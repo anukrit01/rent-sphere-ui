@@ -1,0 +1,18 @@
+.footer-spacer {
+    flex: 1 1 auto;
+}
+
+.footer {
+    background: rgb(246, 246, 31);
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    height: fit-content;
+    justify-content: center;
+}
+
+footer .cr-con{
+    color: #232127;
+    padding: 1rem 4rem;
+    text-align: center;
+}
