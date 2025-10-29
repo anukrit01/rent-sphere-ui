@@ -1,1 +1,16 @@
-<p>asset-list works!</p>
+<div style="padding-left: 100px; padding-right: 100px;">
+<section class="hero">
+    <img src="cover.png" alt="">
+    <div class="hero-text">
+        <h2>Your Project, Our Machinery.<br />Rent with Ease.</h2>
+    </div>
+</section>
+
+<section class="categories">
+    <div class="category-card" *ngFor="let c of categories">
+        <mat-icon [fontIcon]="c.icon"></mat-icon>
+        <h3>{{c.name}}</h3>
+        <p>{{c.desc}}</p>
+    </div>
+</section>
+</div>
