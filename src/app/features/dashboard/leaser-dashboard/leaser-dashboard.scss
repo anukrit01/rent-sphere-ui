@@ -1,0 +1,455 @@
+@use 'breakpoints' as *;
+
+// --------------------------------------------------------
+// 1. Leaser Hero Profile & KPI Bar
+// --------------------------------------------------------
+
+.rs-leaser-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-space-6);
+  padding: var(--rs-space-6);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-xl);
+
+  @include bp-lg {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    gap: var(--rs-space-4);
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.rs-leaser-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rs-space-3);
+  width: 100%;
+
+  @include bp-md {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include bp-lg {
+    max-width: 580px;
+  }
+}
+
+// --------------------------------------------------------
+// 2. Dashboard Tabs (shared with renter, re-declared for safety)
+// --------------------------------------------------------
+
+.rs-dashboard-tabs {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-lg);
+  overflow: hidden;
+}
+
+.rs-tabs-nav {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background-color: var(--rs-color-gray-50);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.rs-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--rs-space-3) var(--rs-space-5);
+  font-size: var(--rs-text-sm);
+  font-weight: var(--rs-font-medium);
+  color: var(--rs-text-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color var(--rs-transition-fast), border-color var(--rs-transition-fast), background-color var(--rs-transition-fast);
+
+  &:hover {
+    color: var(--rs-color-primary-500);
+    background-color: var(--rs-color-gray-100);
+  }
+
+  &--active {
+    color: var(--rs-color-primary-600);
+    font-weight: var(--rs-font-semibold);
+    border-bottom-color: var(--rs-color-primary-500);
+    background-color: var(--rs-surface-default);
+  }
+}
+
+// --------------------------------------------------------
+// 3. Fleet Listing Cards
+// --------------------------------------------------------
+
+.rs-fleet-card {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--rs-shadow-sm);
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-4);
+    padding: var(--rs-space-5);
+
+    @include bp-md {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__thumb {
+    width: 120px;
+    height: 85px;
+    border-radius: var(--rs-radius-lg);
+    overflow: hidden;
+    background-color: var(--rs-color-gray-100);
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    margin: 0 0 var(--rs-space-1) 0;
+    color: var(--rs-color-primary-900);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--rs-space-2);
+    flex-wrap: wrap;
+  }
+
+  &__pricing {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    text-align: left;
+
+    @include bp-md {
+      text-align: right;
+    }
+  }
+
+  &__rate {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+
+    @include bp-md {
+      justify-content: flex-end;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-3);
+    padding: var(--rs-space-3) var(--rs-space-5);
+    background-color: var(--rs-color-gray-50);
+    border-top: 1px solid var(--rs-border-subtle);
+
+    @include bp-md {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+}
+
+// --------------------------------------------------------
+// 4. Incoming Request Cards (with approve/reject actions)
+// --------------------------------------------------------
+
+.rs-request-card {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--rs-shadow-sm);
+  border-left: 4px solid var(--rs-color-accent-500);
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-4);
+    padding: var(--rs-space-5);
+
+    @include bp-md {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  &__thumb {
+    width: 100px;
+    height: 75px;
+    border-radius: var(--rs-radius-lg);
+    overflow: hidden;
+    background-color: var(--rs-color-gray-100);
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__revenue {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    text-align: left;
+    padding: var(--rs-space-3);
+    background-color: var(--rs-color-success-50);
+    border: 1px solid var(--rs-color-success-200);
+    border-radius: var(--rs-radius-lg);
+    min-width: 180px;
+
+    @include bp-md {
+      text-align: right;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-3);
+    padding: var(--rs-space-3) var(--rs-space-5);
+    background-color: var(--rs-color-gray-50);
+    border-top: 1px solid var(--rs-border-subtle);
+
+    @include bp-md {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+}
+
+.rs-request-renter-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rs-reject-reason-panel {
+  padding: var(--rs-space-4) var(--rs-space-5);
+  background-color: var(--rs-color-error-50);
+  border-top: 1px solid var(--rs-color-error-200);
+}
+
+// --------------------------------------------------------
+// 5. Booking Cards (shared pattern — re-declared for scoping)
+// --------------------------------------------------------
+
+.rs-booking-card {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--rs-shadow-sm);
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-4);
+    padding: var(--rs-space-5);
+
+    @include bp-md {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__thumb {
+    width: 100px;
+    height: 75px;
+    border-radius: var(--rs-radius-lg);
+    overflow: hidden;
+    background-color: var(--rs-color-gray-100);
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__price-box {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    flex-shrink: 0;
+
+    @include bp-md {
+      text-align: right;
+    }
+  }
+}
+
+// --------------------------------------------------------
+// 6. Earnings Section
+// --------------------------------------------------------
+
+.rs-earnings-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rs-space-4);
+
+  @include bp-md {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.rs-earnings-card {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-4);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-xl);
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--rs-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    &--revenue {
+      background-color: var(--rs-color-success-50);
+      color: var(--rs-color-success-600);
+    }
+
+    &--escrow {
+      background-color: var(--rs-color-primary-50);
+      color: var(--rs-color-primary-600);
+    }
+
+    &--payout {
+      background-color: var(--rs-color-accent-50);
+      color: var(--rs-color-accent-600);
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Shared Utility Re-declarations (scoped)
+// --------------------------------------------------------
+
+.rs-metric-box {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-3);
+  padding: var(--rs-space-3) var(--rs-space-4);
+  background-color: var(--rs-color-gray-50);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-lg);
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--rs-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &--primary {
+      background-color: var(--rs-color-primary-50);
+      color: var(--rs-color-primary-600);
+    }
+
+    &--accent {
+      background-color: var(--rs-color-accent-50);
+      color: var(--rs-color-accent-600);
+    }
+
+    &--success {
+      background-color: var(--rs-color-success-50);
+      color: var(--rs-color-success-600);
+    }
+
+    &--escrow {
+      background-color: var(--rs-color-blue-50);
+      color: var(--rs-color-blue-600);
+    }
+  }
+
+  &__val {
+    font-size: var(--rs-text-lg);
+    font-weight: var(--rs-font-bold);
+    color: var(--rs-color-primary-900);
+    line-height: 1.1;
+  }
+
+  &__lbl {
+    font-size: 11px;
+    color: var(--rs-text-secondary);
+  }
+}
+
+.rs-detail-meta-dot {
+  color: var(--rs-color-gray-400);
+}

@@ -1,1 +1,387 @@
-<p>renter-dashboard works!</p>
+<app-page-container
+  title="Renter Project Hub"
+  subtitle="Manage active machinery deployments, review pending requests, invoices & escrow deposits."
+  [breadcrumbs]="breadcrumbs"
+  maxWidth="wide"
+>
+
+  <!-- 1. CONTRACTOR PROFILE & STATS HERO BAR -->
+  <div class="rs-renter-hero rs-card rs-card--elevated rs-mb-6">
+    <div class="rs-renter-hero__profile">
+      <div class="rs-avatar rs-avatar--lg">
+        <span>AS</span>
+      </div>
+      <div class="rs-renter-hero__details">
+        <div class="rs-flex rs-items-center rs-gap-2">
+          <h2 class="rs-h3" style="margin: 0;">{{ auth.currentUserSignal()?.name || 'Aman Sharma' }}</h2>
+          <span class="rs-badge rs-badge--success rs-badge--sm">
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px;">verified</mat-icon>
+            Verified Contractor
+          </span>
+        </div>
+        <div class="rs-body-sm rs-text-secondary">
+          {{ auth.currentUserSignal()?.companyName || 'Apex Infra Projects' }} &bull; {{ auth.currentUserSignal()?.location || 'Indore, MP' }}
+        </div>
+        <div class="rs-caption rs-text-muted rs-mt-1">
+          Member since 2024 &bull; 18 Completed Site Projects &bull; Rating: 4.9 ★
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Summary Metric Cards -->
+    <div class="rs-renter-metrics-grid">
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--primary">
+          <mat-icon>precision_manufacturing</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">{{ activeBookings().length }}</div>
+          <div class="rs-metric-box__lbl">Active On Site</div>
+        </div>
+      </div>
+
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--accent">
+          <mat-icon>pending_actions</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">{{ pendingBookings().length }}</div>
+          <div class="rs-metric-box__lbl">Pending Requests</div>
+        </div>
+      </div>
+
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--success">
+          <mat-icon>task_alt</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">{{ completedBookings().length }}</div>
+          <div class="rs-metric-box__lbl">Completed Rentals</div>
+        </div>
+      </div>
+
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--escrow">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">₹{{ totalEscrowHeld() | number:'1.0-0' }}</div>
+          <div class="rs-metric-box__lbl">Escrow Held</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. TABBED NAVIGATION -->
+  <div class="rs-dashboard-tabs rs-card rs-mb-6">
+    <div class="rs-tabs-nav">
+      <button
+        type="button"
+        class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'active'"
+        (click)="activeTab.set('active')"
+      >
+        <span>Active Deployments</span>
+        @if (activeBookings().length > 0) {
+          <span class="rs-badge rs-badge--primary rs-badge--sm rs-ml-2">{{ activeBookings().length }}</span>
+        }
+      </button>
+
+      <button
+        type="button"
+        class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'pending'"
+        (click)="activeTab.set('pending')"
+      >
+        <span>Pending Requests</span>
+        @if (pendingBookings().length > 0) {
+          <span class="rs-badge rs-badge--accent rs-badge--sm rs-ml-2">{{ pendingBookings().length }}</span>
+        }
+      </button>
+
+      <button
+        type="button"
+        class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'all'"
+        (click)="activeTab.set('all')"
+      >
+        <span>All Rentals History ({{ bookings().length }})</span>
+      </button>
+
+      <button
+        type="button"
+        class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'saved'"
+        (click)="activeTab.set('saved')"
+      >
+        <span>Saved Equipment ({{ savedAssets().length }})</span>
+      </button>
+
+      <button
+        type="button"
+        class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'escrow'"
+        (click)="activeTab.set('escrow')"
+      >
+        <span>Invoices & Escrow</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. TAB CONTENT -->
+  @if (loading()) {
+    <app-loading-skeleton type="list" [count]="3"></app-loading-skeleton>
+  } @else {
+    
+    <!-- TAB 1: ACTIVE DEPLOYMENTS -->
+    @if (activeTab() === 'active') {
+      @if (activeBookings().length > 0) {
+        <div class="rs-flex rs-flex-col rs-gap-4">
+          @for (b of activeBookings(); track b.id) {
+            <div class="rs-booking-card rs-card rs-card--elevated rs-animate-fade-in">
+              <div class="rs-booking-card__top">
+                <div class="rs-booking-card__thumb">
+                  <img [src]="getAssetCover(b)" [alt]="b.asset?.title || 'Machinery'" />
+                </div>
+                <div class="rs-booking-card__info">
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1 rs-flex-wrap">
+                    <span class="rs-badge rs-badge--success">ACTIVE ON SITE</span>
+                    <span class="rs-caption rs-text-muted">Booking #RS-{{ b.id }}</span>
+                    <span class="rs-badge rs-badge--neutral rs-badge--sm">{{ b.asset?.category }}</span>
+                  </div>
+                  <h3 class="rs-h4 rs-booking-card__title">{{ b.asset?.title }}</h3>
+                  <div class="rs-booking-card__site rs-body-sm rs-text-secondary">
+                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;">place</mat-icon>
+                    <span>Site: <strong>{{ b.projectLocation }}</strong></span>
+                  </div>
+                  <div class="rs-booking-card__dates rs-caption rs-mt-1">
+                    <mat-icon style="font-size: 14px; width: 14px; height: 14px;">calendar_month</mat-icon>
+                    <span>Deployment: <strong>{{ b.startDate }}</strong> to <strong>{{ b.endDate }}</strong> ({{ b.durationDays }} Days)</span>
+                  </div>
+                </div>
+
+                <!-- Financial Snapshot -->
+                <div class="rs-booking-card__price-box">
+                  <span class="rs-caption rs-text-muted">Estimated Total Cost</span>
+                  <div class="rs-h3" style="color: var(--rs-color-primary-900); margin: 2px 0;">
+                    ₹{{ b.estimatedTotal | number:'1.0-0' }}
+                  </div>
+                  <span class="rs-caption rs-text-success">
+                    (₹{{ b.securityDeposit | number:'1.0-0' }} Escrow Held)
+                  </span>
+                </div>
+              </div>
+
+              <!-- Booking Actions Toolbar -->
+              <div class="rs-booking-card__actions">
+                <div class="rs-booking-card__owner-info">
+                  <mat-icon style="font-size: 18px; width: 18px; height: 18px; color: var(--rs-color-primary-600);">business</mat-icon>
+                  <span class="rs-body-sm">Owner: <strong>{{ b.asset?.owner?.companyName || 'Shree Krishna Earthmovers' }}</strong></span>
+                </div>
+
+                <div class="rs-flex rs-items-center rs-gap-2 rs-flex-wrap">
+                  <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="requestExtension(b)">
+                    <mat-icon>update</mat-icon>
+                    <span>Request Extension</span>
+                  </button>
+                  <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="downloadInvoice(b)">
+                    <mat-icon>receipt</mat-icon>
+                    <span>Invoice / Agreement</span>
+                  </button>
+                  <button type="button" class="rs-btn rs-btn--ghost rs-btn--sm" (click)="contactOwner(b)">
+                    <mat-icon>call</mat-icon>
+                    <span>Contact Owner</span>
+                  </button>
+                  <button type="button" class="rs-btn rs-btn--ghost rs-btn--sm rs-text-error" (click)="reportBreakdown(b)">
+                    <mat-icon>report_problem</mat-icon>
+                    <span>Report Breakdown</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="precision_manufacturing"
+          title="No Active Machinery on Site"
+          message="You do not have any equipment currently mobilized. Browse verified fleet ready for immediate dispatch."
+          actionLabel="Explore Marketplace Fleet"
+          actionRoute="/assets"
+        ></app-empty-state>
+      }
+    }
+
+    <!-- TAB 2: PENDING APPROVAL REQUESTS -->
+    @if (activeTab() === 'pending') {
+      @if (pendingBookings().length > 0) {
+        <div class="rs-flex rs-flex-col rs-gap-4">
+          @for (b of pendingBookings(); track b.id) {
+            <div class="rs-booking-card rs-card rs-card--elevated rs-animate-fade-in">
+              <div class="rs-booking-card__top">
+                <div class="rs-booking-card__thumb">
+                  <img [src]="getAssetCover(b)" [alt]="b.asset?.title || 'Machinery'" />
+                </div>
+                <div class="rs-booking-card__info">
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1 rs-flex-wrap">
+                    <span class="rs-badge rs-badge--accent">PENDING OWNER CONFIRMATION</span>
+                    <span class="rs-caption rs-text-muted">Request #RS-{{ b.id }}</span>
+                  </div>
+                  <h3 class="rs-h4 rs-booking-card__title">{{ b.asset?.title }}</h3>
+                  <div class="rs-booking-card__site rs-body-sm rs-text-secondary">
+                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;">place</mat-icon>
+                    <span>Delivery Target: <strong>{{ b.projectLocation }}</strong></span>
+                  </div>
+                  <div class="rs-booking-card__dates rs-caption rs-mt-1">
+                    <mat-icon style="font-size: 14px; width: 14px; height: 14px;">calendar_month</mat-icon>
+                    <span>Requested Dates: <strong>{{ b.startDate }}</strong> to <strong>{{ b.endDate }}</strong> ({{ b.durationDays }} Days)</span>
+                  </div>
+                </div>
+
+                <div class="rs-booking-card__price-box">
+                  <span class="rs-caption rs-text-muted">Estimated Quote</span>
+                  <div class="rs-h3" style="color: var(--rs-color-primary-900); margin: 2px 0;">
+                    ₹{{ b.estimatedTotal | number:'1.0-0' }}
+                  </div>
+                  <span class="rs-caption rs-text-muted">Deposit: ₹{{ b.securityDeposit | number:'1.0-0' }}</span>
+                </div>
+              </div>
+
+              <div class="rs-booking-card__actions">
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <mat-icon class="rs-text-accent" style="font-size: 18px; width: 18px; height: 18px;">schedule</mat-icon>
+                  <span class="rs-caption rs-text-secondary">
+                    Owner typically confirms within 1 hour. No advance charged yet.
+                  </span>
+                </div>
+
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="contactOwner(b)">
+                    <mat-icon>chat</mat-icon>
+                    <span>Message Owner</span>
+                  </button>
+                  <button type="button" class="rs-btn rs-btn--ghost rs-btn--sm rs-text-error" (click)="cancelBooking(b)">
+                    <mat-icon>close</mat-icon>
+                    <span>Cancel Request</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="hourglass_empty"
+          title="No Pending Rental Requests"
+          message="You don't have any outstanding equipment booking requests awaiting approval."
+          actionLabel="Find Machinery"
+          actionRoute="/assets"
+        ></app-empty-state>
+      }
+    }
+
+    <!-- TAB 3: ALL RENTALS HISTORY -->
+    @if (activeTab() === 'all') {
+      <div class="rs-flex rs-flex-col rs-gap-4">
+        @for (b of bookings(); track b.id) {
+          <div class="rs-booking-card rs-card rs-p-4 rs-animate-fade-in">
+            <div class="rs-booking-card__top">
+              <div class="rs-booking-card__thumb">
+                <img [src]="getAssetCover(b)" [alt]="b.asset?.title || 'Machinery'" />
+              </div>
+              <div class="rs-booking-card__info">
+                <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1">
+                  <span
+                    class="rs-badge"
+                    [class.rs-badge--success]="b.status === 'approved'"
+                    [class.rs-badge--accent]="b.status === 'pending'"
+                    [class.rs-badge--neutral]="b.status === 'completed'"
+                    [class.rs-badge--error]="b.status === 'rejected' || b.status === 'cancelled'"
+                  >
+                    {{ b.status | uppercase }}
+                  </span>
+                  <span class="rs-caption rs-text-muted">#RS-{{ b.id }}</span>
+                </div>
+                <h3 class="rs-h4 rs-booking-card__title">{{ b.asset?.title }}</h3>
+                <div class="rs-caption rs-text-secondary">{{ b.startDate }} &rarr; {{ b.endDate }} &bull; {{ b.projectLocation }}</div>
+              </div>
+              <div class="rs-booking-card__price-box">
+                <strong>₹{{ b.estimatedTotal | number:'1.0-0' }}</strong>
+                <span class="rs-caption rs-text-muted">Total billing</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- TAB 4: SAVED EQUIPMENT (FAVORITES) -->
+    @if (activeTab() === 'saved') {
+      @if (savedAssets().length > 0) {
+        <div class="rs-grid rs-grid--3 rs-gap-6">
+          @for (asset of savedAssets(); track asset.id) {
+            <app-asset-card [asset]="asset"></app-asset-card>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="favorite_border"
+          title="No Saved Equipment"
+          message="You haven't added any machinery to your saved list yet. Save machines while browsing for quick access."
+          actionLabel="Browse Marketplace Fleet"
+          actionRoute="/assets"
+        ></app-empty-state>
+      }
+    }
+
+    <!-- TAB 5: INVOICES & ESCROW -->
+    @if (activeTab() === 'escrow') {
+      <div class="rs-card rs-p-6 rs-animate-fade-in">
+        <h3 class="rs-h4 rs-mb-2">Security Deposit Escrow & Tax Invoices</h3>
+        <p class="rs-body-sm rs-text-secondary rs-mb-4">
+          All deposits are held in RBI-compliant escrow and refunded within 24 hours of on-site demobilization.
+        </p>
+
+        <div class="rs-specs-table-wrapper">
+          <table class="rs-specs-table">
+            <thead>
+              <tr>
+                <th style="background-color: var(--rs-color-gray-100);">Booking Ref</th>
+                <th style="background-color: var(--rs-color-gray-100);">Machinery</th>
+                <th style="background-color: var(--rs-color-gray-100);">Escrow Deposit</th>
+                <th style="background-color: var(--rs-color-gray-100);">Escrow Status</th>
+                <th style="background-color: var(--rs-color-gray-100);">GST Invoice</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of bookings(); track b.id) {
+                <tr>
+                  <td><strong>#RS-{{ b.id }}</strong></td>
+                  <td>{{ b.asset?.title }}</td>
+                  <td><strong>₹{{ b.securityDeposit | number:'1.0-0' }}</strong></td>
+                  <td>
+                    @if (b.status === 'approved' || b.status === 'pending') {
+                      <span class="rs-badge rs-badge--success rs-badge--sm">HELD IN ESCROW</span>
+                    } @else if (b.status === 'completed') {
+                      <span class="rs-badge rs-badge--neutral rs-badge--sm">REFUNDED POST-AUDIT</span>
+                    } @else {
+                      <span class="rs-badge rs-badge--neutral rs-badge--sm">RELEASED</span>
+                    }
+                  </td>
+                  <td>
+                    <button type="button" class="rs-btn rs-btn--link rs-caption" (click)="downloadInvoice(b)">
+                      <mat-icon style="font-size: 16px; width: 16px; height: 16px;">download</mat-icon>
+                      <span>Download (PDF)</span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+  }
+
+</app-page-container>

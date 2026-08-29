@@ -1,1 +1,537 @@
-<p>leaser-dashboard works!</p>
+<app-page-container
+  title="Fleet Owner Portal"
+  subtitle="Manage your listed machinery, review incoming rental requests, track earnings & settlements."
+  [breadcrumbs]="breadcrumbs"
+  maxWidth="wide"
+>
+
+  <!-- ========================================================== -->
+  <!--  1. LEASER PROFILE & KPI HERO BAR                          -->
+  <!-- ========================================================== -->
+  <div class="rs-leaser-hero rs-card rs-card--elevated rs-mb-6">
+    <div class="rs-leaser-hero__profile">
+      <div class="rs-avatar rs-avatar--lg rs-avatar--leaser">
+        <span>VP</span>
+      </div>
+      <div class="rs-leaser-hero__details">
+        <div class="rs-flex rs-items-center rs-gap-2">
+          <h2 class="rs-h3" style="margin: 0;">{{ auth.currentUserSignal()?.name || 'Vikram Patel' }}</h2>
+          <span class="rs-badge rs-badge--success rs-badge--sm">
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px;">verified</mat-icon>
+            Verified Fleet Owner
+          </span>
+        </div>
+        <div class="rs-body-sm rs-text-secondary">
+          {{ auth.currentUserSignal()?.companyName || 'Shree Krishna Heavy Earthmovers' }} &bull;
+          {{ auth.currentUserSignal()?.location || 'Bhopal / Indore, MP' }}
+        </div>
+        <div class="rs-caption rs-text-muted rs-mt-1">
+          Member since 2023 &bull; 42 Completed Rentals &bull; Response Time: Within 1 hour
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 KPI Metric Cards -->
+    <div class="rs-leaser-metrics-grid">
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--primary">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">{{ fleetAssets().length }}</div>
+          <div class="rs-metric-box__lbl">Fleet Machines</div>
+        </div>
+      </div>
+
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--accent">
+          <mat-icon>inbox</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">{{ incomingRequests().length }}</div>
+          <div class="rs-metric-box__lbl">Pending Requests</div>
+        </div>
+      </div>
+
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--success">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">₹{{ totalRevenue() | number:'1.0-0' }}</div>
+          <div class="rs-metric-box__lbl">Total Revenue</div>
+        </div>
+      </div>
+
+      <div class="rs-metric-box">
+        <div class="rs-metric-box__icon rs-metric-box__icon--escrow">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div>
+          <div class="rs-metric-box__val">₹{{ totalEscrowHeld() | number:'1.0-0' }}</div>
+          <div class="rs-metric-box__lbl">Deposits Held</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!--  2. TABBED NAVIGATION                                      -->
+  <!-- ========================================================== -->
+  <div class="rs-dashboard-tabs rs-card rs-mb-6">
+    <div class="rs-tabs-nav">
+      <button type="button" class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'fleet'"
+        (click)="activeTab.set('fleet')">
+        <span>My Fleet ({{ fleetAssets().length }})</span>
+      </button>
+
+      <button type="button" class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'incoming'"
+        (click)="activeTab.set('incoming')">
+        <span>Incoming Requests</span>
+        @if (incomingRequests().length > 0) {
+          <span class="rs-badge rs-badge--accent rs-badge--sm rs-ml-2">{{ incomingRequests().length }}</span>
+        }
+      </button>
+
+      <button type="button" class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'active'"
+        (click)="activeTab.set('active')">
+        <span>Active Deployments</span>
+        @if (activeDeployments().length > 0) {
+          <span class="rs-badge rs-badge--success rs-badge--sm rs-ml-2">{{ activeDeployments().length }}</span>
+        }
+      </button>
+
+      <button type="button" class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'earnings'"
+        (click)="activeTab.set('earnings')">
+        <span>Earnings & Settlements</span>
+      </button>
+
+      <button type="button" class="rs-tab-btn"
+        [class.rs-tab-btn--active]="activeTab() === 'history'"
+        (click)="activeTab.set('history')">
+        <span>Rental History</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!--  3. TAB CONTENT                                            -->
+  <!-- ========================================================== -->
+  @if (loading()) {
+    <app-loading-skeleton type="list" [count]="3"></app-loading-skeleton>
+  } @else {
+
+    <!-- ====== TAB: MY FLEET ====== -->
+    @if (activeTab() === 'fleet') {
+      <div class="rs-fleet-header rs-flex rs-justify-between rs-items-center rs-mb-4">
+        <h3 class="rs-h4" style="margin: 0;">Listed Equipment Fleet</h3>
+        <a routerLink="/list-equipment" class="rs-btn rs-btn--accent rs-btn--md">
+          <mat-icon>add</mat-icon>
+          <span>List New Equipment</span>
+        </a>
+      </div>
+
+      @if (fleetAssets().length > 0) {
+        <div class="rs-fleet-grid rs-flex rs-flex-col rs-gap-4">
+          @for (asset of fleetAssets(); track asset.id) {
+            <div class="rs-fleet-card rs-card rs-animate-fade-in">
+              <div class="rs-fleet-card__top">
+                <div class="rs-fleet-card__thumb">
+                  <img [src]="asset.coverImage || asset.images[0]" [alt]="asset.title" />
+                </div>
+
+                <div class="rs-fleet-card__info">
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1 rs-flex-wrap">
+                    <app-status-badge [status]="asset.status"></app-status-badge>
+                    <span class="rs-badge rs-badge--neutral rs-badge--sm">{{ asset.category }}</span>
+                    <span class="rs-badge rs-badge--neutral rs-badge--sm">{{ asset.condition }}</span>
+                  </div>
+                  <h4 class="rs-h4 rs-fleet-card__title">{{ asset.title }}</h4>
+                  <div class="rs-fleet-card__meta rs-body-sm rs-text-secondary rs-mt-1">
+                    <span>{{ asset.specifications.brand }} {{ asset.specifications.model }} ({{ asset.specifications.year }})</span>
+                    <span class="rs-detail-meta-dot">&bull;</span>
+                    <span>{{ asset.location }}</span>
+                  </div>
+                </div>
+
+                <div class="rs-fleet-card__pricing">
+                  <div class="rs-fleet-card__rate">
+                    <span class="rs-h3" style="color: var(--rs-color-primary-900);">₹{{ asset.pricePerDay | number:'1.0-0' }}</span>
+                    <span class="rs-caption rs-text-muted">/day</span>
+                  </div>
+                  <div class="rs-caption rs-text-secondary rs-mt-1">
+                    Weekly: ₹{{ (asset.pricePerWeek || asset.pricePerDay * 6) | number:'1.0-0' }}
+                  </div>
+                  <div class="rs-caption rs-text-muted">
+                    Deposit: ₹{{ asset.securityDeposit | number:'1.0-0' }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fleet Card Actions -->
+              <div class="rs-fleet-card__actions">
+                <div class="rs-fleet-card__stats rs-flex rs-items-center rs-gap-4">
+                  <span class="rs-caption rs-text-muted">
+                    <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: -2px;">star</mat-icon>
+                    {{ asset.rating }} ({{ asset.reviewCount }} reviews)
+                  </span>
+                  @if (asset.operatorProvided) {
+                    <span class="rs-caption rs-text-muted">
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: -2px;">engineering</mat-icon>
+                      Operator Available
+                    </span>
+                  }
+                </div>
+
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="toggleAvailability(asset)">
+                    <mat-icon>{{ asset.status === 'available' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                    <span>{{ asset.status === 'available' ? 'Mark Deployed' : 'Mark Available' }}</span>
+                  </button>
+                  <button type="button" class="rs-btn rs-btn--ghost rs-btn--sm" (click)="editListing(asset)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit Details</span>
+                  </button>
+                  <a [routerLink]="['/assets', asset.id]" class="rs-btn rs-btn--ghost rs-btn--sm">
+                    <mat-icon>visibility</mat-icon>
+                    <span>View Listing</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="inventory_2"
+          title="No Equipment Listed Yet"
+          message="Start earning by listing your construction machinery on RentSphere."
+          actionLabel="List Your First Machine"
+          actionRoute="/list-equipment"
+        ></app-empty-state>
+      }
+    }
+
+    <!-- ====== TAB: INCOMING REQUESTS (APPROVE / REJECT) ====== -->
+    @if (activeTab() === 'incoming') {
+      @if (incomingRequests().length > 0) {
+        <div class="rs-flex rs-flex-col rs-gap-4">
+          @for (b of incomingRequests(); track b.id) {
+            <div class="rs-request-card rs-card rs-card--elevated rs-animate-fade-in">
+              <div class="rs-request-card__top">
+                <div class="rs-request-card__thumb">
+                  <img [src]="getAssetCover(b)" [alt]="b.asset?.title || 'Machinery'" />
+                </div>
+
+                <div class="rs-request-card__info">
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1 rs-flex-wrap">
+                    <span class="rs-badge rs-badge--accent">PENDING YOUR APPROVAL</span>
+                    <span class="rs-caption rs-text-muted">Request #RS-{{ b.id }}</span>
+                  </div>
+                  <h4 class="rs-h4" style="margin: 0 0 4px 0;">{{ b.asset?.title }}</h4>
+
+                  <!-- Renter Identity -->
+                  <div class="rs-request-renter-info rs-body-sm rs-mt-2">
+                    <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1">
+                      <mat-icon style="font-size: 18px; width: 18px; height: 18px; color: var(--rs-color-primary-600);">person</mat-icon>
+                      <strong>{{ b.renterName || 'Contractor' }}</strong>
+                      <span class="rs-text-muted">&bull; {{ b.renterCompany || 'Infra Company' }}</span>
+                    </div>
+                    <div class="rs-flex rs-items-center rs-gap-2">
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px;">place</mat-icon>
+                      <span class="rs-text-secondary">Delivery Site: <strong>{{ b.projectLocation }}</strong></span>
+                    </div>
+                    <div class="rs-flex rs-items-center rs-gap-2">
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px;">calendar_month</mat-icon>
+                      <span class="rs-text-secondary">
+                        Requested: <strong>{{ b.startDate }}</strong> to <strong>{{ b.endDate }}</strong>
+                        ({{ b.durationDays }} {{ b.durationDays === 1 ? 'day' : 'days' }})
+                      </span>
+                    </div>
+                    @if (b.projectDescription) {
+                      <div class="rs-flex rs-items-center rs-gap-2 rs-mt-1">
+                        <mat-icon style="font-size: 14px; width: 14px; height: 14px;">description</mat-icon>
+                        <span class="rs-caption rs-text-muted">{{ b.projectDescription }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Revenue Snapshot -->
+                <div class="rs-request-card__revenue">
+                  <span class="rs-overline rs-text-muted">Your Estimated Earnings</span>
+                  <div class="rs-h3" style="color: var(--rs-color-success-700); margin: 4px 0;">
+                    ₹{{ (b.rentalSubtotal + b.operatorFee) | number:'1.0-0' }}
+                  </div>
+                  <div class="rs-caption rs-text-muted">
+                    Rental: ₹{{ b.rentalSubtotal | number:'1.0-0' }}
+                    @if (b.operatorRequired) {
+                      + Operator: ₹{{ b.operatorFee | number:'1.0-0' }}
+                    }
+                  </div>
+                  <div class="rs-caption rs-text-secondary rs-mt-1">
+                    Deposit Escrow: ₹{{ b.securityDeposit | number:'1.0-0' }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Approve / Reject Action Bar -->
+              <div class="rs-request-card__actions">
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px; color: var(--rs-color-accent-600);">schedule</mat-icon>
+                  <span class="rs-caption rs-text-secondary">Submitted: {{ b.createdAt }}</span>
+                  @if (b.renterPhone) {
+                    <span class="rs-caption rs-text-muted">&bull; {{ b.renterPhone }}</span>
+                  }
+                </div>
+
+                <div class="rs-flex rs-items-center rs-gap-3">
+                  <button type="button"
+                    class="rs-btn rs-btn--primary rs-btn--md"
+                    (click)="approveRequest(b)">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Approve & Dispatch</span>
+                  </button>
+                  <button type="button"
+                    class="rs-btn rs-btn--danger rs-btn--md"
+                    (click)="openRejectDialog(b.id)">
+                    <mat-icon>cancel</mat-icon>
+                    <span>Decline Request</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Inline Rejection Reason Panel -->
+              @if (showRejectDialog() === b.id) {
+                <div class="rs-reject-reason-panel rs-animate-fade-in">
+                  <div class="rs-form-group rs-mb-2">
+                    <label class="rs-form-label">Decline Reason (sent to contractor):</label>
+                    <textarea
+                      class="rs-input"
+                      style="min-height: 60px;"
+                      placeholder="e.g. Equipment is committed to another project during these dates..."
+                      [ngModel]="rejectionReason()"
+                      (ngModelChange)="rejectionReason.set($event)"
+                    ></textarea>
+                  </div>
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-justify-end">
+                    <button type="button" class="rs-btn rs-btn--ghost rs-btn--sm" (click)="cancelRejectDialog()">
+                      Cancel
+                    </button>
+                    <button type="button" class="rs-btn rs-btn--danger rs-btn--sm" (click)="confirmReject()">
+                      <mat-icon>send</mat-icon>
+                      <span>Send Decline Notice</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="inbox"
+          title="No Pending Rental Requests"
+          message="You don't have any incoming rental requests to review at this time."
+          actionLabel="View Fleet Listings"
+          actionRoute="/dashboard/leaser"
+        ></app-empty-state>
+      }
+    }
+
+    <!-- ====== TAB: ACTIVE DEPLOYMENTS ====== -->
+    @if (activeTab() === 'active') {
+      @if (activeDeployments().length > 0) {
+        <div class="rs-flex rs-flex-col rs-gap-4">
+          @for (b of activeDeployments(); track b.id) {
+            <div class="rs-booking-card rs-card rs-card--elevated rs-animate-fade-in">
+              <div class="rs-booking-card__top">
+                <div class="rs-booking-card__thumb">
+                  <img [src]="getAssetCover(b)" [alt]="b.asset?.title || 'Machinery'" />
+                </div>
+                <div class="rs-booking-card__info">
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1 rs-flex-wrap">
+                    <span class="rs-badge rs-badge--success">DEPLOYED ON SITE</span>
+                    <span class="rs-caption rs-text-muted">Booking #RS-{{ b.id }}</span>
+                  </div>
+                  <h4 class="rs-h4" style="margin: 0 0 4px 0;">{{ b.asset?.title }}</h4>
+                  <div class="rs-body-sm rs-text-secondary">
+                    <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: -2px;">person</mat-icon>
+                    Rented to: <strong>{{ b.renterCompany || b.renterName }}</strong>
+                  </div>
+                  <div class="rs-caption rs-text-secondary rs-mt-1">
+                    <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: -2px;">place</mat-icon>
+                    {{ b.projectLocation }}
+                    &bull;
+                    <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: -2px;">calendar_month</mat-icon>
+                    {{ b.startDate }} &rarr; {{ b.endDate }} ({{ b.durationDays }} days)
+                  </div>
+                </div>
+
+                <div class="rs-booking-card__price-box">
+                  <span class="rs-caption rs-text-muted">Your Earnings</span>
+                  <div class="rs-h3" style="color: var(--rs-color-success-700); margin: 2px 0;">
+                    ₹{{ (b.rentalSubtotal + b.operatorFee) | number:'1.0-0' }}
+                  </div>
+                  <span class="rs-caption rs-text-success">
+                    (₹{{ b.securityDeposit | number:'1.0-0' }} Escrow Secured)
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="local_shipping"
+          title="No Active Deployments"
+          message="None of your machines are currently deployed at a contractor site."
+        ></app-empty-state>
+      }
+    }
+
+    <!-- ====== TAB: EARNINGS & SETTLEMENTS ====== -->
+    @if (activeTab() === 'earnings') {
+      <div class="rs-earnings-section rs-animate-fade-in">
+
+        <!-- Revenue Summary Cards -->
+        <div class="rs-earnings-cards-grid rs-mb-6">
+          <div class="rs-earnings-card rs-card rs-p-5">
+            <div class="rs-earnings-card__icon rs-earnings-card__icon--revenue">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div>
+              <span class="rs-caption rs-text-muted">Total Gross Revenue</span>
+              <div class="rs-h2" style="margin: 4px 0; color: var(--rs-color-success-700);">
+                ₹{{ totalRevenue() | number:'1.0-0' }}
+              </div>
+              <span class="rs-caption rs-text-secondary">Across {{ completedBookings().length + activeDeployments().length }} rentals</span>
+            </div>
+          </div>
+
+          <div class="rs-earnings-card rs-card rs-p-5">
+            <div class="rs-earnings-card__icon rs-earnings-card__icon--escrow">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+            <div>
+              <span class="rs-caption rs-text-muted">Active Escrow Balance</span>
+              <div class="rs-h2" style="margin: 4px 0; color: var(--rs-color-primary-800);">
+                ₹{{ totalEscrowHeld() | number:'1.0-0' }}
+              </div>
+              <span class="rs-caption rs-text-secondary">Security deposits currently held</span>
+            </div>
+          </div>
+
+          <div class="rs-earnings-card rs-card rs-p-5">
+            <div class="rs-earnings-card__icon rs-earnings-card__icon--payout">
+              <mat-icon>receipt_long</mat-icon>
+            </div>
+            <div>
+              <span class="rs-caption rs-text-muted">Estimated Monthly Payout</span>
+              <div class="rs-h2" style="margin: 4px 0; color: var(--rs-color-accent-700);">
+                ₹{{ (totalRevenue() * 0.92) | number:'1.0-0' }}
+              </div>
+              <span class="rs-caption rs-text-secondary">After 8% RentSphere platform fee</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settlement Table -->
+        <div class="rs-card rs-p-6">
+          <div class="rs-flex rs-justify-between rs-items-center rs-mb-4">
+            <h3 class="rs-h4" style="margin: 0;">Revenue Breakdown by Booking</h3>
+            <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="downloadSettlementReport()">
+              <mat-icon>download</mat-icon>
+              <span>Download Report (PDF)</span>
+            </button>
+          </div>
+
+          <div class="rs-specs-table-wrapper">
+            <table class="rs-specs-table">
+              <thead>
+                <tr>
+                  <th style="background-color: var(--rs-color-gray-100);">Ref</th>
+                  <th style="background-color: var(--rs-color-gray-100);">Machine</th>
+                  <th style="background-color: var(--rs-color-gray-100);">Contractor</th>
+                  <th style="background-color: var(--rs-color-gray-100);">Duration</th>
+                  <th style="background-color: var(--rs-color-gray-100);">Rental Revenue</th>
+                  <th style="background-color: var(--rs-color-gray-100);">Operator</th>
+                  <th style="background-color: var(--rs-color-gray-100);">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (b of bookings(); track b.id) {
+                  <tr>
+                    <td><strong>#RS-{{ b.id }}</strong></td>
+                    <td>{{ b.asset?.title }}</td>
+                    <td>{{ b.renterCompany || b.renterName }}</td>
+                    <td>{{ b.durationDays }} days</td>
+                    <td><strong>₹{{ b.rentalSubtotal | number:'1.0-0' }}</strong></td>
+                    <td>{{ b.operatorRequired ? '₹' + (b.operatorFee | number:'1.0-0') : '—' }}</td>
+                    <td>
+                      <span
+                        class="rs-badge rs-badge--sm"
+                        [class.rs-badge--success]="b.status === 'approved' || b.status === 'completed'"
+                        [class.rs-badge--accent]="b.status === 'pending'"
+                        [class.rs-badge--error]="b.status === 'rejected' || b.status === 'cancelled'"
+                      >
+                        {{ b.status | uppercase }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ====== TAB: RENTAL HISTORY ====== -->
+    @if (activeTab() === 'history') {
+      @if (completedBookings().length > 0) {
+        <div class="rs-flex rs-flex-col rs-gap-4">
+          @for (b of completedBookings(); track b.id) {
+            <div class="rs-booking-card rs-card rs-p-4 rs-animate-fade-in">
+              <div class="rs-booking-card__top">
+                <div class="rs-booking-card__thumb">
+                  <img [src]="getAssetCover(b)" [alt]="b.asset?.title || 'Machinery'" />
+                </div>
+                <div class="rs-booking-card__info">
+                  <div class="rs-flex rs-items-center rs-gap-2 rs-mb-1">
+                    <span class="rs-badge rs-badge--neutral">COMPLETED</span>
+                    <span class="rs-caption rs-text-muted">#RS-{{ b.id }}</span>
+                  </div>
+                  <h4 class="rs-h4" style="margin: 0 0 4px 0;">{{ b.asset?.title }}</h4>
+                  <div class="rs-caption rs-text-secondary">
+                    {{ b.renterCompany || b.renterName }} &bull; {{ b.startDate }} &rarr; {{ b.endDate }} &bull; {{ b.projectLocation }}
+                  </div>
+                </div>
+                <div class="rs-booking-card__price-box">
+                  <strong style="color: var(--rs-color-success-700);">₹{{ (b.rentalSubtotal + b.operatorFee) | number:'1.0-0' }}</strong>
+                  <span class="rs-caption rs-text-muted">earned</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="history"
+          title="No Completed Rentals Yet"
+          message="Past rental records will appear here once your first equipment deployment is returned."
+        ></app-empty-state>
+      }
+    }
+
+  }
+
+  <!-- ========================================================== -->
+  <!--  REJECT REASON OVERLAY BACKDROP (when visible)             -->
+  <!-- ========================================================== -->
+
+</app-page-container>
