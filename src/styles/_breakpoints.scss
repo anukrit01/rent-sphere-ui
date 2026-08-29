@@ -1,0 +1,91 @@
+// ============================================================
+// RentSphere Breakpoints & Responsive Mixins
+// ============================================================
+// Use these mixins for all responsive styling.
+// Do NOT use raw @media queries elsewhere.
+// ============================================================
+
+// Breakpoint values
+$bp-xs: 320px;
+$bp-sm: 576px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+$bp-2xl: 1440px;
+
+// --------------------------------------------------------
+// Mobile-first breakpoint mixins (min-width)
+// --------------------------------------------------------
+
+/// @example @include bp-sm { ... }
+@mixin bp-xs {
+  @media (min-width: #{$bp-xs}) { @content; }
+}
+
+@mixin bp-sm {
+  @media (min-width: #{$bp-sm}) { @content; }
+}
+
+@mixin bp-md {
+  @media (min-width: #{$bp-md}) { @content; }
+}
+
+@mixin bp-lg {
+  @media (min-width: #{$bp-lg}) { @content; }
+}
+
+@mixin bp-xl {
+  @media (min-width: #{$bp-xl}) { @content; }
+}
+
+@mixin bp-2xl {
+  @media (min-width: #{$bp-2xl}) { @content; }
+}
+
+// --------------------------------------------------------
+// Max-width breakpoints (desktop-first, for overrides)
+// --------------------------------------------------------
+
+@mixin bp-below-sm {
+  @media (max-width: #{$bp-sm - 1px}) { @content; }
+}
+
+@mixin bp-below-md {
+  @media (max-width: #{$bp-md - 1px}) { @content; }
+}
+
+@mixin bp-below-lg {
+  @media (max-width: #{$bp-lg - 1px}) { @content; }
+}
+
+@mixin bp-below-xl {
+  @media (max-width: #{$bp-xl - 1px}) { @content; }
+}
+
+// --------------------------------------------------------
+// Range breakpoints
+// --------------------------------------------------------
+
+@mixin bp-between($min, $max) {
+  @media (min-width: #{$min}) and (max-width: #{$max - 1px}) { @content; }
+}
+
+@mixin bp-tablet-only {
+  @media (min-width: #{$bp-md}) and (max-width: #{$bp-lg - 1px}) { @content; }
+}
+
+// --------------------------------------------------------
+// Utility: hide/show at breakpoints
+// --------------------------------------------------------
+
+@mixin hide-below($bp) {
+  @media (max-width: #{$bp - 1px}) {
+    display: none !important;
+  }
+}
+
+@mixin show-below($bp) {
+  @media (min-width: #{$bp}) {
+    display: none !important;
+  }
+}

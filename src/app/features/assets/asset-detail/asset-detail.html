@@ -1,1 +1,588 @@
-<p>asset-detail works!</p>
+<app-page-container
+  [breadcrumbs]="breadcrumbs"
+  maxWidth="wide"
+  [noPadding]="true"
+>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="rs-container rs-p-6">
+      <app-loading-skeleton type="card-grid" [count]="1"></app-loading-skeleton>
+    </div>
+  }
+
+  <!-- Asset Not Found Empty State -->
+  @if (!loading() && !asset()) {
+    <div class="rs-container rs-p-6">
+      <app-empty-state
+        icon="search_off"
+        title="Equipment Not Found"
+        message="The machinery you are looking for may have been delisted or does not exist."
+        actionLabel="Explore All Equipment"
+        actionRoute="/assets"
+      ></app-empty-state>
+    </div>
+  }
+
+  <!-- Main Asset Detail Content -->
+  @if (!loading() && asset()) {
+    <div class="rs-asset-detail rs-container rs-p-6">
+      
+      <!-- Top Title & Action Header -->
+      <header class="rs-detail-header rs-mb-6">
+        <div class="rs-detail-header__main">
+          
+          <!-- Badges Row -->
+          <div class="rs-flex rs-items-center rs-gap-2 rs-mb-2 rs-flex-wrap">
+            <span class="rs-badge rs-badge--primary">{{ asset()!.category }}</span>
+            <app-status-badge [status]="asset()!.status"></app-status-badge>
+            @if (asset()!.condition) {
+              <span class="rs-badge rs-badge--neutral">{{ asset()!.condition }}</span>
+            }
+          </div>
+
+          <!-- Title -->
+          <h1 class="rs-h1 rs-detail-header__title">{{ asset()!.title }}</h1>
+
+          <!-- Meta Information (Location, Rating, Operator) -->
+          <div class="rs-detail-header__meta">
+            <div class="rs-detail-meta-item">
+              <mat-icon class="rs-text-accent">place</mat-icon>
+              <span>{{ asset()!.location }}</span>
+            </div>
+            <span class="rs-detail-meta-dot">&bull;</span>
+            <div class="rs-detail-meta-item">
+              <app-rating [rating]="asset()!.rating" [reviewCount]="asset()!.reviewCount"></app-rating>
+            </div>
+            @if (asset()!.operatorProvided) {
+              <span class="rs-detail-meta-dot">&bull;</span>
+              <div class="rs-detail-meta-item">
+                <span class="rs-badge rs-badge--neutral rs-badge--sm">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px; margin-right: 2px;">engineering</mat-icon>
+                  Operator Included / Available
+                </span>
+              </div>
+            }
+          </div>
+
+        </div>
+
+        <!-- Right Quick Action Buttons -->
+        <div class="rs-detail-header__actions">
+          <button
+            type="button"
+            class="rs-btn rs-btn--secondary rs-btn--icon"
+            [class.rs-btn--active-fav]="isFavorite"
+            (click)="toggleFavorite()"
+            [matTooltip]="isFavorite ? 'Remove from favorites' : 'Save to favorites'"
+          >
+            <mat-icon [style.color]="isFavorite ? 'var(--rs-color-error-500)' : 'inherit'">
+              {{ isFavorite ? 'favorite' : 'favorite_border' }}
+            </mat-icon>
+          </button>
+          <button
+            type="button"
+            class="rs-btn rs-btn--secondary rs-btn--icon"
+            (click)="shareAsset()"
+            matTooltip="Copy machine listing link"
+          >
+            <mat-icon>share</mat-icon>
+          </button>
+        </div>
+      </header>
+
+      <!-- 2-Column Marketplace Grid Layout -->
+      <div class="rs-detail-layout">
+        
+        <!-- LEFT COLUMN: Media Gallery, Highlights, Specifications, Tabs & Reviews -->
+        <div class="rs-detail-main">
+          
+          <!-- 1. IMAGE GALLERY -->
+          <div class="rs-gallery rs-card rs-mb-6">
+            <div class="rs-gallery__main">
+              <img
+                [src]="asset()!.images[activeImageIndex()] || asset()!.coverImage"
+                [alt]="asset()!.title"
+                class="rs-gallery__main-img"
+              />
+              <div class="rs-gallery__counter">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px;">photo_camera</mat-icon>
+                <span>{{ activeImageIndex() + 1 }} / {{ asset()!.images.length }}</span>
+              </div>
+            </div>
+
+            <!-- Thumbnail Selector Strip -->
+            @if (asset()!.images.length > 1) {
+              <div class="rs-gallery__thumbs">
+                @for (img of asset()!.images; track img; let idx = $index) {
+                  <button
+                    type="button"
+                    class="rs-gallery__thumb"
+                    [class.rs-gallery__thumb--active]="activeImageIndex() === idx"
+                    (click)="activeImageIndex.set(idx)"
+                  >
+                    <img [src]="img" [alt]="asset()!.title + ' preview ' + (idx + 1)" />
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- 2. KEY HIGHLIGHTS CARDS (4 Grid) -->
+          <div class="rs-highlights-grid rs-mb-6">
+            <div class="rs-highlight-card rs-card rs-p-3">
+              <mat-icon class="rs-highlight-card__icon">badge</mat-icon>
+              <div>
+                <span class="rs-caption rs-text-muted">Brand / Maker</span>
+                <strong class="rs-body-sm">{{ asset()!.specifications.brand }}</strong>
+              </div>
+            </div>
+
+            <div class="rs-highlight-card rs-card rs-p-3">
+              <mat-icon class="rs-highlight-card__icon">calendar_today</mat-icon>
+              <div>
+                <span class="rs-caption rs-text-muted">Manufacturing Year</span>
+                <strong class="rs-body-sm">{{ asset()!.specifications.year }}</strong>
+              </div>
+            </div>
+
+            <div class="rs-highlight-card rs-card rs-p-3">
+              <mat-icon class="rs-highlight-card__icon">fitness_center</mat-icon>
+              <div>
+                <span class="rs-caption rs-text-muted">Operating Weight</span>
+                <strong class="rs-body-sm">{{ asset()!.specifications.operatingWeight || 'Standard Duty' }}</strong>
+              </div>
+            </div>
+
+            <div class="rs-highlight-card rs-card rs-p-3">
+              <mat-icon class="rs-highlight-card__icon">local_gas_station</mat-icon>
+              <div>
+                <span class="rs-caption rs-text-muted">Power & Fuel</span>
+                <strong class="rs-body-sm">{{ asset()!.specifications.fuelType || 'Diesel' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. TABBED INFORMATION SECTION -->
+          <div class="rs-detail-tabs-container rs-card rs-mb-6">
+            <div class="rs-tabs-nav">
+              <button
+                type="button"
+                class="rs-tab-btn"
+                [class.rs-tab-btn--active]="activeTab() === 'overview'"
+                (click)="activeTab.set('overview')"
+              >
+                Overview
+              </button>
+              <button
+                type="button"
+                class="rs-tab-btn"
+                [class.rs-tab-btn--active]="activeTab() === 'specs'"
+                (click)="activeTab.set('specs')"
+              >
+                Technical Specs
+              </button>
+              <button
+                type="button"
+                class="rs-tab-btn"
+                [class.rs-tab-btn--active]="activeTab() === 'features'"
+                (click)="activeTab.set('features')"
+              >
+                Features & Attachments
+              </button>
+              <button
+                type="button"
+                class="rs-tab-btn"
+                [class.rs-tab-btn--active]="activeTab() === 'terms'"
+                (click)="activeTab.set('terms')"
+              >
+                Rental Terms
+              </button>
+              <button
+                type="button"
+                class="rs-tab-btn"
+                [class.rs-tab-btn--active]="activeTab() === 'reviews'"
+                (click)="activeTab.set('reviews')"
+              >
+                Reviews ({{ asset()!.reviewCount }})
+              </button>
+            </div>
+
+            <div class="rs-tab-content rs-p-6">
+              
+              <!-- Tab 1: Overview -->
+              @if (activeTab() === 'overview') {
+                <div class="rs-tab-pane rs-animate-fade-in">
+                  <h3 class="rs-h4 rs-mb-2">Equipment Overview</h3>
+                  <p class="rs-body rs-text-secondary" style="line-height: var(--rs-leading-relaxed); white-space: pre-line;">
+                    {{ asset()!.description }}
+                  </p>
+
+                  <div class="rs-overview-checklist rs-mt-4">
+                    <div class="rs-check-item">
+                      <mat-icon class="rs-text-success">check_circle</mat-icon>
+                      <span>100-Point Pre-Deployment Mechanical & Hydraulic Inspection Passed</span>
+                    </div>
+                    <div class="rs-check-item">
+                      <mat-icon class="rs-text-success">check_circle</mat-icon>
+                      <span>Active GPS Telematics with Real-Time Fuel Log & Hour Meter Tracking</span>
+                    </div>
+                    <div class="rs-check-item">
+                      <mat-icon class="rs-text-success">check_circle</mat-icon>
+                      <span>GST Invoiced with Valid Fitness Certificate & Road Permits</span>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- Tab 2: Specifications Table -->
+              @if (activeTab() === 'specs') {
+                <div class="rs-tab-pane rs-animate-fade-in">
+                  <h3 class="rs-h4 rs-mb-4">Complete Technical Specifications</h3>
+                  <div class="rs-specs-table-wrapper">
+                    <table class="rs-specs-table">
+                      <tbody>
+                        <tr>
+                          <th>Manufacturer Brand</th>
+                          <td>{{ asset()!.specifications.brand }}</td>
+                        </tr>
+                        <tr>
+                          <th>Model Series</th>
+                          <td>{{ asset()!.specifications.model }}</td>
+                        </tr>
+                        <tr>
+                          <th>Manufacturing Year</th>
+                          <td>{{ asset()!.specifications.year }}</td>
+                        </tr>
+                        @if (asset()!.specifications.operatingWeight) {
+                          <tr>
+                            <th>Operating Weight</th>
+                            <td>{{ asset()!.specifications.operatingWeight }}</td>
+                          </tr>
+                        }
+                        @if (asset()!.specifications.enginePower) {
+                          <tr>
+                            <th>Engine Power / Rating</th>
+                            <td>{{ asset()!.specifications.enginePower }}</td>
+                          </tr>
+                        }
+                        <tr>
+                          <th>Fuel Type</th>
+                          <td>{{ asset()!.specifications.fuelType || 'Diesel' }}</td>
+                        </tr>
+                        @if (asset()!.specifications.operatingHours) {
+                          <tr>
+                            <th>Operating Meter Log</th>
+                            <td>{{ asset()!.specifications.operatingHours | number }} Hours</td>
+                          </tr>
+                        }
+                        @if (asset()!.specifications.capacity) {
+                          <tr>
+                            <th>Rated Bucket / Lifting Capacity</th>
+                            <td>{{ asset()!.specifications.capacity }}</td>
+                          </tr>
+                        }
+                        @if (asset()!.specifications.maxReach) {
+                          <tr>
+                            <th>Maximum Digging / Erection Reach</th>
+                            <td>{{ asset()!.specifications.maxReach }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              }
+
+              <!-- Tab 3: Features List -->
+              @if (activeTab() === 'features') {
+                <div class="rs-tab-pane rs-animate-fade-in">
+                  <h3 class="rs-h4 rs-mb-4">Included Features & Attachments</h3>
+                  <div class="rs-features-list">
+                    @for (feat of asset()!.features; track feat) {
+                      <div class="rs-feature-row">
+                        <mat-icon class="rs-text-accent">verified</mat-icon>
+                        <span class="rs-body">{{ feat }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Tab 4: Rental Terms -->
+              @if (activeTab() === 'terms') {
+                <div class="rs-tab-pane rs-animate-fade-in">
+                  <h3 class="rs-h4 rs-mb-4">Commercial Rental Terms & Policies</h3>
+                  <div class="rs-terms-list">
+                    @for (term of asset()!.rentalTerms; track term) {
+                      <div class="rs-term-item">
+                        <mat-icon class="rs-text-primary">info</mat-icon>
+                        <span class="rs-body">{{ term }}</span>
+                      </div>
+                    }
+                    <div class="rs-term-item">
+                      <mat-icon class="rs-text-primary">security</mat-icon>
+                      <span class="rs-body">Refundable security deposit of ₹{{ asset()!.securityDeposit | number:'1.0-0' }} is processed back within 24 hours of on-site demobilization inspection.</span>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- Tab 5: Reviews -->
+              @if (activeTab() === 'reviews') {
+                <div class="rs-tab-pane rs-animate-fade-in">
+                  <div class="rs-reviews-header rs-flex rs-justify-between rs-items-center rs-mb-4">
+                    <div>
+                      <h3 class="rs-h4" style="margin: 0;">Verified Contractor Reviews</h3>
+                      <span class="rs-caption rs-text-muted">Based on completed site deployments</span>
+                    </div>
+                    <app-rating [rating]="asset()!.rating" [reviewCount]="asset()!.reviewCount" size="md"></app-rating>
+                  </div>
+
+                  @if (asset()!.reviews && asset()!.reviews!.length > 0) {
+                    <div class="rs-reviews-list">
+                      @for (rev of asset()!.reviews; track rev.id) {
+                        <div class="rs-review-card rs-card rs-p-4 rs-mb-3">
+                          <div class="rs-review-card__top">
+                            <div>
+                              <strong class="rs-body">{{ rev.authorName }}</strong>
+                              <div class="rs-caption rs-text-muted">{{ rev.authorCompany }} &bull; {{ rev.projectType }}</div>
+                            </div>
+                            <span class="rs-caption rs-text-tertiary">{{ rev.date }}</span>
+                          </div>
+                          <p class="rs-body-sm rs-review-card__comment">{{ rev.comment }}</p>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="rs-body rs-text-muted">No reviews recorded yet for this recently listed machine.</p>
+                  }
+                </div>
+              }
+
+            </div>
+          </div>
+
+          <!-- 4. FLEET OWNER TRUST CARD -->
+          <div class="rs-owner-card rs-card rs-p-6 rs-mb-6">
+            <div class="rs-owner-card__inner">
+              <div class="rs-avatar rs-avatar--lg rs-avatar--leaser">
+                <span>{{ asset()!.owner.name.substring(0, 2).toUpperCase() }}</span>
+              </div>
+              <div class="rs-owner-card__details">
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <h3 class="rs-h4" style="margin: 0;">{{ asset()!.owner.companyName }}</h3>
+                  @if (asset()!.owner.verified) {
+                    <span class="rs-badge rs-badge--success rs-badge--sm">
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px;">verified</mat-icon>
+                      Verified Owner
+                    </span>
+                  }
+                </div>
+
+                <span class="rs-body-sm rs-text-secondary">Owner Contact: {{ asset()!.owner.name }}</span>
+
+                <!-- Owner Trust Metrics -->
+                <div class="rs-owner-metrics rs-mt-3">
+                  <div class="rs-owner-metric">
+                    <span class="rs-caption rs-text-muted">Completed Rentals</span>
+                    <strong>{{ asset()!.owner.completedRentals }} Projects</strong>
+                  </div>
+                  <div class="rs-owner-metric">
+                    <span class="rs-caption rs-text-muted">Response Time</span>
+                    <strong>{{ asset()!.owner.responseTime }}</strong>
+                  </div>
+                  <div class="rs-owner-metric">
+                    <span class="rs-caption rs-text-muted">Member Since</span>
+                    <strong>{{ asset()!.owner.memberSince }}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rs-owner-card__cta">
+                <button type="button" class="rs-btn rs-btn--secondary" (click)="contactOwner()">
+                  <mat-icon>phone</mat-icon>
+                  <span>Contact Owner</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Sticky Booking Calculation Card -->
+        <div class="rs-detail-sidebar">
+          <div class="rs-sticky-booking-widget rs-card rs-card--elevated rs-p-6">
+            
+            <!-- Pricing Header -->
+            <div class="rs-booking-widget__price-row rs-mb-4">
+              <div>
+                <app-price-display [amount]="asset()!.pricePerDay" period="day" size="lg"></app-price-display>
+                <div class="rs-caption rs-text-muted rs-mt-1">
+                  Weekly rate: ₹{{ (asset()!.pricePerWeek || (asset()!.pricePerDay * 6)) | number:'1.0-0' }}/week
+                </div>
+              </div>
+              <app-status-badge [status]="asset()!.status"></app-status-badge>
+            </div>
+
+            <mat-divider class="rs-mb-4"></mat-divider>
+
+            <!-- Date Selectors -->
+            <div class="rs-form-row rs-mb-3">
+              <div class="rs-form-group rs-mb-0">
+                <label class="rs-label-sm" for="detail-start">Start Date</label>
+                <input
+                  id="detail-start"
+                  type="date"
+                  class="rs-input rs-input--sm"
+                  [ngModel]="startDate()"
+                  (ngModelChange)="startDate.set($event)"
+                />
+              </div>
+              <div class="rs-form-group rs-mb-0">
+                <label class="rs-label-sm" for="detail-end">End Date</label>
+                <input
+                  id="detail-end"
+                  type="date"
+                  class="rs-input rs-input--sm"
+                  [ngModel]="endDate()"
+                  (ngModelChange)="endDate.set($event)"
+                />
+              </div>
+            </div>
+
+            <!-- Toggles (Operator & Delivery) -->
+            <div class="rs-booking-widget__toggles rs-card rs-p-3 rs-mb-4">
+              <label class="rs-checkbox rs-flex rs-justify-between rs-items-center">
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <input
+                    type="checkbox"
+                    [ngModel]="operatorRequired()"
+                    (ngModelChange)="operatorRequired.set($event)"
+                  />
+                  <span class="rs-body-sm">Include Certified Operator</span>
+                </div>
+                <span class="rs-caption rs-text-muted">+₹800/day</span>
+              </label>
+
+              <mat-divider style="margin: 6px 0;"></mat-divider>
+
+              <label class="rs-checkbox rs-flex rs-justify-between rs-items-center">
+                <div class="rs-flex rs-items-center rs-gap-2">
+                  <input
+                    type="checkbox"
+                    [ngModel]="deliveryRequired()"
+                    (ngModelChange)="deliveryRequired.set($event)"
+                  />
+                  <span class="rs-body-sm">Trailer Site Delivery</span>
+                </div>
+                <span class="rs-caption rs-text-muted">+₹{{ asset()!.deliveryFee || 2500 }}</span>
+              </label>
+            </div>
+
+            <!-- Live Calculation Breakdown -->
+            <div class="rs-booking-calculation rs-mb-4">
+              <div class="rs-summary-row">
+                <span class="rs-text-secondary">
+                  Rental ({{ calculation().durationDays }} {{ calculation().durationDays === 1 ? 'day' : 'days' }} × ₹{{ calculation().dailyRate | number:'1.0-0' }})
+                </span>
+                <strong>₹{{ calculation().rentalSubtotal | number:'1.0-0' }}</strong>
+              </div>
+
+              @if (operatorRequired()) {
+                <div class="rs-summary-row">
+                  <span class="rs-text-secondary">Operator ({{ calculation().durationDays }} days)</span>
+                  <span>+₹{{ calculation().operatorFee | number:'1.0-0' }}</span>
+                </div>
+              }
+
+              @if (deliveryRequired()) {
+                <div class="rs-summary-row">
+                  <span class="rs-text-secondary">Site Delivery</span>
+                  <span>+₹{{ calculation().deliveryFee | number:'1.0-0' }}</span>
+                </div>
+              }
+
+              <div class="rs-summary-row rs-summary-row--deposit">
+                <div>
+                  <span class="rs-body-sm">Security Deposit</span>
+                  <div class="rs-caption" style="color: var(--rs-color-success-700);">100% Refundable Escrow</div>
+                </div>
+                <strong>₹{{ calculation().securityDeposit | number:'1.0-0' }}</strong>
+              </div>
+
+              <mat-divider style="margin: 10px 0;"></mat-divider>
+
+              <div class="rs-summary-total">
+                <div>
+                  <span class="rs-label">Estimated Total</span>
+                  <span class="rs-caption rs-text-muted">Payable upon confirmation</span>
+                </div>
+                <strong class="rs-h3" style="color: var(--rs-color-primary-900);">
+                  ₹{{ calculation().estimatedTotal | number:'1.0-0' }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- Primary Actions -->
+            <button
+              type="button"
+              class="rs-btn rs-btn--accent rs-btn--lg rs-btn--full rs-mb-3"
+              (click)="openBookingDialog()"
+            >
+              <mat-icon>calendar_month</mat-icon>
+              <span>Request to Rent</span>
+            </button>
+
+            <button
+              type="button"
+              class="rs-btn rs-btn--secondary rs-btn--full"
+              (click)="contactOwner()"
+            >
+              <mat-icon>chat</mat-icon>
+              <span>Contact Fleet Owner</span>
+            </button>
+
+            <!-- Trust Bullet Points -->
+            <div class="rs-booking-widget__trust-bullets rs-mt-4">
+              <div class="rs-trust-bullet">
+                <mat-icon class="rs-text-success">shield</mat-icon>
+                <span class="rs-caption">100% Escrow Protection on Deposits</span>
+              </div>
+              <div class="rs-trust-bullet">
+                <mat-icon class="rs-text-success">verified</mat-icon>
+                <span class="rs-caption">Inspected Machinery Guarantee</span>
+              </div>
+              <div class="rs-trust-bullet">
+                <mat-icon class="rs-text-success">schedule</mat-icon>
+                <span class="rs-caption">Zero Cancellation Fee before dispatch</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile Sticky Bottom CTA Bar -->
+      <div class="rs-mobile-sticky-cta rs-show-below-lg">
+        <div class="rs-mobile-sticky-cta__inner">
+          <div class="rs-mobile-sticky-cta__price">
+            <span class="rs-caption rs-text-muted">Daily Rate</span>
+            <strong>₹{{ asset()!.pricePerDay | number:'1.0-0' }}/day</strong>
+          </div>
+          <button
+            type="button"
+            class="rs-btn rs-btn--accent rs-btn--md"
+            (click)="openBookingDialog()"
+          >
+            <mat-icon>send</mat-icon>
+            <span>Request to Rent</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</app-page-container>

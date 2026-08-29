@@ -1,0 +1,118 @@
+@use 'breakpoints' as *;
+
+.rs-toast-container {
+  position: fixed;
+  top: calc(var(--rs-header-height) + var(--rs-space-3));
+  right: var(--rs-space-4);
+  z-index: var(--rs-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-space-2);
+  pointer-events: none;
+  max-width: 420px;
+  width: calc(100% - var(--rs-space-8));
+
+  @include bp-below-sm {
+    right: var(--rs-space-2);
+    left: var(--rs-space-2);
+    width: auto;
+  }
+}
+
+.rs-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rs-space-3);
+  padding: var(--rs-space-3) var(--rs-space-4);
+  border-radius: var(--rs-radius-lg);
+  box-shadow: var(--rs-shadow-lg);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  transition: transform var(--rs-transition-fast), opacity var(--rs-transition-fast);
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: var(--rs-text-sm);
+    font-weight: var(--rs-font-semibold);
+    line-height: var(--rs-leading-tight);
+    margin-bottom: 2px;
+  }
+
+  &__message {
+    font-size: var(--rs-text-sm);
+    color: var(--rs-text-secondary);
+    line-height: var(--rs-leading-snug);
+    word-break: break-word;
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    margin: -2px -4px 0 0;
+    border-radius: var(--rs-radius-sm);
+    color: var(--rs-text-tertiary);
+    cursor: pointer;
+    transition: color var(--rs-transition-fast), background-color var(--rs-transition-fast);
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      color: var(--rs-text-primary);
+      background-color: var(--rs-color-gray-100);
+    }
+  }
+
+  // Variant modifiers
+  &--success {
+    border-left: 4px solid var(--rs-color-success-500);
+    .rs-toast__icon {
+      color: var(--rs-color-success-600);
+    }
+  }
+
+  &--error {
+    border-left: 4px solid var(--rs-color-error-500);
+    .rs-toast__icon {
+      color: var(--rs-color-error-600);
+    }
+  }
+
+  &--warning {
+    border-left: 4px solid var(--rs-color-warning-500);
+    .rs-toast__icon {
+      color: var(--rs-color-warning-600);
+    }
+  }
+
+  &--info {
+    border-left: 4px solid var(--rs-color-info-500);
+    .rs-toast__icon {
+      color: var(--rs-color-info-500);
+    }
+  }
+}

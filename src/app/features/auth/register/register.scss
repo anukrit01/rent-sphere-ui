@@ -1,0 +1,204 @@
+@use 'breakpoints' as *;
+
+.rs-auth-page {
+  min-height: calc(100vh - var(--rs-header-height));
+  background-color: var(--rs-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rs-space-8) var(--rs-space-4);
+}
+
+.rs-auth-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rs-space-8);
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+
+  @include bp-lg {
+    grid-template-columns: 1fr 1.15fr;
+    gap: var(--rs-space-12);
+  }
+}
+
+// --------------------------------------------------------
+// Left Hero Banner
+// --------------------------------------------------------
+
+.rs-auth-hero {
+  background: linear-gradient(135deg, var(--rs-color-primary-900) 0%, var(--rs-color-primary-800) 100%);
+  border-radius: var(--rs-radius-2xl);
+  padding: var(--rs-space-8);
+  color: var(--rs-color-white);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: var(--rs-shadow-lg);
+
+  @include bp-lg {
+    padding: var(--rs-space-12);
+  }
+
+  &__title {
+    color: var(--rs-color-white);
+    margin: 0 0 var(--rs-space-3) 0;
+    font-size: var(--rs-text-3xl);
+
+    @include bp-md {
+      font-size: var(--rs-text-4xl);
+    }
+  }
+
+  &__subtitle {
+    color: var(--rs-color-gray-300);
+    line-height: var(--rs-leading-relaxed);
+    margin: 0 0 var(--rs-space-8) 0;
+  }
+
+  &__perks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-4);
+    padding-top: var(--rs-space-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.rs-auth-perk {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rs-space-3);
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: var(--rs-color-accent-400);
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    strong {
+      color: var(--rs-color-white);
+      font-size: var(--rs-text-sm);
+    }
+
+    span {
+      color: var(--rs-color-gray-300);
+      font-size: var(--rs-text-xs);
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Right Auth Card
+// --------------------------------------------------------
+
+.rs-auth-card-wrapper {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.rs-auth-card {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-2xl);
+  padding: var(--rs-space-8);
+  box-shadow: var(--rs-shadow-xl);
+
+  &__header {
+    margin-bottom: var(--rs-space-5);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--rs-space-2);
+    margin-top: var(--rs-space-6);
+    padding-top: var(--rs-space-4);
+    border-top: 1px solid var(--rs-border-subtle);
+    flex-wrap: wrap;
+  }
+}
+
+// --------------------------------------------------------
+// Role Selector Cards (Renter vs Leaser)
+// --------------------------------------------------------
+
+.rs-role-selector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--rs-space-3);
+  margin-top: 6px;
+}
+
+.rs-role-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rs-space-2);
+  padding: var(--rs-space-3);
+  border-radius: var(--rs-radius-lg);
+  border: 2px solid var(--rs-border-default);
+  background-color: var(--rs-surface-default);
+  cursor: pointer;
+  transition: border-color var(--rs-transition-fast), background-color var(--rs-transition-fast);
+
+  &:hover {
+    border-color: var(--rs-border-strong);
+    background-color: var(--rs-color-gray-50);
+  }
+
+  &--selected {
+    border-color: var(--rs-color-primary-500);
+    background-color: var(--rs-color-primary-50);
+  }
+
+  &__radio {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  &__title {
+    font-size: var(--rs-text-sm);
+    color: var(--rs-color-primary-900);
+  }
+}
+
+.rs-radio-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--rs-radius-full);
+  border: 2px solid var(--rs-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--rs-transition-fast);
+
+  &--checked {
+    border-color: var(--rs-color-primary-500);
+
+    &::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: var(--rs-radius-full);
+      background-color: var(--rs-color-primary-500);
+    }
+  }
+}

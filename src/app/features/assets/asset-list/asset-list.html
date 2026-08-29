@@ -1,16 +1,374 @@
-<div style="padding-left: 100px; padding-right: 100px;">
-<section class="hero">
-    <img src="cover.png" alt="">
-    <div class="hero-text">
-        <h2>Your Project, Our Machinery.<br />Rent with Ease.</h2>
-    </div>
-</section>
+<div class="rs-homepage">
 
-<section class="categories">
-    <div class="category-card" *ngFor="let c of categories">
-        <mat-icon [fontIcon]="c.icon"></mat-icon>
-        <h3>{{c.name}}</h3>
-        <p>{{c.desc}}</p>
+  <!-- ============================================================ -->
+  <!-- 1. HERO SECTION & INTEGRATED SEARCH EXPERIENCE -->
+  <!-- ============================================================ -->
+  <section class="rs-hero">
+    <div class="rs-hero__background-pattern" aria-hidden="true"></div>
+    <div class="rs-container rs-hero__container">
+      
+      <!-- Hero Top Content -->
+      <div class="rs-hero__content">
+        <div class="rs-hero__badge rs-animate-fade-in">
+          <span class="rs-status-dot rs-status-dot--available"></span>
+          <span>India's Heavy Equipment & Machinery Rental Marketplace</span>
+        </div>
+
+        <h1 class="rs-display rs-hero__title rs-animate-fade-in-up">
+          Your Project.<br />
+          <span class="rs-hero__title-accent">Our Machinery.</span>
+        </h1>
+
+        <p class="rs-body-lg rs-hero__subtitle rs-animate-fade-in-up">
+          Find reliable construction equipment from verified owners and rent it when you need it. High-capacity machinery with transparent pricing and zero middlemen markups.
+        </p>
+
+        <!-- Quick CTAs -->
+        <div class="rs-hero__ctas rs-animate-fade-in-up">
+          <a routerLink="/assets" class="rs-btn rs-btn--accent rs-btn--lg">
+            <mat-icon>precision_manufacturing</mat-icon>
+            <span>Explore Machinery Fleet</span>
+          </a>
+          <a
+            [routerLink]="auth.isAuthenticated() ? '/dashboard/leaser/list-equipment' : '/auth/register'"
+            [queryParams]="auth.isAuthenticated() ? {} : { role: 'leaser' }"
+            class="rs-btn rs-btn--secondary rs-hero__btn-secondary rs-btn--lg"
+          >
+            <mat-icon>add_business</mat-icon>
+            <span>List Your Machinery</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Integrated Marketplace Search Widget -->
+      <div class="rs-hero-search-box rs-card rs-card--elevated rs-animate-fade-in-up">
+        <div class="rs-hero-search-box__header">
+          <span class="rs-label">Find Available Machinery</span>
+          <span class="rs-caption rs-text-muted">Instant real-time availability across Indian project hubs</span>
+        </div>
+
+        <form class="rs-hero-search-form" (ngSubmit)="onHeroSearch()" role="search">
+          
+          <!-- Keyword Field -->
+          <div class="rs-hero-search-form__field rs-hero-search-form__field--keyword">
+            <label class="rs-label-sm" for="hero-keyword">What equipment do you need?</label>
+            <div class="rs-input-wrapper">
+              <mat-icon class="rs-input-icon">search</mat-icon>
+              <input
+                id="hero-keyword"
+                type="text"
+                class="rs-input rs-input--lg"
+                placeholder="Excavators, JCB 3DX, cranes, generators..."
+                [ngModel]="heroQuery()"
+                (ngModelChange)="heroQuery.set($event)"
+                name="heroKeyword"
+              />
+            </div>
+          </div>
+
+          <!-- Category Selector -->
+          <div class="rs-hero-search-form__field">
+            <label class="rs-label-sm" for="hero-category">Category</label>
+            <div class="rs-input-wrapper">
+              <mat-icon class="rs-input-icon">category</mat-icon>
+              <select
+                id="hero-category"
+                class="rs-input rs-input--lg"
+                [ngModel]="heroCategory()"
+                (ngModelChange)="heroCategory.set($event)"
+                name="heroCat"
+              >
+                <option value="All">All Categories</option>
+                @for (cat of categories; track cat.id) {
+                  <option [value]="cat.name">{{ cat.name }} ({{ cat.assetCount }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Location Selector -->
+          <div class="rs-hero-search-form__field">
+            <label class="rs-label-sm" for="hero-location">Location / Region</label>
+            <div class="rs-input-wrapper">
+              <mat-icon class="rs-input-icon">location_on</mat-icon>
+              <select
+                id="hero-location"
+                class="rs-input rs-input--lg"
+                [ngModel]="heroLocation()"
+                (ngModelChange)="heroLocation.set($event)"
+                name="heroLoc"
+              >
+                @for (loc of locations; track loc.id) {
+                  <option [value]="loc.city">{{ loc.city }}{{ loc.id !== 'loc-all' ? ', ' + loc.state : '' }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Search Button -->
+          <div class="rs-hero-search-form__action">
+            <button type="submit" class="rs-btn rs-btn--primary rs-btn--lg rs-btn--full">
+              <mat-icon>search</mat-icon>
+              <span>Search Equipment</span>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Popular Search Tags -->
+        <div class="rs-hero-search-tags">
+          <span class="rs-caption rs-text-muted">Popular Searches:</span>
+          <button type="button" class="rs-hero-tag" (click)="heroQuery.set('JCB 3DX'); onHeroSearch()">JCB 3DX</button>
+          <button type="button" class="rs-hero-tag" (click)="heroQuery.set('CAT 320'); onHeroSearch()">CAT 320 Excavator</button>
+          <button type="button" class="rs-hero-tag" (click)="heroQuery.set('Hydra Crane'); onHeroSearch()">Hydra Crane 15T</button>
+          <button type="button" class="rs-hero-tag" (click)="heroQuery.set('125 kVA Generator'); onHeroSearch()">125 kVA DG Set</button>
+          <button type="button" class="rs-hero-tag" (click)="heroQuery.set('HAMM Compactor'); onHeroSearch()">Soil Compactor</button>
+        </div>
+      </div>
+
+      <!-- Trust Metrics Bar -->
+      <div class="rs-hero-metrics rs-animate-fade-in-up">
+        @for (stat of trustStats; track stat.label) {
+          <div class="rs-hero-metric-item">
+            <div class="rs-hero-metric-item__icon">
+              <mat-icon>{{ stat.icon }}</mat-icon>
+            </div>
+            <div>
+              <div class="rs-hero-metric-item__val">{{ stat.value }}</div>
+              <div class="rs-hero-metric-item__lbl">{{ stat.label }}</div>
+            </div>
+          </div>
+        }
+      </div>
+
     </div>
-</section>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 2. QUICK CATEGORIES SECTION -->
+  <!-- ============================================================ -->
+  <section class="rs-section rs-categories-section">
+    <div class="rs-container">
+      
+      <div class="rs-section-header rs-flex rs-justify-between rs-items-end">
+        <div>
+          <span class="rs-overline">Machinery Taxonomy</span>
+          <h2 class="rs-h2">Explore Equipment Fleet</h2>
+          <p class="rs-section-header__subtitle">
+            Find high-productivity heavy machinery engineered for earthmoving, material lifting, paving, and continuous power generation.
+          </p>
+        </div>
+        <a routerLink="/assets" class="rs-btn rs-btn--ghost rs-hidden-mobile">
+          <span>View All Fleet</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <!-- Category Cards Grid -->
+      <div class="rs-categories-grid">
+        @for (cat of categories; track cat.id) {
+          <app-category-card [category]="cat"></app-category-card>
+        }
+      </div>
+
+      <div class="rs-mt-6 rs-show-below-lg rs-text-center">
+        <a routerLink="/assets" class="rs-btn rs-btn--secondary rs-btn--full">
+          <span>Explore All 9 Categories</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 3. POPULAR EQUIPMENT SECTION -->
+  <!-- ============================================================ -->
+  <section class="rs-section rs-bg-secondary rs-popular-section">
+    <div class="rs-container">
+
+      <div class="rs-section-header rs-flex rs-justify-between rs-items-end">
+        <div>
+          <span class="rs-overline rs-text-accent">High Demand Machinery</span>
+          <h2 class="rs-h2">Popular Equipment</h2>
+          <p class="rs-section-header__subtitle">
+            Reliable machinery verified and available for immediate project deployment across key industrial corridors.
+          </p>
+        </div>
+        <a routerLink="/assets" class="rs-btn rs-btn--secondary rs-hidden-mobile">
+          <span>Browse All Equipment</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <!-- Asset Grid -->
+      <div class="rs-grid rs-grid--3 rs-gap-6">
+        @for (asset of popularAssets(); track asset.id) {
+          <app-asset-card [asset]="asset"></app-asset-card>
+        }
+      </div>
+
+      <div class="rs-mt-8 rs-text-center">
+        <a routerLink="/assets" class="rs-btn rs-btn--primary rs-btn--lg">
+          <span>View Complete Marketplace Fleet (500+ Assets)</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 4. NEW ARRIVALS / RECENT FLEET ADDITIONS -->
+  <!-- ============================================================ -->
+  <section class="rs-section rs-new-arrivals-section">
+    <div class="rs-container">
+
+      <div class="rs-section-header rs-flex rs-justify-between rs-items-end">
+        <div>
+          <span class="rs-overline">Recently Inspected</span>
+          <h2 class="rs-h2">New Additions to Fleet</h2>
+          <p class="rs-section-header__subtitle">
+            Freshly listed, telematics-audited machinery ready for deployment with low operating hours.
+          </p>
+        </div>
+        <a routerLink="/assets" [queryParams]="{ sortBy: 'newest' }" class="rs-btn rs-btn--ghost rs-hidden-mobile">
+          <span>View All New Arrivals</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <!-- Asset Grid: 4 columns on large screens -->
+      <div class="rs-grid rs-grid--4 rs-gap-6">
+        @for (asset of newArrivals(); track asset.id) {
+          <app-asset-card [asset]="asset"></app-asset-card>
+        }
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 5. HOW RENTSPHERE WORKS -->
+  <!-- ============================================================ -->
+  <section class="rs-section rs-bg-secondary rs-how-it-works-section">
+    <div class="rs-container">
+
+      <div class="rs-section-header rs-text-center" style="max-width: 680px; margin-left: auto; margin-right: auto;">
+        <span class="rs-overline">Frictionless Workflow</span>
+        <h2 class="rs-h2">How RentSphere Works</h2>
+        <p class="rs-section-header__subtitle" style="margin-left: auto; margin-right: auto;">
+          A simple, transparent process engineered for project contractors and machinery owners with zero paperwork hassle.
+        </p>
+      </div>
+
+      <div class="rs-grid rs-grid--4 rs-gap-6 rs-mt-8">
+        @for (step of howItWorksSteps; track step.step) {
+          <div class="rs-workflow-card rs-card">
+            <div class="rs-workflow-card__header">
+              <div class="rs-workflow-card__icon-box">
+                <mat-icon>{{ step.icon }}</mat-icon>
+              </div>
+              <span class="rs-workflow-card__step">{{ step.step }}</span>
+            </div>
+            <h3 class="rs-workflow-card__title">{{ step.title }}</h3>
+            <p class="rs-workflow-card__desc rs-body-sm">{{ step.description }}</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 6. WHY RENTSPHERE / VALUE PROPOSITION PILLARS -->
+  <!-- ============================================================ -->
+  <section class="rs-section rs-why-section">
+    <div class="rs-container">
+
+      <div class="rs-section-header rs-text-center" style="max-width: 720px; margin-left: auto; margin-right: auto;">
+        <span class="rs-overline rs-text-accent">Industrial Reliability</span>
+        <h2 class="rs-h2">Why Contractors Choose RentSphere</h2>
+        <p class="rs-section-header__subtitle" style="margin-left: auto; margin-right: auto;">
+          Built from the ground up for industrial strength, transparent INR commercial terms, and zero project downtime.
+        </p>
+      </div>
+
+      <div class="rs-grid rs-grid--3 rs-gap-6 rs-mt-8">
+        @for (pillar of whyRentSpherePillars; track pillar.title) {
+          <div class="rs-pillar-card rs-card">
+            <div class="rs-pillar-card__icon-wrapper">
+              <mat-icon>{{ pillar.icon }}</mat-icon>
+            </div>
+            <h3 class="rs-pillar-card__title">{{ pillar.title }}</h3>
+            <p class="rs-pillar-card__desc rs-body-sm">{{ pillar.description }}</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 7. LEASER CONVERSION CTA BANNER -->
+  <!-- ============================================================ -->
+  <section class="rs-section rs-cta-section">
+    <div class="rs-container">
+      <div class="rs-cta-banner">
+        <div class="rs-cta-banner__content">
+          <span class="rs-overline rs-cta-banner__overline">For Equipment Owners & Fleet Companies</span>
+          <h2 class="rs-display rs-cta-banner__title">Have equipment sitting idle?</h2>
+          <p class="rs-body-lg rs-cta-banner__desc">
+            Turn your unused machinery into steady, verified rental revenue. RentSphere connects your fleet with verified construction contractors across India with escrow-protected payments.
+          </p>
+          <div class="rs-cta-banner__actions">
+            <a
+              [routerLink]="auth.isAuthenticated() ? '/dashboard/leaser/list-equipment' : '/auth/register'"
+              [queryParams]="auth.isAuthenticated() ? {} : { role: 'leaser' }"
+              class="rs-btn rs-btn--accent rs-btn--lg"
+            >
+              <mat-icon>add_business</mat-icon>
+              <span>List Your Machinery Today</span>
+            </a>
+            <a routerLink="/dashboard/leaser" class="rs-btn rs-btn--secondary rs-cta-banner__btn-outline rs-btn--lg">
+              <mat-icon>calculate</mat-icon>
+              <span>Explore Leaser Portal</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="rs-cta-banner__badge-box rs-hidden-mobile">
+          <div class="rs-cta-perk">
+            <mat-icon>verified</mat-icon>
+            <div>
+              <strong>100% Escrow Security</strong>
+              <span class="rs-caption">Deposits collected upfront</span>
+            </div>
+          </div>
+          <div class="rs-cta-perk">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <strong>Fast 24h Payouts</strong>
+              <span class="rs-caption">Direct to bank account</span>
+            </div>
+          </div>
+          <div class="rs-cta-perk">
+            <mat-icon>security</mat-icon>
+            <div>
+              <strong>Contractor KYC</strong>
+              <span class="rs-caption">Verified business profiles</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
 </div>

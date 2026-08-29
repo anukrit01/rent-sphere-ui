@@ -1,0 +1,501 @@
+@use 'breakpoints' as *;
+
+.rs-asset-detail {
+  padding-bottom: var(--rs-space-16);
+}
+
+// --------------------------------------------------------
+// Detail Top Header
+// --------------------------------------------------------
+
+.rs-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-space-4);
+
+  @include bp-md {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__main {
+    flex: 1;
+  }
+
+  &__title {
+    margin: var(--rs-space-1) 0 var(--rs-space-2) 0;
+    color: var(--rs-color-primary-900);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--rs-space-2);
+    flex-wrap: wrap;
+    color: var(--rs-text-secondary);
+    font-size: var(--rs-text-sm);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--rs-space-2);
+    flex-shrink: 0;
+  }
+}
+
+.rs-detail-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rs-detail-meta-dot {
+  color: var(--rs-color-gray-400);
+}
+
+.rs-btn--active-fav {
+  background-color: var(--rs-color-error-50) !important;
+  border-color: var(--rs-color-error-100) !important;
+}
+
+// --------------------------------------------------------
+// 2-Column Marketplace Grid Layout
+// --------------------------------------------------------
+
+.rs-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rs-space-8);
+
+  @include bp-lg {
+    grid-template-columns: 1fr 380px;
+    align-items: flex-start;
+  }
+}
+
+.rs-detail-main {
+  min-width: 0;
+}
+
+.rs-detail-sidebar {
+  @include bp-lg {
+    position: sticky;
+    top: calc(var(--rs-header-height) + var(--rs-space-4));
+  }
+}
+
+// --------------------------------------------------------
+// 1. Gallery
+// --------------------------------------------------------
+
+.rs-gallery {
+  border-radius: var(--rs-radius-xl);
+  overflow: hidden;
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+
+  &__main {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: var(--rs-color-gray-100);
+  }
+
+  &__main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__counter {
+    position: absolute;
+    bottom: var(--rs-space-3);
+    right: var(--rs-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: var(--rs-radius-full);
+    background-color: rgba(10, 22, 40, 0.75);
+    backdrop-filter: blur(4px);
+    color: var(--rs-color-white);
+    font-size: var(--rs-text-xs);
+    font-weight: var(--rs-font-medium);
+  }
+
+  &__thumbs {
+    display: flex;
+    gap: var(--rs-space-2);
+    padding: var(--rs-space-3);
+    overflow-x: auto;
+    background-color: var(--rs-color-gray-50);
+    border-top: 1px solid var(--rs-border-subtle);
+  }
+
+  &__thumb {
+    width: 72px;
+    height: 52px;
+    border-radius: var(--rs-radius-md);
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    background: none;
+    transition: border-color var(--rs-transition-fast), transform var(--rs-transition-fast);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    &:hover {
+      border-color: var(--rs-color-primary-300);
+    }
+
+    &--active {
+      border-color: var(--rs-color-primary-500);
+      transform: scale(1.04);
+    }
+  }
+}
+
+// --------------------------------------------------------
+// 2. Highlights Grid
+// --------------------------------------------------------
+
+.rs-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rs-space-3);
+
+  @include bp-md {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.rs-highlight-card {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-3);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-md);
+
+  &__icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: var(--rs-color-primary-500);
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+}
+
+// --------------------------------------------------------
+// 3. Tabbed Information Section
+// --------------------------------------------------------
+
+.rs-detail-tabs-container {
+  border-radius: var(--rs-radius-xl);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  overflow: hidden;
+}
+
+.rs-tabs-nav {
+  display: flex;
+  border-bottom: 1px solid var(--rs-border-default);
+  background-color: var(--rs-color-gray-50);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.rs-tab-btn {
+  padding: var(--rs-space-3) var(--rs-space-5);
+  font-size: var(--rs-text-sm);
+  font-weight: var(--rs-font-medium);
+  color: var(--rs-text-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color var(--rs-transition-fast), border-color var(--rs-transition-fast), background-color var(--rs-transition-fast);
+
+  &:hover {
+    color: var(--rs-color-primary-500);
+    background-color: var(--rs-color-gray-100);
+  }
+
+  &--active {
+    color: var(--rs-color-primary-600);
+    font-weight: var(--rs-font-semibold);
+    border-bottom-color: var(--rs-color-primary-500);
+    background-color: var(--rs-surface-default);
+  }
+}
+
+.rs-overview-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-space-2);
+}
+
+.rs-check-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-2);
+  font-size: var(--rs-text-sm);
+  color: var(--rs-text-primary);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// Specs Table
+.rs-specs-table-wrapper {
+  overflow-x: auto;
+}
+
+.rs-specs-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: var(--rs-space-3) var(--rs-space-4);
+    text-align: left;
+    font-size: var(--rs-text-sm);
+    border-bottom: 1px solid var(--rs-border-subtle);
+  }
+
+  th {
+    width: 40%;
+    color: var(--rs-text-secondary);
+    font-weight: var(--rs-font-medium);
+    background-color: var(--rs-color-gray-50);
+  }
+
+  td {
+    color: var(--rs-text-primary);
+    font-weight: var(--rs-font-semibold);
+  }
+
+  tr:last-child th,
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+// Features List
+.rs-features-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rs-space-3);
+
+  @include bp-md {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.rs-feature-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-2);
+  padding: var(--rs-space-2) var(--rs-space-3);
+  background-color: var(--rs-color-gray-50);
+  border-radius: var(--rs-radius-md);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// Terms List
+.rs-terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-space-3);
+}
+
+.rs-term-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rs-space-3);
+  padding: var(--rs-space-3);
+  background-color: var(--rs-color-gray-50);
+  border-radius: var(--rs-radius-md);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+// Reviews
+.rs-review-card {
+  background-color: var(--rs-color-gray-50);
+  border: 1px solid var(--rs-border-subtle);
+  border-radius: var(--rs-radius-md);
+
+  &__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--rs-space-2);
+  }
+
+  &__comment {
+    color: var(--rs-text-secondary);
+    line-height: var(--rs-leading-relaxed);
+    margin: 0;
+  }
+}
+
+// --------------------------------------------------------
+// 4. Fleet Owner Trust Card
+// --------------------------------------------------------
+
+.rs-owner-card {
+  border-radius: var(--rs-radius-xl);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-4);
+
+    @include bp-md {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__details {
+    flex: 1;
+  }
+
+  &__cta {
+    flex-shrink: 0;
+  }
+}
+
+.rs-avatar--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 18px;
+  border-radius: var(--rs-radius-full);
+}
+
+.rs-owner-metrics {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-6);
+  flex-wrap: wrap;
+}
+
+.rs-owner-metric {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+
+  strong {
+    color: var(--rs-color-primary-900);
+    font-size: var(--rs-text-sm);
+  }
+}
+
+// --------------------------------------------------------
+// RIGHT COLUMN: Sticky Booking Calculation Card
+// --------------------------------------------------------
+
+.rs-sticky-booking-widget {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-xl);
+  box-shadow: var(--rs-shadow-lg);
+
+  .rs-booking-widget__price-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__trust-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rs-space-2);
+    padding-top: var(--rs-space-3);
+    border-top: 1px solid var(--rs-border-subtle);
+  }
+}
+
+.rs-trust-bullet {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-2);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// --------------------------------------------------------
+// Mobile Sticky Bottom CTA Bar
+// --------------------------------------------------------
+
+.rs-mobile-sticky-cta {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--rs-surface-default);
+  border-top: 1px solid var(--rs-border-default);
+  box-shadow: var(--rs-shadow-xl);
+  padding: var(--rs-space-3) var(--rs-space-4);
+  z-index: var(--rs-z-sticky);
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__price {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+
+    strong {
+      color: var(--rs-color-primary-900);
+      font-size: var(--rs-text-md);
+    }
+  }
+}

@@ -1,0 +1,188 @@
+// ============================================================
+// RentSphere Animations
+// ============================================================
+// Reusable keyframes and animation utility classes.
+// Keep animations subtle and purposeful.
+// ============================================================
+
+// --------------------------------------------------------
+// Keyframes
+// --------------------------------------------------------
+
+@keyframes rs-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes rs-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rs-fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rs-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rs-slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes rs-slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes rs-slide-in-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes rs-skeleton-pulse {
+  0%    { opacity: 0.6; }
+  50%   { opacity: 1; }
+  100%  { opacity: 0.6; }
+}
+
+@keyframes rs-skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes rs-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// --------------------------------------------------------
+// Animation classes
+// --------------------------------------------------------
+
+.rs-animate-fade-in {
+  animation: rs-fade-in var(--rs-duration-base) var(--rs-ease-out) both;
+}
+
+.rs-animate-fade-in-up {
+  animation: rs-fade-in-up var(--rs-duration-base) var(--rs-ease-out) both;
+}
+
+.rs-animate-fade-in-down {
+  animation: rs-fade-in-down var(--rs-duration-base) var(--rs-ease-out) both;
+}
+
+.rs-animate-scale-in {
+  animation: rs-scale-in var(--rs-duration-base) var(--rs-ease-out) both;
+}
+
+.rs-animate-slide-in-right {
+  animation: rs-slide-in-right var(--rs-duration-slow) var(--rs-ease-out) both;
+}
+
+.rs-animate-slide-in-up {
+  animation: rs-slide-in-up var(--rs-duration-slow) var(--rs-ease-out) both;
+}
+
+.rs-animate-spin {
+  animation: rs-spin 800ms linear infinite;
+}
+
+// --------------------------------------------------------
+// Skeleton loading
+// --------------------------------------------------------
+
+.rs-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--rs-color-gray-100) 25%,
+    var(--rs-color-gray-200) 50%,
+    var(--rs-color-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: rs-skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--rs-radius-sm);
+  color: transparent !important;
+  user-select: none;
+  pointer-events: none;
+
+  * {
+    visibility: hidden;
+  }
+}
+
+.rs-skeleton--circle {
+  border-radius: var(--rs-radius-full);
+}
+
+.rs-skeleton--text {
+  height: 14px;
+  margin-bottom: var(--rs-space-2);
+
+  &:last-child {
+    width: 60%;
+  }
+}
+
+.rs-skeleton--heading {
+  height: 24px;
+  width: 50%;
+  margin-bottom: var(--rs-space-3);
+}
+
+.rs-skeleton--image {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--rs-radius-lg);
+}
+
+.rs-skeleton--button {
+  height: 40px;
+  width: 120px;
+  border-radius: var(--rs-radius-md);
+}
+
+// --------------------------------------------------------
+// Stagger delays (for lists of items)
+// --------------------------------------------------------
+
+@for $i from 1 through 12 {
+  .rs-stagger-#{$i} {
+    animation-delay: #{$i * 50}ms;
+  }
+}
+
+// --------------------------------------------------------
+// Reduced motion
+// --------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

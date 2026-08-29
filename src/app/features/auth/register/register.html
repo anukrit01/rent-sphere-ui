@@ -1,1 +1,309 @@
-<p>register works!</p>
+<div class="rs-auth-page">
+  <div class="rs-auth-layout rs-container--wide">
+    
+    <!-- LEFT: Hero Branding & Role Explanation -->
+    <div class="rs-auth-hero">
+      <div class="rs-auth-hero__inner">
+        
+        <a routerLink="/" class="rs-brand rs-brand--light rs-mb-6">
+          <div class="rs-brand__icon-wrapper">
+            <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
+          </div>
+          <div class="rs-brand__text">
+            <span class="rs-brand__name">Rent<span class="rs-brand__accent">Sphere</span></span>
+            <span class="rs-brand__tagline">Heavy Equipment Marketplace</span>
+          </div>
+        </a>
+
+        <h1 class="rs-display rs-auth-hero__title">
+          Build faster with verified heavy equipment.
+        </h1>
+
+        <p class="rs-body-lg rs-auth-hero__subtitle">
+          Whether you are an infrastructure contractor mobilizing machines or a fleet owner looking for reliable monthly payouts, RentSphere delivers the trust you need.
+        </p>
+
+        <!-- Role Comparison Info -->
+        <div class="rs-auth-hero__perks">
+          <div class="rs-auth-perk">
+            <mat-icon>engineering</mat-icon>
+            <div>
+              <strong>For Contractors & Renters</strong>
+              <span>Zero-downtime equipment, verified operators, full GST invoicing</span>
+            </div>
+          </div>
+          <div class="rs-auth-perk">
+            <mat-icon>business</mat-icon>
+            <div>
+              <strong>For Fleet Owners & Leasers</strong>
+              <span>Monetize idle machinery with upfront escrow protection & KYC tenants</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Registration Card -->
+    <div class="rs-auth-card-wrapper">
+      <div class="rs-auth-card rs-card rs-card--elevated">
+        
+        <div class="rs-auth-card__header">
+          <h2 class="rs-h2" style="margin: 0;">Create Your Account</h2>
+          <p class="rs-body-sm rs-text-muted" style="margin-top: 4px;">
+            Select your account type to customize your workspace
+          </p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="rs-auth-form" novalidate>
+          
+          <!-- 1. ACCOUNT TYPE SELECTOR -->
+          <div class="rs-form-group rs-mb-4">
+            <label class="rs-form-label">I want to:</label>
+            <div class="rs-role-selector-grid">
+              
+              <!-- Option 1: Renter -->
+              <div
+                class="rs-role-card"
+                [class.rs-role-card--selected]="selectedRole() === 'renter'"
+                (click)="selectRole('renter')"
+                role="button"
+                tabindex="0"
+              >
+                <div class="rs-role-card__radio">
+                  <div class="rs-radio-circle" [class.rs-radio-circle--checked]="selectedRole() === 'renter'"></div>
+                </div>
+                <div class="rs-role-card__content">
+                  <strong class="rs-role-card__title">Rent Machinery</strong>
+                  <span class="rs-caption rs-text-muted">Contractor / Project Developer</span>
+                </div>
+              </div>
+
+              <!-- Option 2: Leaser -->
+              <div
+                class="rs-role-card"
+                [class.rs-role-card--selected]="selectedRole() === 'leaser'"
+                (click)="selectRole('leaser')"
+                role="button"
+                tabindex="0"
+              >
+                <div class="rs-role-card__radio">
+                  <div class="rs-radio-circle" [class.rs-radio-circle--checked]="selectedRole() === 'leaser'"></div>
+                </div>
+                <div class="rs-role-card__content">
+                  <strong class="rs-role-card__title">List Equipment</strong>
+                  <span class="rs-caption rs-text-muted">Machinery Owner / Fleet Company</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 2. FULL NAME -->
+          <div class="rs-form-group">
+            <label class="rs-form-label" for="reg-name">
+              Full Name <span class="rs-required">*</span>
+            </label>
+            <div class="rs-input-wrapper">
+              <mat-icon class="rs-input-icon">person_outline</mat-icon>
+              <input
+                id="reg-name"
+                type="text"
+                class="rs-input"
+                [class.rs-input--error]="f['name'].invalid && f['name'].touched"
+                formControlName="name"
+                placeholder="e.g. Aman Sharma / Vikram Patel"
+              />
+            </div>
+            @if (f['name'].invalid && f['name'].touched) {
+              <div class="rs-form-error">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                <span>Full name is required</span>
+              </div>
+            }
+          </div>
+
+          <!-- 3. EMAIL & PHONE (2 COLUMNS) -->
+          <div class="rs-form-row">
+            <!-- Email -->
+            <div class="rs-form-group">
+              <label class="rs-form-label" for="reg-email">
+                Work Email <span class="rs-required">*</span>
+              </label>
+              <div class="rs-input-wrapper">
+                <mat-icon class="rs-input-icon">mail_outline</mat-icon>
+                <input
+                  id="reg-email"
+                  type="email"
+                  class="rs-input"
+                  [class.rs-input--error]="f['email'].invalid && f['email'].touched"
+                  formControlName="email"
+                  placeholder="name@company.in"
+                />
+              </div>
+              @if (f['email'].invalid && f['email'].touched) {
+                <div class="rs-form-error">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  <span>Valid email required</span>
+                </div>
+              }
+            </div>
+
+            <!-- Phone -->
+            <div class="rs-form-group">
+              <label class="rs-form-label" for="reg-phone">
+                Mobile Number <span class="rs-required">*</span>
+              </label>
+              <div class="rs-input-wrapper">
+                <span class="rs-input-prefix rs-caption" style="font-weight: var(--rs-font-semibold); padding-left: 10px;">+91</span>
+                <input
+                  id="reg-phone"
+                  type="tel"
+                  class="rs-input"
+                  [class.rs-input--error]="f['phone'].invalid && f['phone'].touched"
+                  formControlName="phone"
+                  placeholder="98260 12345"
+                  maxlength="10"
+                />
+              </div>
+              @if (f['phone'].invalid && f['phone'].touched) {
+                <div class="rs-form-error">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  <span>10-digit Indian number</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- 4. COMPANY NAME (OPTIONAL) -->
+          <div class="rs-form-group">
+            <label class="rs-form-label" for="reg-company">
+              Company / Business Name (Optional)
+            </label>
+            <div class="rs-input-wrapper">
+              <mat-icon class="rs-input-icon">business</mat-icon>
+              <input
+                id="reg-company"
+                type="text"
+                class="rs-input"
+                formControlName="companyName"
+                placeholder="e.g. Apex Infra Projects / Shree Krishna Earthmovers"
+              />
+            </div>
+          </div>
+
+          <!-- 5. PASSWORD & CONFIRM PASSWORD (2 COLUMNS) -->
+          <div class="rs-form-row">
+            <!-- Password -->
+            <div class="rs-form-group">
+              <label class="rs-form-label" for="reg-password">
+                Password <span class="rs-required">*</span>
+              </label>
+              <div class="rs-input-wrapper">
+                <input
+                  id="reg-password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  class="rs-input"
+                  [class.rs-input--error]="f['password'].invalid && f['password'].touched"
+                  formControlName="password"
+                  placeholder="Min. 6 chars"
+                />
+                <button
+                  type="button"
+                  class="rs-input-suffix rs-btn rs-btn--ghost rs-btn--icon rs-btn--sm"
+                  (click)="toggleShowPassword()"
+                  tabindex="-1"
+                >
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">
+                    {{ showPassword() ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </button>
+              </div>
+              @if (f['password'].invalid && f['password'].touched) {
+                <div class="rs-form-error">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  <span>At least 6 chars</span>
+                </div>
+              }
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="rs-form-group">
+              <label class="rs-form-label" for="reg-confirm">
+                Confirm <span class="rs-required">*</span>
+              </label>
+              <div class="rs-input-wrapper">
+                <input
+                  id="reg-confirm"
+                  [type]="showConfirmPassword() ? 'text' : 'password'"
+                  class="rs-input"
+                  [class.rs-input--error]="passwordMismatch || (f['confirmPassword'].invalid && f['confirmPassword'].touched)"
+                  formControlName="confirmPassword"
+                  placeholder="Re-enter"
+                />
+                <button
+                  type="button"
+                  class="rs-input-suffix rs-btn rs-btn--ghost rs-btn--icon rs-btn--sm"
+                  (click)="toggleShowConfirmPassword()"
+                  tabindex="-1"
+                >
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">
+                    {{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </button>
+              </div>
+              @if (passwordMismatch) {
+                <div class="rs-form-error">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  <span>Passwords do not match</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- 6. TERMS CHECKBOX -->
+          <div class="rs-form-group">
+            <label class="rs-checkbox">
+              <input type="checkbox" formControlName="agreeTerms" />
+              <span class="rs-caption rs-text-secondary">
+                I agree to the <a href="javascript:void(0)" class="rs-text-link">Terms of Service</a>, <a href="javascript:void(0)" class="rs-text-link">Machinery Safety Standards</a>, and <a href="javascript:void(0)" class="rs-text-link">Escrow Policy</a>.
+              </span>
+            </label>
+            @if (f['agreeTerms'].invalid && f['agreeTerms'].touched) {
+              <div class="rs-form-error">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                <span>You must accept the terms to proceed</span>
+              </div>
+            }
+          </div>
+
+          <!-- 7. SUBMIT BUTTON -->
+          <button
+            type="submit"
+            class="rs-btn rs-btn--primary rs-btn--lg rs-btn--full rs-mt-2"
+            [disabled]="loading()"
+          >
+            @if (loading()) {
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>Creating Account...</span>
+            } @else {
+              <mat-icon>person_add</mat-icon>
+              <span>Complete Registration</span>
+            }
+          </button>
+
+        </form>
+
+        <!-- Sign In Link -->
+        <div class="rs-auth-card__footer">
+          <span class="rs-body-sm rs-text-secondary">Already registered on RentSphere?</span>
+          <a routerLink="/auth/login" class="rs-text-link rs-body-sm" style="font-weight: var(--rs-font-semibold);">
+            Sign In Here &rarr;
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

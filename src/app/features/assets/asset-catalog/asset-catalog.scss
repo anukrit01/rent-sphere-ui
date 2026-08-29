@@ -1,0 +1,224 @@
+@use 'breakpoints' as *;
+
+.rs-catalog-search-bar {
+  padding: var(--rs-space-3);
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-lg);
+}
+
+.rs-catalog-search-form {
+  display: flex;
+  gap: var(--rs-space-2);
+  align-items: center;
+
+  @include bp-below-sm {
+    flex-direction: column;
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.rs-catalog-search-clear {
+  position: absolute;
+  right: var(--rs-space-3);
+  display: flex;
+  align-items: center;
+  color: var(--rs-text-tertiary);
+  padding: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: var(--rs-text-primary);
+  }
+}
+
+// --------------------------------------------------------
+// Active Filters Bar
+// --------------------------------------------------------
+
+.rs-active-filters-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-2);
+  flex-wrap: wrap;
+}
+
+.rs-active-pills-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rs-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--rs-radius-full);
+  background-color: var(--rs-color-primary-50);
+  border: 1px solid var(--rs-color-primary-200);
+  color: var(--rs-color-primary-700);
+  font-size: var(--rs-text-xs);
+  font-weight: var(--rs-font-medium);
+
+  &__remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--rs-radius-full);
+    color: var(--rs-color-primary-600);
+    padding: 1px;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      background-color: var(--rs-color-primary-200);
+      color: var(--rs-color-primary-900);
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Main Marketplace 2-Column Layout
+// --------------------------------------------------------
+
+.rs-catalog-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rs-space-6);
+
+  @include bp-lg {
+    grid-template-columns: 280px 1fr;
+    align-items: flex-start;
+  }
+}
+
+.rs-catalog-sidebar {
+  &__sticky {
+    position: sticky;
+    top: calc(var(--rs-header-height) + var(--rs-space-4));
+    max-height: calc(100vh - var(--rs-header-height) - var(--rs-space-8));
+    overflow-y: auto;
+  }
+}
+
+.rs-catalog-results {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+// --------------------------------------------------------
+// Results Header Controls Bar
+// --------------------------------------------------------
+
+.rs-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-md);
+  flex-wrap: wrap;
+  gap: var(--rs-space-2);
+}
+
+.rs-sort-select {
+  height: 34px;
+  font-size: var(--rs-text-xs);
+  padding: 0 var(--rs-space-6) 0 var(--rs-space-2);
+  width: auto;
+  min-width: 160px;
+}
+
+.rs-view-toggle {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-md);
+  overflow: hidden;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--rs-text-tertiary);
+    background-color: var(--rs-surface-default);
+    transition: background-color var(--rs-transition-fast), color var(--rs-transition-fast);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      color: var(--rs-text-primary);
+      background-color: var(--rs-color-gray-100);
+    }
+
+    &--active {
+      color: var(--rs-color-primary-600);
+      background-color: var(--rs-color-primary-50);
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Mobile Filter Drawer
+// --------------------------------------------------------
+
+.rs-mobile-filter-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--rs-z-modal);
+  display: flex;
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+  }
+
+  &__content {
+    position: relative;
+    width: 340px;
+    max-width: 90vw;
+    height: 100%;
+    background-color: var(--rs-surface-default);
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--rs-shadow-xl);
+    padding: var(--rs-space-4);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--rs-space-3);
+    border-bottom: 1px solid var(--rs-border-default);
+    margin-bottom: var(--rs-space-3);
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}

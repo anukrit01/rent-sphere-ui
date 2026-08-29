@@ -1,0 +1,132 @@
+// ============================================================
+// RentSphere Angular Material Theme Override
+// ============================================================
+// Customizes Angular Material M3 to align with the
+// RentSphere design system tokens.
+// ============================================================
+
+@use '@angular/material' as mat;
+
+// --------------------------------------------------------
+// Material 3 custom theme
+// --------------------------------------------------------
+
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$blue-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: Inter,
+    density: 0,
+  ));
+}
+
+// --------------------------------------------------------
+// Override specific Material component styles
+// to blend with RentSphere design language
+// --------------------------------------------------------
+
+// Toolbar
+.mat-toolbar {
+  font-family: var(--rs-font-family) !important;
+}
+
+// Buttons — let Material handle its own variants,
+// but enforce font and border-radius consistency
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-stroked-button,
+.mat-mdc-flat-button,
+.mat-mdc-icon-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  font-family: var(--rs-font-family) !important;
+  letter-spacing: var(--rs-tracking-normal) !important;
+  border-radius: var(--rs-radius-md) !important;
+}
+
+// Form fields — adjust sizing
+.mat-mdc-form-field {
+  font-family: var(--rs-font-family) !important;
+
+  .mdc-text-field {
+    border-radius: var(--rs-radius-md) !important;
+  }
+}
+
+// Cards
+.mat-mdc-card {
+  border-radius: var(--rs-radius-lg) !important;
+  box-shadow: var(--rs-shadow-sm) !important;
+  border: 1px solid var(--rs-border-default);
+}
+
+// Dialog
+.mat-mdc-dialog-container {
+  border-radius: var(--rs-radius-xl) !important;
+
+  .mat-mdc-dialog-surface {
+    border-radius: var(--rs-radius-xl) !important;
+  }
+}
+
+// Table
+.mat-mdc-table {
+  font-family: var(--rs-font-family) !important;
+
+  .mat-mdc-header-cell {
+    font-weight: var(--rs-font-semibold);
+    color: var(--rs-text-secondary);
+    font-size: var(--rs-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--rs-tracking-wider);
+  }
+
+  .mat-mdc-cell {
+    font-size: var(--rs-text-base);
+  }
+}
+
+// Chips
+.mat-mdc-chip {
+  border-radius: var(--rs-radius-md) !important;
+  font-family: var(--rs-font-family) !important;
+}
+
+// Tooltip
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  font-family: var(--rs-font-family) !important;
+  font-size: var(--rs-text-xs) !important;
+  border-radius: var(--rs-radius-sm) !important;
+}
+
+// Snack bar
+.mat-mdc-snack-bar-container {
+  border-radius: var(--rs-radius-lg) !important;
+  font-family: var(--rs-font-family) !important;
+}
+
+// Select / Menu
+.mat-mdc-select-panel,
+.mat-mdc-menu-panel {
+  border-radius: var(--rs-radius-lg) !important;
+  border: 1px solid var(--rs-border-default);
+  box-shadow: var(--rs-shadow-lg) !important;
+}
+
+// Datepicker
+.mat-datepicker-content {
+  border-radius: var(--rs-radius-xl) !important;
+  box-shadow: var(--rs-shadow-xl) !important;
+}
+
+// Paginator
+.mat-mdc-paginator {
+  font-family: var(--rs-font-family) !important;
+}
+
+// Tab group
+.mat-mdc-tab-group {
+  font-family: var(--rs-font-family) !important;
+}

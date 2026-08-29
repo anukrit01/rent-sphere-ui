@@ -1,1 +1,279 @@
-<p>login works!</p>
+<div class="rs-auth-page">
+  <div class="rs-auth-layout rs-container--wide">
+    
+    <!-- LEFT: Industrial Branding & Trust Hero Banner -->
+    <div class="rs-auth-hero">
+      <div class="rs-auth-hero__inner">
+        
+        <a routerLink="/" class="rs-brand rs-brand--light rs-mb-6">
+          <div class="rs-brand__icon-wrapper">
+            <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
+          </div>
+          <div class="rs-brand__text">
+            <span class="rs-brand__name">Rent<span class="rs-brand__accent">Sphere</span></span>
+            <span class="rs-brand__tagline">Heavy Equipment Marketplace</span>
+          </div>
+        </a>
+
+        <h1 class="rs-display rs-auth-hero__title">
+          Heavy equipment leasing, made transparent.
+        </h1>
+
+        <p class="rs-body-lg rs-auth-hero__subtitle">
+          Join thousands of verified construction contractors and fleet owners managing project machinery with zero hassle.
+        </p>
+
+        <!-- Trust Highlights -->
+        <div class="rs-auth-hero__perks">
+          <div class="rs-auth-perk">
+            <mat-icon>verified</mat-icon>
+            <div>
+              <strong>100% Inspected Machinery</strong>
+              <span>Verified telematics & safety certificates</span>
+            </div>
+          </div>
+          <div class="rs-auth-perk">
+            <mat-icon>security</mat-icon>
+            <div>
+              <strong>Escrow Security Deposit</strong>
+              <span>Protected payments and 24h deposit refunds</span>
+            </div>
+          </div>
+          <div class="rs-auth-perk">
+            <mat-icon>speed</mat-icon>
+            <div>
+              <strong>Fast 1-Hour Dispatch Approval</strong>
+              <span>Direct communication with fleet owners</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Form Card -->
+    <div class="rs-auth-card-wrapper">
+      <div class="rs-auth-card rs-card rs-card--elevated">
+        
+        <!-- Standard Login Mode -->
+        @if (!isForgotPasswordMode()) {
+          <div class="rs-auth-card__header">
+            <h2 class="rs-h2" style="margin: 0;">Sign In to RentSphere</h2>
+            <p class="rs-body-sm rs-text-muted" style="margin-top: 4px;">
+              Access your rentals, equipment listings, and project bookings
+            </p>
+          </div>
+
+          <!-- Interactive 1-Click Demo Accounts -->
+          <div class="rs-quick-demo-box rs-mb-4">
+            <div class="rs-overline rs-mb-2">1-Click Recruiter / Demo Sign-In:</div>
+            <div class="rs-quick-demo-pills">
+              <button
+                type="button"
+                class="rs-demo-btn rs-demo-btn--renter"
+                (click)="quickSignIn('renter')"
+              >
+                <mat-icon>person</mat-icon>
+                <span>Aman (Renter)</span>
+              </button>
+              <button
+                type="button"
+                class="rs-demo-btn rs-demo-btn--leaser"
+                (click)="quickSignIn('leaser')"
+              >
+                <mat-icon>business</mat-icon>
+                <span>Vikram (Leaser)</span>
+              </button>
+              <button
+                type="button"
+                class="rs-demo-btn rs-demo-btn--admin"
+                (click)="quickSignIn('admin')"
+              >
+                <mat-icon>admin_panel_settings</mat-icon>
+                <span>Priya (Admin)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="rs-auth-divider rs-mb-4">
+            <span>or sign in with email</span>
+          </div>
+
+          <!-- Main Login Form -->
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="rs-auth-form" novalidate>
+            
+            <!-- Email Field -->
+            <div class="rs-form-group">
+              <label class="rs-form-label" for="login-email">
+                Email Address <span class="rs-required">*</span>
+              </label>
+              <div class="rs-input-wrapper">
+                <mat-icon class="rs-input-icon">mail_outline</mat-icon>
+                <input
+                  id="login-email"
+                  type="email"
+                  class="rs-input"
+                  [class.rs-input--error]="emailControl?.invalid && emailControl?.touched"
+                  formControlName="email"
+                  placeholder="name@company.in"
+                  autocomplete="email"
+                />
+              </div>
+              @if (emailControl?.invalid && emailControl?.touched) {
+                <div class="rs-form-error">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  <span>Please enter a valid work email address</span>
+                </div>
+              }
+            </div>
+
+            <!-- Password Field -->
+            <div class="rs-form-group">
+              <div class="rs-flex rs-justify-between rs-items-center">
+                <label class="rs-form-label" for="login-password">
+                  Password <span class="rs-required">*</span>
+                </label>
+                <button
+                  type="button"
+                  class="rs-btn rs-btn--link rs-caption"
+                  (click)="isForgotPasswordMode.set(true)"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              <div class="rs-input-wrapper">
+                <mat-icon class="rs-input-icon">lock_outline</mat-icon>
+                <input
+                  id="login-password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  class="rs-input"
+                  [class.rs-input--error]="passwordControl?.invalid && passwordControl?.touched"
+                  formControlName="password"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  class="rs-input-suffix rs-btn rs-btn--ghost rs-btn--icon rs-btn--sm"
+                  (click)="toggleShowPassword()"
+                  tabindex="-1"
+                  aria-label="Toggle password visibility"
+                >
+                  <mat-icon style="font-size: 18px; width: 18px; height: 18px;">
+                    {{ showPassword() ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </button>
+              </div>
+              @if (passwordControl?.invalid && passwordControl?.touched) {
+                <div class="rs-form-error">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                  <span>Password must be at least 6 characters</span>
+                </div>
+              }
+            </div>
+
+            <!-- Remember Me -->
+            <div class="rs-flex rs-justify-between rs-items-center rs-mb-4">
+              <label class="rs-checkbox">
+                <input type="checkbox" formControlName="rememberMe" />
+                <span class="rs-body-sm">Remember this device</span>
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="rs-btn rs-btn--primary rs-btn--lg rs-btn--full"
+              [disabled]="loading()"
+            >
+              @if (loading()) {
+                <mat-spinner diameter="18"></mat-spinner>
+                <span>Authenticating...</span>
+              } @else {
+                <mat-icon>login</mat-icon>
+                <span>Sign In to Account</span>
+              }
+            </button>
+
+          </form>
+
+          <!-- Register Link -->
+          <div class="rs-auth-card__footer">
+            <span class="rs-body-sm rs-text-secondary">Don't have a RentSphere account?</span>
+            <a routerLink="/auth/register" class="rs-text-link rs-body-sm" style="font-weight: var(--rs-font-semibold);">
+              Create an Account &rarr;
+            </a>
+          </div>
+
+        } @else {
+
+          <!-- Forgot Password Sub-View -->
+          <div class="rs-auth-card__header">
+            <button
+              type="button"
+              class="rs-btn rs-btn--link rs-caption rs-mb-2 rs-flex rs-items-center rs-gap-1"
+              (click)="isForgotPasswordMode.set(false); resetSent.set(false)"
+            >
+              <mat-icon style="font-size: 16px; width: 16px; height: 16px;">arrow_back</mat-icon>
+              <span>Back to Sign In</span>
+            </button>
+            <h2 class="rs-h2" style="margin: 0;">Reset Your Password</h2>
+            <p class="rs-body-sm rs-text-muted" style="margin-top: 4px;">
+              Enter your registered work email and we will send a password reset verification link.
+            </p>
+          </div>
+
+          @if (!resetSent()) {
+            <div class="rs-form-group rs-mt-4">
+              <label class="rs-form-label" for="forgot-email">Account Email Address</label>
+              <div class="rs-input-wrapper">
+                <mat-icon class="rs-input-icon">mail_outline</mat-icon>
+                <input
+                  id="forgot-email"
+                  type="email"
+                  class="rs-input"
+                  placeholder="name@company.in"
+                  [ngModel]="forgotEmail()"
+                  (ngModelChange)="forgotEmail.set($event)"
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="rs-btn rs-btn--primary rs-btn--lg rs-btn--full rs-mt-4"
+              (click)="sendPasswordReset()"
+              [disabled]="loading()"
+            >
+              @if (loading()) {
+                <mat-spinner diameter="18"></mat-spinner>
+                <span>Sending Reset Link...</span>
+              } @else {
+                <mat-icon>send</mat-icon>
+                <span>Send Password Reset Link</span>
+              }
+            </button>
+          } @else {
+            <div class="rs-reset-success-box rs-p-4 rs-card rs-mt-4 rs-animate-fade-in">
+              <mat-icon class="rs-text-success" style="font-size: 32px; width: 32px; height: 32px;">check_circle</mat-icon>
+              <h3 class="rs-h4 rs-mt-2 rs-mb-1">Reset Instructions Sent</h3>
+              <p class="rs-body-sm rs-text-secondary">
+                We have sent an authentication link to <strong>{{ forgotEmail() }}</strong>. Please check your inbox.
+              </p>
+              <button
+                type="button"
+                class="rs-btn rs-btn--secondary rs-btn--sm rs-mt-3"
+                (click)="isForgotPasswordMode.set(false); resetSent.set(false)"
+              >
+                Return to Login
+              </button>
+            </div>
+          }
+
+        }
+
+      </div>
+    </div>
+
+  </div>
+</div>

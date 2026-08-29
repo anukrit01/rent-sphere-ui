@@ -1,0 +1,220 @@
+<app-page-container
+  title="Browse Heavy Machinery Fleet"
+  subtitle="Discover, compare, and rent certified industrial equipment from verified owners across India."
+  [breadcrumbs]="breadcrumbs"
+  maxWidth="wide"
+>
+
+  <!-- Top Search & Quick Control Bar -->
+  <div class="rs-catalog-search-bar rs-card rs-mb-6">
+    <form class="rs-catalog-search-form" (ngSubmit)="onSearchSubmit()">
+      <div class="rs-input-wrapper rs-flex-1">
+        <mat-icon class="rs-input-icon">search</mat-icon>
+        <input
+          type="search"
+          class="rs-input rs-input--lg"
+          placeholder="Search machinery, models (e.g. CAT 320, JCB 3DX, Generators)..."
+          [ngModel]="searchInput()"
+          (ngModelChange)="searchInput.set($event)"
+          name="catalogSearch"
+        />
+        @if (searchInput()) {
+          <button
+            type="button"
+            class="rs-catalog-search-clear"
+            (click)="clearSearch()"
+            aria-label="Clear search"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+      <button type="submit" class="rs-btn rs-btn--primary rs-btn--lg">
+        <mat-icon>search</mat-icon>
+        <span>Search</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Active Filter Pills Bar (if any active filters) -->
+  @if (activePills.length > 0) {
+    <div class="rs-active-filters-bar rs-mb-4 rs-animate-fade-in">
+      <span class="rs-caption rs-text-muted">Active Filters ({{ activePills.length }}):</span>
+      <div class="rs-active-pills-list">
+        @for (pill of activePills; track pill.label) {
+          <span class="rs-filter-pill">
+            <span>{{ pill.label }}</span>
+            <button
+              type="button"
+              class="rs-filter-pill__remove"
+              (click)="pill.remove()"
+              aria-label="Remove filter"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </span>
+        }
+        <button
+          type="button"
+          class="rs-btn rs-btn--link rs-caption rs-ml-2"
+          (click)="resetAll()"
+        >
+          Reset All
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Main Marketplace 2-Column Layout -->
+  <div class="rs-catalog-layout">
+    
+    <!-- LEFT: Sticky Desktop Filter Sidebar -->
+    <aside class="rs-catalog-sidebar rs-hidden-below-lg">
+      <div class="rs-catalog-sidebar__sticky">
+        <app-filter-panel
+          [currentFilters]="filters()"
+          [totalResultsCount]="totalResults()"
+          (filtersChange)="onFiltersChanged($event)"
+        ></app-filter-panel>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Results & Controls Area -->
+    <main class="rs-catalog-results">
+      
+      <!-- Results Subheader Bar -->
+      <div class="rs-results-header rs-card rs-p-3 rs-mb-4">
+        
+        <!-- Left: Results count & Mobile filter toggle -->
+        <div class="rs-flex rs-items-center rs-gap-3">
+          <!-- Mobile Filter Button Trigger -->
+          <button
+            type="button"
+            class="rs-btn rs-btn--secondary rs-btn--sm rs-show-below-lg"
+            (click)="mobileFilterOpen.set(true)"
+          >
+            <mat-icon>tune</mat-icon>
+            <span>Filter & Sort</span>
+            @if (activePills.length > 0) {
+              <span class="rs-count-badge" style="width: 18px; height: 18px; font-size: 10px;">{{ activePills.length }}</span>
+            }
+          </button>
+
+          <div class="rs-results-count">
+            <span class="rs-label">
+              <strong>{{ totalResults() }}</strong> {{ totalResults() === 1 ? 'machine' : 'machines' }} found
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: Sort Selector & Grid/List View Mode -->
+        <div class="rs-results-controls rs-flex rs-items-center rs-gap-3">
+          
+          <!-- Sort Dropdown -->
+          <div class="rs-flex rs-items-center rs-gap-2">
+            <span class="rs-caption rs-text-muted rs-hidden-mobile">Sort by:</span>
+            <select
+              class="rs-input rs-input--sm rs-sort-select"
+              [ngModel]="selectedSort()"
+              (ngModelChange)="onSortChanged($event)"
+            >
+              <option value="recommended">Recommended / Popular</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="newest">Newest Arrivals</option>
+            </select>
+          </div>
+
+          <!-- Grid / List Toggle -->
+          <div class="rs-view-toggle rs-hidden-mobile">
+            <button
+              type="button"
+              class="rs-view-toggle__btn"
+              [class.rs-view-toggle__btn--active]="viewMode() === 'grid'"
+              (click)="viewMode.set('grid')"
+              aria-label="Grid view"
+            >
+              <mat-icon>grid_view</mat-icon>
+            </button>
+            <button
+              type="button"
+              class="rs-view-toggle__btn"
+              [class.rs-view-toggle__btn--active]="viewMode() === 'list'"
+              (click)="viewMode.set('list')"
+              aria-label="List view"
+            >
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Loading State -->
+      @if (loading()) {
+        <app-loading-skeleton type="card-grid" [count]="6"></app-loading-skeleton>
+      }
+
+      <!-- Results Grid -->
+      @if (!loading() && assets().length > 0) {
+        <div
+          class="rs-grid rs-gap-6"
+          [class.rs-grid--3]="viewMode() === 'grid'"
+          [class.rs-grid--1]="viewMode() === 'list'"
+        >
+          @for (asset of assets(); track asset.id) {
+            <app-asset-card [asset]="asset"></app-asset-card>
+          }
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && assets().length === 0) {
+        <app-empty-state
+          icon="search_off"
+          title="No machinery matches your criteria"
+          message="We couldn't find any equipment matching your active filters. Try removing filters or expanding your price and location range."
+          actionLabel="Clear All Filters"
+          (actionClick)="resetAll()"
+        ></app-empty-state>
+      }
+
+    </main>
+
+  </div>
+
+  <!-- Mobile Filter Drawer Overlay -->
+  @if (mobileFilterOpen()) {
+    <div class="rs-mobile-filter-drawer rs-animate-fade-in">
+      <div class="rs-mobile-filter-drawer__overlay" (click)="mobileFilterOpen.set(false)"></div>
+      <div class="rs-mobile-filter-drawer__content rs-animate-slide-in-right">
+        
+        <div class="rs-mobile-filter-drawer__header">
+          <h3 class="rs-h4" style="margin: 0;">Filter & Sort Fleet</h3>
+          <button
+            type="button"
+            class="rs-btn rs-btn--ghost rs-btn--icon"
+            (click)="mobileFilterOpen.set(false)"
+            aria-label="Close filters"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="rs-mobile-filter-drawer__body">
+          <app-filter-panel
+            [currentFilters]="filters()"
+            [totalResultsCount]="totalResults()"
+            [isMobileDrawer]="true"
+            (filtersChange)="onFiltersChanged($event)"
+            (closeDrawer)="mobileFilterOpen.set(false)"
+          ></app-filter-panel>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</app-page-container>

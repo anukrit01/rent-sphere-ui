@@ -1,0 +1,255 @@
+// ============================================================
+// RentSphere Buttons
+// ============================================================
+// All button variants. Use these classes directly in templates
+// or combine with Angular Material button directives.
+// ============================================================
+
+// --------------------------------------------------------
+// Base button reset & shared styles
+// --------------------------------------------------------
+
+.rs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rs-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--rs-radius-md);
+  font-family: var(--rs-font-family);
+  font-weight: var(--rs-font-medium);
+  font-size: var(--rs-text-base);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color var(--rs-transition-fast),
+    border-color var(--rs-transition-fast),
+    color var(--rs-transition-fast),
+    box-shadow var(--rs-transition-fast),
+    transform var(--rs-transition-fast);
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: var(--rs-shadow-focus);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// --------------------------------------------------------
+// Sizes
+// --------------------------------------------------------
+
+.rs-btn--sm {
+  height: 32px;
+  padding: 0 var(--rs-space-3);
+  font-size: var(--rs-text-sm);
+  border-radius: var(--rs-radius-sm);
+}
+
+.rs-btn--md {
+  height: 40px;
+  padding: 0 var(--rs-space-4);
+  font-size: var(--rs-text-base);
+}
+
+.rs-btn--lg {
+  height: 48px;
+  padding: 0 var(--rs-space-6);
+  font-size: var(--rs-text-md);
+}
+
+// Default to --md when no size is specified
+.rs-btn:not(.rs-btn--sm):not(.rs-btn--lg) {
+  height: 40px;
+  padding: 0 var(--rs-space-4);
+}
+
+// --------------------------------------------------------
+// Primary — deep navy fill
+// --------------------------------------------------------
+
+.rs-btn--primary {
+  background-color: var(--rs-color-primary-500);
+  color: var(--rs-color-white);
+
+  &:hover:not(:disabled) {
+    background-color: var(--rs-color-primary-600);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--rs-color-primary-700);
+  }
+}
+
+// --------------------------------------------------------
+// Accent — warm amber fill
+// --------------------------------------------------------
+
+.rs-btn--accent {
+  background-color: var(--rs-color-accent-500);
+  color: var(--rs-color-white);
+
+  &:hover:not(:disabled) {
+    background-color: var(--rs-color-accent-600);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--rs-color-accent-700);
+  }
+}
+
+// --------------------------------------------------------
+// Secondary — outlined
+// --------------------------------------------------------
+
+.rs-btn--secondary {
+  background-color: transparent;
+  color: var(--rs-color-primary-500);
+  border-color: var(--rs-border-default);
+
+  &:hover:not(:disabled) {
+    background-color: var(--rs-color-primary-50);
+    border-color: var(--rs-color-primary-300);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--rs-color-primary-100);
+  }
+}
+
+// --------------------------------------------------------
+// Ghost — no border, transparent
+// --------------------------------------------------------
+
+.rs-btn--ghost {
+  background-color: transparent;
+  color: var(--rs-text-primary);
+
+  &:hover:not(:disabled) {
+    background-color: var(--rs-color-gray-100);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--rs-color-gray-200);
+  }
+}
+
+// --------------------------------------------------------
+// Danger — destructive actions
+// --------------------------------------------------------
+
+.rs-btn--danger {
+  background-color: var(--rs-color-error-500);
+  color: var(--rs-color-white);
+
+  &:hover:not(:disabled) {
+    background-color: var(--rs-color-error-600);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--rs-color-error-700);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--rs-shadow-focus-error);
+  }
+}
+
+// --------------------------------------------------------
+// Danger outline
+// --------------------------------------------------------
+
+.rs-btn--danger-outline {
+  background-color: transparent;
+  color: var(--rs-color-error-600);
+  border-color: var(--rs-color-error-500);
+
+  &:hover:not(:disabled) {
+    background-color: var(--rs-color-error-50);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--rs-color-error-100);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--rs-shadow-focus-error);
+  }
+}
+
+// --------------------------------------------------------
+// Link — looks like a text link but has button dimensions
+// --------------------------------------------------------
+
+.rs-btn--link {
+  background-color: transparent;
+  color: var(--rs-text-link);
+  padding: 0;
+  height: auto;
+  border-radius: 0;
+
+  &:hover:not(:disabled) {
+    color: var(--rs-text-link-hover);
+    text-decoration: underline;
+  }
+}
+
+// --------------------------------------------------------
+// Icon button
+// --------------------------------------------------------
+
+.rs-btn--icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--rs-radius-md);
+
+  &.rs-btn--sm {
+    width: 32px;
+    height: 32px;
+  }
+
+  &.rs-btn--lg {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+// --------------------------------------------------------
+// Full width
+// --------------------------------------------------------
+
+.rs-btn--full {
+  width: 100%;
+}
+
+// --------------------------------------------------------
+// Button group
+// --------------------------------------------------------
+
+.rs-btn-group {
+  display: inline-flex;
+  gap: var(--rs-space-2);
+  align-items: center;
+
+  &--full {
+    width: 100%;
+
+    > .rs-btn {
+      flex: 1;
+    }
+  }
+}

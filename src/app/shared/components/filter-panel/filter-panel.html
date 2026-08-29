@@ -1,0 +1,213 @@
+<div class="rs-filter-panel" [class.rs-filter-panel--mobile]="isMobileDrawer">
+  
+  <!-- Panel Header -->
+  <div class="rs-filter-panel__header">
+    <div class="rs-flex rs-items-center rs-gap-2">
+      <mat-icon class="rs-text-accent">tune</mat-icon>
+      <h3 class="rs-h4" style="margin: 0;">Filters</h3>
+    </div>
+    @if (hasActiveFilters) {
+      <button
+        type="button"
+        class="rs-btn rs-btn--link rs-caption"
+        (click)="resetAllFilters()"
+      >
+        Reset All
+      </button>
+    }
+  </div>
+
+  <div class="rs-filter-panel__body">
+    
+    <!-- 1. CATEGORY FILTER -->
+    <div class="rs-filter-group">
+      <div class="rs-filter-group__header">
+        <span class="rs-label">Equipment Category</span>
+      </div>
+      <div class="rs-filter-list">
+        <button
+          type="button"
+          class="rs-filter-option"
+          [class.rs-filter-option--active]="currentFilters.category === 'All'"
+          (click)="setCategory('All')"
+        >
+          <span>All Categories</span>
+          <mat-icon *ngIf="currentFilters.category === 'All'">check</mat-icon>
+        </button>
+        @for (cat of categories; track cat.id) {
+          <button
+            type="button"
+            class="rs-filter-option"
+            [class.rs-filter-option--active]="currentFilters.category === cat.name"
+            (click)="setCategory(cat.name)"
+          >
+            <div class="rs-flex rs-items-center rs-gap-2">
+              <mat-icon style="font-size: 16px; width: 16px; height: 16px; color: var(--rs-text-tertiary);">{{ cat.icon }}</mat-icon>
+              <span>{{ cat.name }}</span>
+            </div>
+            <span class="rs-caption rs-text-muted">({{ cat.assetCount }})</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="rs-divider rs-divider--sm"></div>
+
+    <!-- 2. LOCATION / REGION -->
+    <div class="rs-filter-group">
+      <div class="rs-filter-group__header">
+        <span class="rs-label">Rental Hub / Location</span>
+      </div>
+      <div class="rs-input-wrapper">
+        <mat-icon class="rs-input-icon">place</mat-icon>
+        <select
+          class="rs-input rs-input--sm"
+          [ngModel]="currentFilters.location"
+          (ngModelChange)="setLocation($event)"
+        >
+          @for (loc of locations; track loc.id) {
+            <option [value]="loc.city">{{ loc.city }}{{ loc.id !== 'loc-all' ? ', ' + loc.state : '' }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="rs-divider rs-divider--sm"></div>
+
+    <!-- 3. PRICE RANGE -->
+    <div class="rs-filter-group">
+      <div class="rs-filter-group__header">
+        <span class="rs-label">Daily Rental Rate (INR)</span>
+      </div>
+      <div class="rs-price-presets">
+        @for (preset of pricePresets; track preset.label) {
+          <button
+            type="button"
+            class="rs-preset-chip"
+            [class.rs-preset-chip--active]="currentFilters.minPrice === preset.min && currentFilters.maxPrice === preset.max"
+            (click)="setPricePreset(preset)"
+          >
+            {{ preset.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Custom Min/Max Inputs -->
+      <div class="rs-form-row rs-mt-3">
+        <div class="rs-form-group rs-mb-0">
+          <label class="rs-label-sm">Min (₹)</label>
+          <input
+            type="number"
+            class="rs-input rs-input--sm"
+            placeholder="0"
+            [ngModel]="currentFilters.minPrice"
+            (ngModelChange)="currentFilters.minPrice = $event; onFilterUpdate()"
+          />
+        </div>
+        <div class="rs-form-group rs-mb-0">
+          <label class="rs-label-sm">Max (₹)</label>
+          <input
+            type="number"
+            class="rs-input rs-input--sm"
+            placeholder="25000"
+            [ngModel]="currentFilters.maxPrice"
+            (ngModelChange)="currentFilters.maxPrice = $event; onFilterUpdate()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="rs-divider rs-divider--sm"></div>
+
+    <!-- 4. AVAILABILITY TOGGLE -->
+    <div class="rs-filter-group">
+      <div class="rs-filter-group__header">
+        <span class="rs-label">Availability & Logistics</span>
+      </div>
+      <label class="rs-checkbox">
+        <input
+          type="checkbox"
+          [ngModel]="currentFilters.availableOnly"
+          (ngModelChange)="currentFilters.availableOnly = $event; onFilterUpdate()"
+        />
+        <span>Available for Immediate Dispatch</span>
+      </label>
+      <label class="rs-checkbox rs-mt-2">
+        <input
+          type="checkbox"
+          [ngModel]="currentFilters.operatorRequired"
+          (ngModelChange)="currentFilters.operatorRequired = $event; onFilterUpdate()"
+        />
+        <span>Certified Operator Provided</span>
+      </label>
+    </div>
+
+    <div class="rs-divider rs-divider--sm"></div>
+
+    <!-- 5. EQUIPMENT CONDITION -->
+    <div class="rs-filter-group">
+      <div class="rs-filter-group__header">
+        <span class="rs-label">Equipment Condition</span>
+      </div>
+      <div class="rs-flex rs-flex-col rs-gap-1">
+        @for (cond of conditions; track cond) {
+          <label class="rs-radio">
+            <input
+              type="radio"
+              name="eqCondition"
+              [value]="cond"
+              [ngModel]="currentFilters.condition"
+              (ngModelChange)="currentFilters.condition = $event; onFilterUpdate()"
+            />
+            <span class="rs-body-sm">{{ cond }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="rs-divider rs-divider--sm"></div>
+
+    <!-- 6. MINIMUM RATING -->
+    <div class="rs-filter-group">
+      <div class="rs-filter-group__header">
+        <span class="rs-label">Owner Rating</span>
+      </div>
+      <div class="rs-flex rs-flex-col rs-gap-1">
+        @for (opt of ratingOptions; track opt.value) {
+          <label class="rs-radio">
+            <input
+              type="radio"
+              name="ownerRating"
+              [value]="opt.value"
+              [ngModel]="currentFilters.minRating"
+              (ngModelChange)="currentFilters.minRating = $event; onFilterUpdate()"
+            />
+            <span class="rs-body-sm">{{ opt.label }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mobile Drawer Sticky Action Bar -->
+  @if (isMobileDrawer) {
+    <div class="rs-filter-panel__mobile-actions">
+      <button
+        type="button"
+        class="rs-btn rs-btn--secondary"
+        (click)="resetAllFilters()"
+      >
+        Clear All
+      </button>
+      <button
+        type="button"
+        class="rs-btn rs-btn--primary rs-flex-1"
+        (click)="closeDrawer.emit()"
+      >
+        Show {{ totalResultsCount }} Machines
+      </button>
+    </div>
+  }
+
+</div>

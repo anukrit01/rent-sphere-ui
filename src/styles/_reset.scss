@@ -1,0 +1,131 @@
+// ============================================================
+// RentSphere — Base / Reset Styles
+// ============================================================
+// Normalize and reset browser defaults.
+// This is imported first, before all other partials.
+// ============================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  font-family: var(--rs-font-family);
+  font-size: var(--rs-text-base);
+  font-weight: var(--rs-font-regular);
+  line-height: var(--rs-leading-normal);
+  color: var(--rs-text-primary);
+  background-color: var(--rs-bg-primary);
+  min-height: 100%;
+  color-scheme: light;
+}
+
+// Headings reset
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-tight);
+}
+
+// Links
+a {
+  color: var(--rs-text-link);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--rs-text-link-hover);
+  }
+}
+
+// Lists
+ul, ol {
+  list-style: none;
+}
+
+// Images
+img, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// Tables
+table {
+  border-collapse: collapse;
+}
+
+// Buttons — reset
+button {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+// Inputs
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+// Remove default fieldset styles
+fieldset {
+  border: none;
+  padding: 0;
+}
+
+// Remove default blockquote styles
+blockquote {
+  margin: 0;
+}
+
+// Remove tap highlight on mobile
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Prevent address styling in Safari
+address {
+  font-style: normal;
+}
+
+// Strong and b
+strong, b {
+  font-weight: var(--rs-font-semibold);
+}
+
+// Selection
+::selection {
+  background-color: var(--rs-color-primary-100);
+  color: var(--rs-color-primary-900);
+}
+
+// Focus visible — global
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--rs-border-focus);
+  outline-offset: 2px;
+}
+
+// Scroll margin for anchored content (accounts for fixed header)
+[id] {
+  scroll-margin-top: calc(var(--rs-header-height) + var(--rs-space-4));
+}

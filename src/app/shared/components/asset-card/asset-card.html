@@ -1,0 +1,108 @@
+<article
+  class="rs-asset-card rs-card rs-card--interactive"
+  (click)="navigateToDetail()"
+  [attr.aria-label]="asset.title"
+>
+  <!-- Card Media Top -->
+  <div class="rs-asset-card__media">
+    <img
+      [src]="asset.coverImage || (asset.images && asset.images[0]) || 'https://images.unsplash.com/photo-1579829366248-204fe8413f31?auto=format&fit=crop&w=800&q=80'"
+      [alt]="asset.title"
+      class="rs-asset-card__img"
+      loading="lazy"
+    />
+
+    <!-- Top Floating Overlays -->
+    <div class="rs-asset-card__badges">
+      <app-status-badge [status]="asset.status"></app-status-badge>
+      @if (asset.isNewArrival) {
+        <span class="rs-badge rs-badge--accent rs-badge--pill">NEW</span>
+      }
+      @if (asset.featured) {
+        <span class="rs-badge rs-badge--primary rs-badge--pill">POPULAR</span>
+      }
+    </div>
+
+    <!-- Favorite / Heart Button -->
+    <button
+      type="button"
+      class="rs-asset-card__fav"
+      [class.rs-asset-card__fav--active]="isFavorite"
+      (click)="toggleFavorite($event)"
+      [attr.aria-label]="isFavorite ? 'Remove from favorites' : 'Save to favorites'"
+    >
+      <mat-icon>{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
+
+    <!-- Location Pill on Image Bottom -->
+    <div class="rs-asset-card__loc-overlay">
+      <mat-icon>place</mat-icon>
+      <span>{{ asset.location }}</span>
+    </div>
+  </div>
+
+  <!-- Card Body -->
+  <div class="rs-asset-card__body">
+    
+    <!-- Category & Owner Verified Row -->
+    <div class="rs-asset-card__meta-row">
+      <span class="rs-overline">{{ asset.category }}</span>
+      @if (asset.owner && asset.owner.verified) {
+        <span class="rs-verified-badge" matTooltip="Verified Machinery Owner">
+          <mat-icon>verified</mat-icon>
+          <span>Verified</span>
+        </span>
+      }
+    </div>
+
+    <!-- Title & Specs Highlight -->
+    <h3 class="rs-asset-card__title rs-text-clamp-2">
+      {{ asset.title }}
+    </h3>
+
+    <!-- Key Spec Snippet -->
+    @if (asset.specifications) {
+      <div class="rs-asset-card__specs-row">
+        @if (asset.specifications.brand) {
+          <span class="rs-spec-pill">{{ asset.specifications.brand }}</span>
+        }
+        @if (asset.specifications.year) {
+          <span class="rs-spec-pill">{{ asset.specifications.year }}</span>
+        }
+        @if (asset.specifications.operatingWeight) {
+          <span class="rs-spec-pill">{{ asset.specifications.operatingWeight }}</span>
+        }
+      </div>
+    }
+
+    <!-- Rating & Review Count -->
+    <div class="rs-asset-card__rating-row">
+      <app-rating [rating]="asset.rating" [reviewCount]="asset.reviewCount" size="sm"></app-rating>
+      @if (showOperatorTag && asset.operatorProvided) {
+        <span class="rs-badge rs-badge--neutral rs-badge--sm">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; margin-right: 2px;">engineering</mat-icon>
+          Operator Available
+        </span>
+      }
+    </div>
+
+  </div>
+
+  <!-- Card Footer: Pricing & CTA -->
+  <div class="rs-asset-card__footer">
+    <div class="rs-asset-card__price-box">
+      <app-price-display [amount]="asset.pricePerDay" period="day"></app-price-display>
+      <span class="rs-caption rs-text-muted">Deposit: ₹{{ asset.securityDeposit | number:'1.0-0' }}</span>
+    </div>
+
+    <a
+      [routerLink]="['/assets', asset.id]"
+      class="rs-btn rs-btn--secondary rs-btn--sm rs-asset-card__cta"
+      (click)="$event.stopPropagation()"
+    >
+      <span>View Details</span>
+      <mat-icon style="font-size: 16px; width: 16px; height: 16px;">arrow_forward</mat-icon>
+    </a>
+  </div>
+
+</article>

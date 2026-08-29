@@ -15,9 +15,14 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-
-
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   exports: [
@@ -36,7 +41,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatNativeDateModule,
     MatSelectModule,
     MatChipsModule,
-    MatTooltipModule
-  ]
+    MatTooltipModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatBadgeModule,
+    MatProgressSpinnerModule,
+    MatTabsModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatRadioModule,
+  ],
 })
-export class MaterialModule { }
+export class MaterialModule {}

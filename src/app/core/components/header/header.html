@@ -1,16 +1,678 @@
-<div>
-    <mat-toolbar class="header">
-        <button matIconButton class="example-icon" aria-label="Example icon-button with menu icon">
-            <mat-icon>menu</mat-icon>
+<header class="rs-header">
+  <div class="rs-header__inner rs-container--wide">
+    
+    <!-- LEFT: Mobile Menu Toggle & Brand Wordmark -->
+    <div class="rs-header__left">
+      <button
+        type="button"
+        class="rs-header__mobile-toggle rs-btn rs-btn--ghost rs-btn--icon rs-hidden-desktop"
+        (click)="toggleMobileMenu()"
+        aria-label="Toggle navigation menu"
+        [attr.aria-expanded]="mobileMenuOpen()"
+      >
+        <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+      </button>
+
+      <a routerLink="/" class="rs-brand" (click)="closeMobileMenu()">
+        <div class="rs-brand__icon-wrapper">
+          <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
+        </div>
+        <div class="rs-brand__text">
+          <span class="rs-brand__name">Rent<span class="rs-brand__accent">Sphere</span></span>
+          <span class="rs-brand__tagline">Heavy Machinery Marketplace</span>
+        </div>
+      </a>
+
+      <!-- Location Hub Selector (Desktop) -->
+      <div class="rs-header__location rs-hidden-below-lg">
+        <button
+          type="button"
+          class="rs-location-btn"
+          [matMenuTriggerFor]="locationMenu"
+          aria-label="Select location"
+          [matTooltip]="'Current region: ' + selectedLocation().city"
+        >
+          <mat-icon class="rs-location-btn__icon">place</mat-icon>
+          <span class="rs-location-btn__text">{{ selectedLocation().city }}</span>
+          <mat-icon class="rs-location-btn__chevron">expand_more</mat-icon>
         </button>
-        <span style="padding: 5px;">RentSphere</span>
-        <div class="search-bar">
-            <input type="text" placeholder="Search for machinery, equipment..."/>
-            <button><mat-icon fontIcon="search"></mat-icon></button>
+
+        <mat-menu #locationMenu="matMenu" class="rs-location-dropdown-menu">
+          <div class="rs-menu-header">
+            <span class="rs-overline">Select Rental Hub</span>
+            <span class="rs-caption rs-text-muted">Browse equipment nearby</span>
+          </div>
+          <mat-divider></mat-divider>
+          @for (loc of locations; track loc.id) {
+            <button
+              mat-menu-item
+              (click)="selectLocation(loc)"
+              [class.rs-menu-item--active]="selectedLocation().id === loc.id"
+            >
+              <mat-icon>{{ loc.id === 'loc-all' ? 'public' : 'location_on' }}</mat-icon>
+              <div class="rs-location-menu-item">
+                <span class="rs-location-menu-item__city">{{ loc.city }}</span>
+                <span class="rs-caption rs-text-muted">{{ loc.activeMachineryCount }} machines available</span>
+              </div>
+            </button>
+          }
+        </mat-menu>
+      </div>
+
+    </div>
+
+    <!-- CENTER: Marketplace Search Bar & Autocomplete Dropdown (Desktop) -->
+    <div class="rs-header__center rs-hidden-mobile">
+      <div class="rs-header-search-container">
+        <form class="rs-header-search" (ngSubmit)="onSearchSubmit()" role="search">
+          <div class="rs-header-search__icon">
+            <mat-icon>search</mat-icon>
+          </div>
+          <input
+            type="search"
+            class="rs-header-search__input"
+            placeholder="Search excavators, cranes, loaders, generators..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            (focus)="searchFocused.set(true)"
+            name="headerSearch"
+            autocomplete="off"
+            aria-label="Search machinery and equipment"
+          />
+          @if (searchQuery()) {
+            <button
+              type="button"
+              class="rs-header-search__clear"
+              (click)="searchQuery.set('')"
+              aria-label="Clear search"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <button type="submit" class="rs-header-search__submit rs-btn rs-btn--primary rs-btn--sm">
+            <span>Search</span>
+          </button>
+        </form>
+
+        <!-- Live Search Suggestions Dropdown -->
+        @if (searchFocused()) {
+          <div class="rs-search-suggestions rs-animate-scale-in" (mousedown)="$event.preventDefault()">
+            
+            <!-- Category Suggestions -->
+            <div class="rs-search-suggestions__section">
+              <div class="rs-search-suggestions__label">
+                <mat-icon>category</mat-icon>
+                <span>Equipment Categories</span>
+              </div>
+              <div class="rs-search-suggestions__pills">
+                @for (cat of filteredCategories(); track cat.id) {
+                  <button
+                    type="button"
+                    class="rs-search-pill"
+                    (click)="selectCategory(cat)"
+                  >
+                    <mat-icon>{{ cat.icon }}</mat-icon>
+                    <span>{{ cat.name }}</span>
+                    <span class="rs-search-pill__count">({{ cat.assetCount }})</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Popular Machine Models -->
+            <div class="rs-search-suggestions__section">
+              <div class="rs-search-suggestions__label">
+                <mat-icon>engineering</mat-icon>
+                <span>Popular Equipment Models</span>
+              </div>
+              <div class="rs-search-suggestions__list">
+                @for (item of filteredModels(); track item.model) {
+                  <button
+                    type="button"
+                    class="rs-search-suggestion-item"
+                    (click)="selectSearchSuggestion(item.model)"
+                  >
+                    <mat-icon class="rs-search-suggestion-item__icon">trending_up</mat-icon>
+                    <span class="rs-search-suggestion-item__text"><strong>{{ item.model }}</strong></span>
+                    <span class="rs-search-suggestion-item__cat rs-caption">{{ item.category }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Trending Search Terms -->
+            <div class="rs-search-suggestions__footer">
+              <span class="rs-caption rs-text-muted">Trending:</span>
+              @for (term of popularSearchTerms.slice(0, 3); track term) {
+                <button
+                  type="button"
+                  class="rs-trending-tag"
+                  (click)="selectSearchSuggestion(term)"
+                >
+                  {{ term }}
+                </button>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- RIGHT: Role-Based Navigation & Demo Switcher -->
+    <div class="rs-header__right">
+
+      <!-- Interactive Demo Role Selector -->
+      <div class="rs-demo-role-selector rs-hidden-mobile">
+        <button
+          type="button"
+          class="rs-role-pill"
+          [matMenuTriggerFor]="roleMenu"
+          aria-label="Switch demo role"
+          [matTooltip]="'Role: ' + auth.currentRole().toUpperCase() + ' (Click to test other user roles)'"
+        >
+          <span class="rs-status-dot rs-status-dot--available"></span>
+          <span class="rs-role-pill__label">Demo:</span>
+          <strong class="rs-role-pill__value">{{ auth.currentRole() | titlecase }}</strong>
+          <mat-icon class="rs-role-pill__chevron">arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #roleMenu="matMenu" class="rs-role-dropdown-menu">
+          <div class="rs-menu-header">
+            <div class="rs-overline">Interactive Role Simulation</div>
+            <div class="rs-caption rs-text-muted">Experience all marketplace views:</div>
+          </div>
+          <mat-divider></mat-divider>
+          @for (acc of demoAccounts; track acc.user.role) {
+            <button
+              mat-menu-item
+              (click)="switchRole(acc.user.role)"
+              [class.rs-menu-item--active]="auth.currentRole() === acc.user.role"
+            >
+              <mat-icon [style.color]="auth.currentRole() === acc.user.role ? 'var(--rs-color-primary-500)' : 'inherit'">
+                {{ acc.user.role === 'guest' ? 'public' : acc.user.role === 'renter' ? 'person' : acc.user.role === 'leaser' ? 'business' : 'admin_panel_settings' }}
+              </mat-icon>
+              <div class="rs-role-menu-item">
+                <span class="rs-role-menu-item__name">{{ acc.badgeLabel }}</span>
+                <span class="rs-caption rs-text-muted">{{ acc.user.name }} ({{ acc.description }})</span>
+              </div>
+            </button>
+          }
+        </mat-menu>
+      </div>
+
+      <!-- Navigation Links based on Auth state -->
+      <nav class="rs-nav rs-hidden-mobile" aria-label="Main Navigation">
+        
+        <!-- Category Mega Menu Trigger -->
+        <button
+          type="button"
+          class="rs-nav__link rs-category-nav-btn"
+          [matMenuTriggerFor]="categoriesMenu"
+          aria-label="Browse machinery categories"
+        >
+          <mat-icon class="rs-nav__icon">grid_view</mat-icon>
+          <span>Categories</span>
+          <mat-icon class="rs-nav__chevron">expand_more</mat-icon>
+        </button>
+
+        <mat-menu #categoriesMenu="matMenu" class="rs-mega-menu">
+          <div class="rs-mega-menu__header">
+            <span class="rs-h5">Industrial Equipment Categories</span>
+            <a routerLink="/assets" class="rs-text-link rs-caption">View All Fleet &rarr;</a>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="rs-mega-menu__grid">
+            @for (cat of categories; track cat.id) {
+              <a
+                mat-menu-item
+                [routerLink]="['/assets']"
+                [queryParams]="{ category: cat.name }"
+                class="rs-mega-menu__item"
+              >
+                <div class="rs-mega-menu__icon-box">
+                  <mat-icon>{{ cat.icon }}</mat-icon>
+                </div>
+                <div class="rs-mega-menu__details">
+                  <span class="rs-mega-menu__name">{{ cat.name }}</span>
+                  <span class="rs-caption rs-text-muted">{{ cat.assetCount }} machines</span>
+                </div>
+              </a>
+            }
+          </div>
+        </mat-menu>
+
+        <!-- GUEST Navigation -->
+        @if (auth.currentRole() === 'guest') {
+          <a
+            routerLink="/auth/register"
+            [queryParams]="{ role: 'leaser' }"
+            class="rs-btn rs-btn--secondary rs-btn--sm"
+          >
+            <mat-icon class="rs-btn-icon">add_business</mat-icon>
+            <span>List Machinery</span>
+          </a>
+
+          <div class="rs-header__divider"></div>
+
+          <a routerLink="/auth/login" class="rs-nav__link">
+            <span>Sign In</span>
+          </a>
+
+          <a routerLink="/auth/register" class="rs-btn rs-btn--primary rs-btn--sm">
+            <span>Register</span>
+          </a>
+        }
+
+        <!-- RENTER Navigation -->
+        @if (auth.currentRole() === 'renter') {
+          <a
+            routerLink="/dashboard/renter"
+            routerLinkActive="rs-nav__link--active"
+            class="rs-nav__link"
+          >
+            <mat-icon class="rs-nav__icon">receipt_long</mat-icon>
+            <span>My Rentals</span>
+          </a>
+
+          <!-- Notifications trigger -->
+          <button
+            type="button"
+            class="rs-icon-button"
+            [matMenuTriggerFor]="notifMenu"
+            aria-label="View notifications"
+          >
+            <mat-icon>notifications_none</mat-icon>
+            @if (unreadNotificationCount() > 0) {
+              <span class="rs-count-badge rs-header-badge">{{ unreadNotificationCount() }}</span>
+            }
+          </button>
+
+          <!-- Renter User Menu -->
+          <button
+            type="button"
+            class="rs-user-trigger"
+            [matMenuTriggerFor]="userMenu"
+            aria-label="User account menu"
+          >
+            <div class="rs-avatar rs-avatar--sm">
+              <span>AS</span>
+            </div>
+            <div class="rs-user-trigger__info">
+              <span class="rs-user-trigger__name">Aman Sharma</span>
+              <span class="rs-badge rs-badge--success rs-badge--sm">Renter</span>
+            </div>
+            <mat-icon class="rs-user-trigger__chevron">expand_more</mat-icon>
+          </button>
+        }
+
+        <!-- LEASER Navigation -->
+        @if (auth.currentRole() === 'leaser') {
+          <a
+            routerLink="/dashboard/leaser"
+            routerLinkActive="rs-nav__link--active"
+            class="rs-nav__link"
+          >
+            <mat-icon class="rs-nav__icon">inventory_2</mat-icon>
+            <span>My Listings</span>
+          </a>
+
+          <!-- List Equipment Prominent CTA -->
+          <a
+            routerLink="/dashboard/leaser/list-equipment"
+            class="rs-btn rs-btn--accent rs-btn--sm"
+          >
+            <mat-icon class="rs-btn-icon">add_circle_outline</mat-icon>
+            <span>+ List Equipment</span>
+          </a>
+
+          <!-- Notifications trigger -->
+          <button
+            type="button"
+            class="rs-icon-button"
+            [matMenuTriggerFor]="notifMenu"
+            aria-label="View notifications"
+          >
+            <mat-icon>notifications_none</mat-icon>
+            @if (unreadNotificationCount() > 0) {
+              <span class="rs-count-badge rs-header-badge">{{ unreadNotificationCount() }}</span>
+            }
+          </button>
+
+          <!-- Leaser User Menu -->
+          <button
+            type="button"
+            class="rs-user-trigger"
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Leaser account menu"
+          >
+            <div class="rs-avatar rs-avatar--sm rs-avatar--leaser">
+              <span>VP</span>
+            </div>
+            <div class="rs-user-trigger__info">
+              <span class="rs-user-trigger__name">Vikram Patel</span>
+              <span class="rs-badge rs-badge--accent rs-badge--sm">Owner</span>
+            </div>
+            <mat-icon class="rs-user-trigger__chevron">expand_more</mat-icon>
+          </button>
+        }
+
+        <!-- ADMIN Navigation -->
+        @if (auth.currentRole() === 'admin') {
+          <a
+            routerLink="/admin"
+            routerLinkActive="rs-nav__link--active"
+            class="rs-btn rs-btn--primary rs-btn--sm"
+          >
+            <mat-icon class="rs-btn-icon">admin_panel_settings</mat-icon>
+            <span>Admin Portal</span>
+          </a>
+
+          <!-- Notifications trigger -->
+          <button
+            type="button"
+            class="rs-icon-button"
+            [matMenuTriggerFor]="notifMenu"
+            aria-label="View admin notifications"
+          >
+            <mat-icon>notifications_none</mat-icon>
+            @if (unreadNotificationCount() > 0) {
+              <span class="rs-count-badge rs-header-badge">{{ unreadNotificationCount() }}</span>
+            }
+          </button>
+
+          <!-- Admin User Menu -->
+          <button
+            type="button"
+            class="rs-user-trigger"
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Admin account menu"
+          >
+            <div class="rs-avatar rs-avatar--sm rs-avatar--admin">
+              <span>PV</span>
+            </div>
+            <div class="rs-user-trigger__info">
+              <span class="rs-user-trigger__name">Priya Verma</span>
+              <span class="rs-badge rs-badge--primary rs-badge--sm">Admin</span>
+            </div>
+            <mat-icon class="rs-user-trigger__chevron">expand_more</mat-icon>
+          </button>
+        }
+
+      </nav>
+
+      <!-- Reusable User Menu Dropdown -->
+      <mat-menu #userMenu="matMenu" class="rs-user-dropdown-menu">
+        <div class="rs-user-menu-profile">
+          <div class="rs-user-menu-profile__name">{{ auth.currentUserSignal()?.name }}</div>
+          <div class="rs-user-menu-profile__email rs-caption">{{ auth.currentUserSignal()?.email }}</div>
+          @if (auth.currentUserSignal()?.companyName) {
+            <div class="rs-user-menu-profile__company rs-caption rs-text-muted">
+              {{ auth.currentUserSignal()?.companyName }}
+            </div>
+          }
         </div>
-        <div class="nav-actions">
-            <button><mat-icon fontIcon="engineering"></mat-icon></button>
-            <button><mat-icon fontIcon="forklift"></mat-icon></button>
+        <mat-divider></mat-divider>
+
+        @if (auth.isRenter()) {
+          <a mat-menu-item routerLink="/dashboard/renter">
+            <mat-icon>dashboard</mat-icon>
+            <span>Renter Dashboard</span>
+          </a>
+          <a mat-menu-item routerLink="/dashboard/renter">
+            <mat-icon>receipt_long</mat-icon>
+            <span>My Active Rentals</span>
+          </a>
+          <a mat-menu-item routerLink="/assets">
+            <mat-icon>favorite_border</mat-icon>
+            <span>Saved Equipment</span>
+          </a>
+        }
+
+        @if (auth.isLeaser()) {
+          <a mat-menu-item routerLink="/dashboard/leaser">
+            <mat-icon>dashboard</mat-icon>
+            <span>Fleet Dashboard</span>
+          </a>
+          <a mat-menu-item routerLink="/dashboard/leaser/list-equipment">
+            <mat-icon>add_box</mat-icon>
+            <span>+ List New Machinery</span>
+          </a>
+          <a mat-menu-item routerLink="/dashboard/leaser">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>Rental Earnings & Payouts</span>
+          </a>
+        }
+
+        @if (auth.isAdmin()) {
+          <a mat-menu-item routerLink="/admin">
+            <mat-icon>verified_user</mat-icon>
+            <span>Pending Asset Approvals</span>
+          </a>
+          <a mat-menu-item routerLink="/admin">
+            <mat-icon>people</mat-icon>
+            <span>User Management</span>
+          </a>
+        }
+
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon color="warn">logout</mat-icon>
+          <span style="color: var(--rs-color-error-600);">Sign Out</span>
+        </button>
+      </mat-menu>
+
+      <!-- Reusable Notification Menu Dropdown -->
+      <mat-menu #notifMenu="matMenu" class="rs-notifications-dropdown">
+        <div class="rs-notif-header">
+          <span class="rs-h5">Notifications</span>
+          <button
+            type="button"
+            class="rs-btn rs-btn--link rs-caption"
+            (click)="markAllNotificationsAsRead(); $event.stopPropagation()"
+          >
+            Mark all read
+          </button>
         </div>
-    </mat-toolbar>
-</div>
+        <mat-divider></mat-divider>
+        <div class="rs-notif-list">
+          @for (item of notifications(); track item.id) {
+            <div
+              class="rs-notif-item"
+              [class.rs-notif-item--unread]="!item.read"
+              (click)="markNotificationAsRead(item)"
+            >
+              <div class="rs-notif-item__dot" [class.rs-notif-item__dot--unread]="!item.read"></div>
+              <div class="rs-notif-item__body">
+                <div class="rs-notif-item__title">{{ item.title }}</div>
+                <div class="rs-notif-item__msg rs-caption">{{ item.message }}</div>
+                <div class="rs-notif-item__time">{{ item.time }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      </mat-menu>
+
+    </div>
+  </div>
+
+  <!-- Mobile Full-Screen Navigation Drawer -->
+  @if (mobileMenuOpen()) {
+    <div class="rs-mobile-drawer rs-animate-fade-in">
+      <div class="rs-mobile-drawer__overlay" (click)="closeMobileMenu()"></div>
+      <div class="rs-mobile-drawer__content rs-animate-slide-in-right">
+        
+        <!-- Mobile Drawer Header -->
+        <div class="rs-mobile-drawer__header">
+          <div class="rs-brand">
+            <div class="rs-brand__icon-wrapper">
+              <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
+            </div>
+            <span class="rs-brand__name">Rent<span class="rs-brand__accent">Sphere</span></span>
+          </div>
+          <button
+            type="button"
+            class="rs-btn rs-btn--ghost rs-btn--icon"
+            (click)="closeMobileMenu()"
+            aria-label="Close menu"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <!-- Mobile Search -->
+        <div class="rs-mobile-drawer__search">
+          <form (ngSubmit)="onSearchSubmit()">
+            <div class="rs-input-wrapper">
+              <div class="rs-input-icon">
+                <mat-icon>search</mat-icon>
+              </div>
+              <input
+                type="search"
+                class="rs-input"
+                placeholder="Search equipment..."
+                [ngModel]="searchQuery()"
+                (ngModelChange)="searchQuery.set($event)"
+                name="mobileSearch"
+              />
+            </div>
+          </form>
+        </div>
+
+        <!-- Mobile Location Selector -->
+        <div class="rs-mobile-drawer__location-box">
+          <div class="rs-overline">Selected Location</div>
+          <div class="rs-flex rs-items-center rs-gap-2 rs-mt-2">
+            <mat-icon class="rs-text-accent">place</mat-icon>
+            <select
+              class="rs-input rs-input--sm"
+              [ngModel]="selectedLocation().id"
+              (ngModelChange)="selectLocationById($event)"
+            >
+              @for (loc of locations; track loc.id) {
+                <option [value]="loc.id">{{ loc.city }}, {{ loc.state }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Mobile Demo Role Switcher -->
+        <div class="rs-mobile-drawer__role-box">
+          <div class="rs-overline">Interactive Demo Role</div>
+          <div class="rs-role-pills-row">
+            @for (acc of demoAccounts; track acc.user.role) {
+              <button
+                type="button"
+                class="rs-role-chip"
+                [class.rs-role-chip--active]="auth.currentRole() === acc.user.role"
+                (click)="switchRole(acc.user.role)"
+              >
+                {{ acc.badgeLabel }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Mobile Nav Links -->
+        <nav class="rs-mobile-drawer__nav">
+          <a routerLink="/" (click)="closeMobileMenu()" class="rs-mobile-nav-link">
+            <mat-icon>home</mat-icon>
+            <span>Home</span>
+          </a>
+          <a routerLink="/assets" (click)="closeMobileMenu()" class="rs-mobile-nav-link">
+            <mat-icon>grid_view</mat-icon>
+            <span>Browse All Machinery</span>
+          </a>
+
+          <!-- Mobile Categories Accordion -->
+          <div class="rs-mobile-categories">
+            <div class="rs-overline rs-p-2">Top Categories</div>
+            <div class="rs-mobile-categories__grid">
+              @for (cat of categories.slice(0, 6); track cat.id) {
+                <a
+                  [routerLink]="['/assets']"
+                  [queryParams]="{ category: cat.name }"
+                  (click)="closeMobileMenu()"
+                  class="rs-mobile-cat-pill"
+                >
+                  <mat-icon>{{ cat.icon }}</mat-icon>
+                  <span>{{ cat.name }}</span>
+                </a>
+              }
+            </div>
+          </div>
+
+          @if (auth.isRenter()) {
+            <a routerLink="/dashboard/renter" (click)="closeMobileMenu()" class="rs-mobile-nav-link">
+              <mat-icon>receipt_long</mat-icon>
+              <span>My Rentals</span>
+            </a>
+          }
+
+          @if (auth.isLeaser()) {
+            <a routerLink="/dashboard/leaser" (click)="closeMobileMenu()" class="rs-mobile-nav-link">
+              <mat-icon>inventory_2</mat-icon>
+              <span>My Equipment Listings</span>
+            </a>
+            <a
+              routerLink="/dashboard/leaser/list-equipment"
+              (click)="closeMobileMenu()"
+              class="rs-mobile-nav-link rs-mobile-nav-link--highlight"
+            >
+              <mat-icon>add_circle_outline</mat-icon>
+              <span>+ List New Machinery</span>
+            </a>
+          }
+
+          @if (auth.isAdmin()) {
+            <a routerLink="/admin" (click)="closeMobileMenu()" class="rs-mobile-nav-link">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Admin Dashboard</span>
+            </a>
+          }
+        </nav>
+
+        <!-- Mobile Footer / Auth Actions -->
+        <div class="rs-mobile-drawer__footer">
+          @if (auth.currentRole() === 'guest') {
+            <div class="rs-btn-group rs-btn-group--full">
+              <a
+                routerLink="/auth/login"
+                (click)="closeMobileMenu()"
+                class="rs-btn rs-btn--secondary"
+              >
+                Sign In
+              </a>
+              <a
+                routerLink="/auth/register"
+                (click)="closeMobileMenu()"
+                class="rs-btn rs-btn--primary"
+              >
+                Register
+              </a>
+            </div>
+          } @else {
+            <div class="rs-mobile-user-card">
+              <div class="rs-avatar rs-avatar--sm">
+                <span>{{ auth.currentUserSignal()?.name?.substring(0, 2)?.toUpperCase() }}</span>
+              </div>
+              <div class="rs-mobile-user-card__details">
+                <strong>{{ auth.currentUserSignal()?.name }}</strong>
+                <span class="rs-caption rs-text-muted">{{ auth.currentUserSignal()?.email }}</span>
+              </div>
+              <button
+                type="button"
+                class="rs-btn rs-btn--ghost rs-btn--sm rs-btn--icon"
+                (click)="logout()"
+                aria-label="Sign out"
+              >
+                <mat-icon>logout</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+</header>

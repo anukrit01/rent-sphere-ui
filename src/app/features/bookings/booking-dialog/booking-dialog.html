@@ -1,1 +1,227 @@
-<p>booking-dialog works!</p>
+<div class="rs-booking-modal">
+  
+  <!-- Dialog Header -->
+  <div class="rs-booking-modal__header">
+    <div class="rs-flex rs-items-center rs-gap-3">
+      <div class="rs-booking-modal__thumb">
+        <img [src]="asset.coverImage || (asset.images && asset.images[0])" [alt]="asset.title" />
+      </div>
+      <div>
+        <span class="rs-badge rs-badge--primary rs-badge--sm">{{ asset.category }}</span>
+        <h2 class="rs-h4 rs-booking-modal__title">{{ asset.title }}</h2>
+        <div class="rs-caption rs-text-muted rs-flex rs-items-center rs-gap-1">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px;">place</mat-icon>
+          <span>{{ asset.location }}</span>
+        </div>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="rs-btn rs-btn--ghost rs-btn--icon"
+      (click)="dialogRef.close()"
+      aria-label="Close dialog"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Dialog Body (2 Columns on large screens) -->
+  <div class="rs-booking-modal__body">
+    
+    <!-- LEFT: Form Inputs -->
+    <div class="rs-booking-modal__form">
+      
+      <!-- Date Range Inputs -->
+      <div class="rs-form-row">
+        <div class="rs-form-group">
+          <label class="rs-form-label" for="book-start">
+            Start Date <span class="rs-required">*</span>
+          </label>
+          <input
+            id="book-start"
+            type="date"
+            class="rs-input"
+            [ngModel]="startDate()"
+            (ngModelChange)="startDate.set($event)"
+          />
+        </div>
+
+        <div class="rs-form-group">
+          <label class="rs-form-label" for="book-end">
+            End Date <span class="rs-required">*</span>
+          </label>
+          <input
+            id="book-end"
+            type="date"
+            class="rs-input"
+            [ngModel]="endDate()"
+            (ngModelChange)="endDate.set($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Add-ons & Logistics Toggles -->
+      <div class="rs-booking-modal__options-box rs-card rs-p-3 rs-mb-4">
+        <div class="rs-overline rs-mb-2">Site Logistics & Operations</div>
+
+        <!-- Operator Option -->
+        <label class="rs-checkbox rs-flex rs-justify-between rs-items-center">
+          <div class="rs-flex rs-items-center rs-gap-2">
+            <input
+              type="checkbox"
+              [ngModel]="operatorRequired()"
+              (ngModelChange)="operatorRequired.set($event)"
+            />
+            <div>
+              <strong>Certified Machinery Operator</strong>
+              <div class="rs-caption rs-text-muted">Includes heavy-equipment licensed driver (8h shift)</div>
+            </div>
+          </div>
+          <span class="rs-badge rs-badge--neutral">+₹800/day</span>
+        </label>
+
+        <mat-divider style="margin: 8px 0;"></mat-divider>
+
+        <!-- Delivery Option -->
+        <label class="rs-checkbox rs-flex rs-justify-between rs-items-center">
+          <div class="rs-flex rs-items-center rs-gap-2">
+            <input
+              type="checkbox"
+              [ngModel]="deliveryRequired()"
+              (ngModelChange)="deliveryRequired.set($event)"
+            />
+            <div>
+              <strong>Low-Bed Trailer Site Delivery</strong>
+              <div class="rs-caption rs-text-muted">Direct mobilization & demobilization to project depot</div>
+            </div>
+          </div>
+          <span class="rs-badge rs-badge--neutral">+₹{{ asset.deliveryFee || 2500 }} flat</span>
+        </label>
+      </div>
+
+      <!-- Project Site Location -->
+      <div class="rs-form-group">
+        <label class="rs-form-label" for="book-loc">
+          Project Site Location <span class="rs-required">*</span>
+        </label>
+        <div class="rs-input-wrapper">
+          <mat-icon class="rs-input-icon">location_on</mat-icon>
+          <input
+            id="book-loc"
+            type="text"
+            class="rs-input"
+            placeholder="Enter exact project / site address in MP / India"
+            [ngModel]="projectLocation()"
+            (ngModelChange)="projectLocation.set($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Project Notes -->
+      <div class="rs-form-group rs-mb-0">
+        <label class="rs-form-label" for="book-notes">
+          Special Site Requirements (Optional)
+        </label>
+        <textarea
+          id="book-notes"
+          class="rs-input"
+          style="min-height: 70px;"
+          placeholder="e.g. 24-hour continuous shift, specific rock bucket attachment, night lighting..."
+          [ngModel]="projectNotes()"
+          (ngModelChange)="projectNotes.set($event)"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Commercial Summary & Escrow Terms -->
+    <div class="rs-booking-modal__summary">
+      <div class="rs-booking-summary-card rs-card rs-p-4">
+        
+        <h3 class="rs-h5 rs-mb-3">Rental Cost Breakdown</h3>
+
+        <div class="rs-summary-row">
+          <span class="rs-text-secondary">
+            Daily Rate (₹{{ calculation().dailyRate | number:'1.0-0' }} × {{ calculation().durationDays }} {{ calculation().durationDays === 1 ? 'day' : 'days' }})
+          </span>
+          <strong>₹{{ calculation().rentalSubtotal | number:'1.0-0' }}</strong>
+        </div>
+
+        @if (operatorRequired()) {
+          <div class="rs-summary-row">
+            <span class="rs-text-secondary">Operator Service ({{ calculation().durationDays }} days)</span>
+            <span>+₹{{ calculation().operatorFee | number:'1.0-0' }}</span>
+          </div>
+        }
+
+        @if (deliveryRequired()) {
+          <div class="rs-summary-row">
+            <span class="rs-text-secondary">Low-Bed Trailer Delivery</span>
+            <span>+₹{{ calculation().deliveryFee | number:'1.0-0' }}</span>
+          </div>
+        }
+
+        <div class="rs-summary-row rs-summary-row--deposit">
+          <div>
+            <span class="rs-text-secondary">Refundable Security Deposit</span>
+            <div class="rs-caption" style="color: var(--rs-color-success-700);">Held in Escrow (100% Refundable)</div>
+          </div>
+          <strong>₹{{ calculation().securityDeposit | number:'1.0-0' }}</strong>
+        </div>
+
+        <mat-divider style="margin: 12px 0;"></mat-divider>
+
+        <div class="rs-summary-total">
+          <div>
+            <span class="rs-label">Estimated Total</span>
+            <span class="rs-caption rs-text-muted">Includes all taxes & deposit</span>
+          </div>
+          <div class="rs-price-total">
+            <span class="rs-h3" style="color: var(--rs-color-primary-900);">₹{{ calculation().estimatedTotal | number:'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <div class="rs-booking-modal__notice rs-mt-3">
+          <mat-icon>info</mat-icon>
+          <span class="rs-caption">
+            The owner will review your site request before confirmation. No payment is charged right now.
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Dialog Footer -->
+  <div class="rs-booking-modal__footer">
+    <button
+      type="button"
+      class="rs-btn rs-btn--secondary"
+      (click)="dialogRef.close()"
+      [disabled]="submitting()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="rs-btn rs-btn--primary rs-btn--lg"
+      (click)="submitRequest()"
+      [disabled]="submitting()"
+    >
+      @if (submitting()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        <span>Sending Request...</span>
+      } @else {
+        <mat-icon>send</mat-icon>
+        <span>Send Rental Request (₹{{ calculation().estimatedTotal | number:'1.0-0' }})</span>
+      }
+    </button>
+  </div>
+
+</div>

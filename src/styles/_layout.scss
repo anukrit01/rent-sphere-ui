@@ -1,0 +1,242 @@
+// ============================================================
+// RentSphere Layout Utilities
+// ============================================================
+// Container, grid, flex helpers, spacing, and display utilities.
+// ============================================================
+
+@use 'breakpoints' as *;
+
+// --------------------------------------------------------
+// Container
+// --------------------------------------------------------
+
+.rs-container {
+  width: 100%;
+  max-width: var(--rs-container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--rs-space-4);
+  padding-right: var(--rs-space-4);
+
+  @include bp-md {
+    padding-left: var(--rs-space-6);
+    padding-right: var(--rs-space-6);
+  }
+
+  @include bp-xl {
+    padding-left: var(--rs-space-8);
+    padding-right: var(--rs-space-8);
+  }
+}
+
+.rs-container--wide {
+  max-width: var(--rs-container-wide);
+}
+
+.rs-container--narrow {
+  max-width: var(--rs-container-narrow);
+}
+
+.rs-container--fluid {
+  max-width: none;
+}
+
+// --------------------------------------------------------
+// Section spacing
+// --------------------------------------------------------
+
+.rs-section {
+  padding-top: var(--rs-space-12);
+  padding-bottom: var(--rs-space-12);
+
+  @include bp-lg {
+    padding-top: var(--rs-space-16);
+    padding-bottom: var(--rs-space-16);
+  }
+}
+
+.rs-section--sm {
+  padding-top: var(--rs-space-8);
+  padding-bottom: var(--rs-space-8);
+
+  @include bp-lg {
+    padding-top: var(--rs-space-12);
+    padding-bottom: var(--rs-space-12);
+  }
+}
+
+.rs-section--lg {
+  padding-top: var(--rs-space-16);
+  padding-bottom: var(--rs-space-16);
+
+  @include bp-lg {
+    padding-top: var(--rs-space-20);
+    padding-bottom: var(--rs-space-20);
+  }
+}
+
+// --------------------------------------------------------
+// Section header pattern
+// --------------------------------------------------------
+
+.rs-section-header {
+  margin-bottom: var(--rs-space-8);
+
+  @include bp-lg {
+    margin-bottom: var(--rs-space-10);
+  }
+}
+
+.rs-section-header__subtitle {
+  margin-top: var(--rs-space-2);
+  color: var(--rs-text-secondary);
+  max-width: 600px;
+}
+
+// --------------------------------------------------------
+// Flex utilities
+// --------------------------------------------------------
+
+.rs-flex           { display: flex; }
+.rs-inline-flex    { display: inline-flex; }
+
+.rs-flex-col       { flex-direction: column; }
+.rs-flex-row       { flex-direction: row; }
+.rs-flex-wrap      { flex-wrap: wrap; }
+
+.rs-items-start    { align-items: flex-start; }
+.rs-items-center   { align-items: center; }
+.rs-items-end      { align-items: flex-end; }
+.rs-items-stretch  { align-items: stretch; }
+.rs-items-baseline { align-items: baseline; }
+
+.rs-justify-start    { justify-content: flex-start; }
+.rs-justify-center   { justify-content: center; }
+.rs-justify-end      { justify-content: flex-end; }
+.rs-justify-between  { justify-content: space-between; }
+.rs-justify-around   { justify-content: space-around; }
+
+.rs-flex-1   { flex: 1; }
+.rs-flex-auto { flex: auto; }
+.rs-flex-none { flex: none; }
+.rs-shrink-0 { flex-shrink: 0; }
+
+// Gap
+.rs-gap-1  { gap: var(--rs-space-1); }
+.rs-gap-2  { gap: var(--rs-space-2); }
+.rs-gap-3  { gap: var(--rs-space-3); }
+.rs-gap-4  { gap: var(--rs-space-4); }
+.rs-gap-5  { gap: var(--rs-space-5); }
+.rs-gap-6  { gap: var(--rs-space-6); }
+.rs-gap-8  { gap: var(--rs-space-8); }
+
+// --------------------------------------------------------
+// Grid
+// --------------------------------------------------------
+
+.rs-grid {
+  display: grid;
+  gap: var(--rs-space-4);
+}
+
+.rs-grid--2 {
+  grid-template-columns: 1fr;
+
+  @include bp-md { grid-template-columns: repeat(2, 1fr); }
+}
+
+.rs-grid--3 {
+  grid-template-columns: 1fr;
+
+  @include bp-sm { grid-template-columns: repeat(2, 1fr); }
+  @include bp-lg { grid-template-columns: repeat(3, 1fr); }
+}
+
+.rs-grid--4 {
+  grid-template-columns: 1fr;
+
+  @include bp-sm { grid-template-columns: repeat(2, 1fr); }
+  @include bp-md { grid-template-columns: repeat(3, 1fr); }
+  @include bp-xl { grid-template-columns: repeat(4, 1fr); }
+}
+
+.rs-grid--auto-fill {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+// --------------------------------------------------------
+// Spacing utilities
+// --------------------------------------------------------
+
+// Margin bottom
+.rs-mb-0  { margin-bottom: 0; }
+.rs-mb-1  { margin-bottom: var(--rs-space-1); }
+.rs-mb-2  { margin-bottom: var(--rs-space-2); }
+.rs-mb-3  { margin-bottom: var(--rs-space-3); }
+.rs-mb-4  { margin-bottom: var(--rs-space-4); }
+.rs-mb-6  { margin-bottom: var(--rs-space-6); }
+.rs-mb-8  { margin-bottom: var(--rs-space-8); }
+
+// Margin top
+.rs-mt-0  { margin-top: 0; }
+.rs-mt-2  { margin-top: var(--rs-space-2); }
+.rs-mt-4  { margin-top: var(--rs-space-4); }
+.rs-mt-6  { margin-top: var(--rs-space-6); }
+.rs-mt-8  { margin-top: var(--rs-space-8); }
+
+// Padding
+.rs-p-0   { padding: 0; }
+.rs-p-2   { padding: var(--rs-space-2); }
+.rs-p-3   { padding: var(--rs-space-3); }
+.rs-p-4   { padding: var(--rs-space-4); }
+.rs-p-6   { padding: var(--rs-space-6); }
+.rs-p-8   { padding: var(--rs-space-8); }
+
+// --------------------------------------------------------
+// Display
+// --------------------------------------------------------
+
+.rs-hidden { display: none; }
+.rs-block  { display: block; }
+
+.rs-hidden-mobile {
+  @include bp-below-md { display: none !important; }
+}
+
+.rs-hidden-desktop {
+  @include bp-md { display: none !important; }
+}
+
+.rs-hidden-below-lg {
+  @include bp-below-lg { display: none !important; }
+}
+
+.rs-show-below-lg {
+  @include bp-lg { display: none !important; }
+}
+
+// --------------------------------------------------------
+// Width utilities
+// --------------------------------------------------------
+
+.rs-w-full { width: 100%; }
+.rs-w-auto { width: auto; }
+
+// --------------------------------------------------------
+// Divider
+// --------------------------------------------------------
+
+.rs-divider {
+  height: 1px;
+  background-color: var(--rs-border-default);
+  border: none;
+  margin: var(--rs-space-4) 0;
+}
+
+.rs-divider--sm {
+  margin: var(--rs-space-2) 0;
+}
+
+.rs-divider--lg {
+  margin: var(--rs-space-8) 0;
+}

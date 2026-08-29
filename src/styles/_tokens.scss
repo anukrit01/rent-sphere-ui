@@ -1,0 +1,228 @@
+// ============================================================
+// RentSphere Design Tokens
+// ============================================================
+// Single source of truth for all design primitives.
+// All components reference these tokens via CSS custom properties.
+// Never hardcode colors, spacing, or typography values elsewhere.
+// ============================================================
+
+:root {
+  // --------------------------------------------------------
+  // COLOR — Brand
+  // --------------------------------------------------------
+  --rs-color-primary-900: #0a1628;
+  --rs-color-primary-800: #0f2240;
+  --rs-color-primary-700: #142e54;
+  --rs-color-primary-600: #1a3a68;
+  --rs-color-primary-500: #1e4d8c; // Deep navy — primary brand
+  --rs-color-primary-400: #2563a8;
+  --rs-color-primary-300: #3b82c4;
+  --rs-color-primary-200: #6ba3d9;
+  --rs-color-primary-100: #a8cce9;
+  --rs-color-primary-50: #e0eef7;
+
+  --rs-color-accent-900: #4a2800;
+  --rs-color-accent-800: #6b3a00;
+  --rs-color-accent-700: #8c4e08;
+  --rs-color-accent-600: #a86210;
+  --rs-color-accent-500: #d4820c; // Warm amber — industrial accent
+  --rs-color-accent-400: #e89a24;
+  --rs-color-accent-300: #f0b44c;
+  --rs-color-accent-200: #f5cc7e;
+  --rs-color-accent-100: #fae3b0;
+  --rs-color-accent-50: #fdf4e0;
+
+  --rs-color-blue-600: #1570c8;
+  --rs-color-blue-500: #1a7fe0; // Interaction blue
+  --rs-color-blue-400: #3d96ec;
+  --rs-color-blue-100: #d4e9fa;
+  --rs-color-blue-50: #eef5fd;
+
+  // --------------------------------------------------------
+  // COLOR — Semantic
+  // --------------------------------------------------------
+  --rs-color-success-700: #15663a;
+  --rs-color-success-600: #1a7f48;
+  --rs-color-success-500: #22a55b;
+  --rs-color-success-100: #c6f0d8;
+  --rs-color-success-50: #edfaf2;
+
+  --rs-color-warning-700: #8a5a00;
+  --rs-color-warning-600: #a86e00;
+  --rs-color-warning-500: #d49200;
+  --rs-color-warning-100: #fce7b0;
+  --rs-color-warning-50: #fef8e7;
+
+  --rs-color-error-700: #9c1a1a;
+  --rs-color-error-600: #b82020;
+  --rs-color-error-500: #dc2626;
+  --rs-color-error-100: #fccfcf;
+  --rs-color-error-50: #fef2f2;
+
+  --rs-color-info-700: #0f5499;
+  --rs-color-info-500: #1570c8;
+  --rs-color-info-100: #c8e0f5;
+  --rs-color-info-50: #edf5fc;
+
+  // --------------------------------------------------------
+  // COLOR — Neutrals
+  // --------------------------------------------------------
+  --rs-color-white: #ffffff;
+  --rs-color-gray-50: #f8f9fa;
+  --rs-color-gray-100: #f1f3f5;
+  --rs-color-gray-200: #e9ecef;
+  --rs-color-gray-300: #dee2e6;
+  --rs-color-gray-400: #ced4da;
+  --rs-color-gray-500: #adb5bd;
+  --rs-color-gray-600: #868e96;
+  --rs-color-gray-700: #495057;
+  --rs-color-gray-800: #343a40;
+  --rs-color-gray-900: #212529;
+  --rs-color-black: #111214;
+
+  // --------------------------------------------------------
+  // COLOR — Surface & Background
+  // --------------------------------------------------------
+  --rs-bg-primary: var(--rs-color-white);
+  --rs-bg-secondary: var(--rs-color-gray-50);
+  --rs-bg-tertiary: var(--rs-color-gray-100);
+  --rs-bg-inverse: var(--rs-color-primary-900);
+
+  --rs-surface-default: var(--rs-color-white);
+  --rs-surface-raised: var(--rs-color-white);
+  --rs-surface-overlay: var(--rs-color-white);
+  --rs-surface-sunken: var(--rs-color-gray-50);
+
+  // --------------------------------------------------------
+  // COLOR — Text
+  // --------------------------------------------------------
+  --rs-text-primary: var(--rs-color-gray-900);
+  --rs-text-secondary: var(--rs-color-gray-600);
+  --rs-text-tertiary: var(--rs-color-gray-500);
+  --rs-text-disabled: var(--rs-color-gray-400);
+  --rs-text-inverse: var(--rs-color-white);
+  --rs-text-link: var(--rs-color-blue-500);
+  --rs-text-link-hover: var(--rs-color-blue-600);
+
+  // --------------------------------------------------------
+  // COLOR — Border
+  // --------------------------------------------------------
+  --rs-border-default: var(--rs-color-gray-200);
+  --rs-border-strong: var(--rs-color-gray-300);
+  --rs-border-subtle: var(--rs-color-gray-100);
+  --rs-border-focus: var(--rs-color-blue-500);
+  --rs-border-error: var(--rs-color-error-500);
+  --rs-border-success: var(--rs-color-success-500);
+
+  // --------------------------------------------------------
+  // TYPOGRAPHY
+  // --------------------------------------------------------
+  --rs-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --rs-font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  // Font sizes
+  --rs-text-xs: 0.75rem;     // 12px
+  --rs-text-sm: 0.8125rem;   // 13px
+  --rs-text-base: 0.875rem;  // 14px
+  --rs-text-md: 1rem;        // 16px
+  --rs-text-lg: 1.125rem;    // 18px
+  --rs-text-xl: 1.25rem;     // 20px
+  --rs-text-2xl: 1.5rem;     // 24px
+  --rs-text-3xl: 1.875rem;   // 30px
+  --rs-text-4xl: 2.25rem;    // 36px
+  --rs-text-5xl: 3rem;       // 48px
+
+  // Font weights
+  --rs-font-regular: 400;
+  --rs-font-medium: 500;
+  --rs-font-semibold: 600;
+  --rs-font-bold: 700;
+
+  // Line heights
+  --rs-leading-tight: 1.2;
+  --rs-leading-snug: 1.35;
+  --rs-leading-normal: 1.5;
+  --rs-leading-relaxed: 1.65;
+
+  // Letter spacing
+  --rs-tracking-tight: -0.02em;
+  --rs-tracking-normal: 0;
+  --rs-tracking-wide: 0.01em;
+  --rs-tracking-wider: 0.04em;
+  --rs-tracking-widest: 0.08em;
+
+  // --------------------------------------------------------
+  // SPACING
+  // --------------------------------------------------------
+  --rs-space-0: 0;
+  --rs-space-1: 0.25rem;  // 4px
+  --rs-space-2: 0.5rem;   // 8px
+  --rs-space-3: 0.75rem;  // 12px
+  --rs-space-4: 1rem;     // 16px
+  --rs-space-5: 1.25rem;  // 20px
+  --rs-space-6: 1.5rem;   // 24px
+  --rs-space-8: 2rem;     // 32px
+  --rs-space-10: 2.5rem;  // 40px
+  --rs-space-12: 3rem;    // 48px
+  --rs-space-16: 4rem;    // 64px
+  --rs-space-20: 5rem;    // 80px
+  --rs-space-24: 6rem;    // 96px
+
+  // --------------------------------------------------------
+  // BORDER RADIUS
+  // --------------------------------------------------------
+  --rs-radius-none: 0;
+  --rs-radius-sm: 4px;
+  --rs-radius-md: 6px;
+  --rs-radius-lg: 8px;
+  --rs-radius-xl: 12px;
+  --rs-radius-2xl: 16px;
+  --rs-radius-full: 9999px;
+
+  // --------------------------------------------------------
+  // SHADOWS / ELEVATION
+  // --------------------------------------------------------
+  --rs-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --rs-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --rs-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --rs-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --rs-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.04);
+  --rs-shadow-focus: 0 0 0 3px rgba(26, 127, 224, 0.25);
+  --rs-shadow-focus-error: 0 0 0 3px rgba(220, 38, 38, 0.2);
+
+  // --------------------------------------------------------
+  // TRANSITIONS
+  // --------------------------------------------------------
+  --rs-duration-fast: 150ms;
+  --rs-duration-base: 200ms;
+  --rs-duration-slow: 300ms;
+  --rs-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --rs-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --rs-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --rs-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --rs-transition-fast: var(--rs-duration-fast) var(--rs-ease-default);
+  --rs-transition-base: var(--rs-duration-base) var(--rs-ease-default);
+  --rs-transition-slow: var(--rs-duration-slow) var(--rs-ease-default);
+
+  // --------------------------------------------------------
+  // Z-INDEX
+  // --------------------------------------------------------
+  --rs-z-dropdown: 100;
+  --rs-z-sticky: 200;
+  --rs-z-header: 300;
+  --rs-z-overlay: 400;
+  --rs-z-modal: 500;
+  --rs-z-toast: 600;
+  --rs-z-tooltip: 700;
+
+  // --------------------------------------------------------
+  // LAYOUT
+  // --------------------------------------------------------
+  --rs-container-max: 1280px;
+  --rs-container-wide: 1440px;
+  --rs-container-narrow: 960px;
+  --rs-header-height: 64px;
+  --rs-sidebar-width: 280px;
+}

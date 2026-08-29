@@ -1,0 +1,181 @@
+// ============================================================
+// RentSphere Typography
+// ============================================================
+// All typographic styles. Reference these classes or
+// @extend them in component SCSS.
+// ============================================================
+
+@use 'breakpoints' as *;
+
+// --------------------------------------------------------
+// Headings
+// --------------------------------------------------------
+
+.rs-display {
+  font-size: var(--rs-text-4xl);
+  font-weight: var(--rs-font-bold);
+  line-height: var(--rs-leading-tight);
+  letter-spacing: var(--rs-tracking-tight);
+  color: var(--rs-text-primary);
+
+  @include bp-lg {
+    font-size: var(--rs-text-5xl);
+  }
+}
+
+.rs-h1 {
+  font-size: var(--rs-text-3xl);
+  font-weight: var(--rs-font-bold);
+  line-height: var(--rs-leading-tight);
+  letter-spacing: var(--rs-tracking-tight);
+  color: var(--rs-text-primary);
+
+  @include bp-lg {
+    font-size: var(--rs-text-4xl);
+  }
+}
+
+.rs-h2 {
+  font-size: var(--rs-text-2xl);
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-snug);
+  letter-spacing: var(--rs-tracking-tight);
+  color: var(--rs-text-primary);
+
+  @include bp-lg {
+    font-size: var(--rs-text-3xl);
+  }
+}
+
+.rs-h3 {
+  font-size: var(--rs-text-xl);
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-snug);
+  color: var(--rs-text-primary);
+
+  @include bp-lg {
+    font-size: var(--rs-text-2xl);
+  }
+}
+
+.rs-h4 {
+  font-size: var(--rs-text-lg);
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-snug);
+  color: var(--rs-text-primary);
+}
+
+.rs-h5 {
+  font-size: var(--rs-text-md);
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-snug);
+  color: var(--rs-text-primary);
+}
+
+// --------------------------------------------------------
+// Body text
+// --------------------------------------------------------
+
+.rs-body {
+  font-size: var(--rs-text-base);
+  font-weight: var(--rs-font-regular);
+  line-height: var(--rs-leading-normal);
+  color: var(--rs-text-primary);
+}
+
+.rs-body-lg {
+  font-size: var(--rs-text-md);
+  font-weight: var(--rs-font-regular);
+  line-height: var(--rs-leading-relaxed);
+  color: var(--rs-text-primary);
+}
+
+.rs-body-sm {
+  font-size: var(--rs-text-sm);
+  font-weight: var(--rs-font-regular);
+  line-height: var(--rs-leading-normal);
+  color: var(--rs-text-secondary);
+}
+
+// --------------------------------------------------------
+// Utility text styles
+// --------------------------------------------------------
+
+.rs-caption {
+  font-size: var(--rs-text-xs);
+  font-weight: var(--rs-font-regular);
+  line-height: var(--rs-leading-normal);
+  color: var(--rs-text-tertiary);
+}
+
+.rs-overline {
+  font-size: var(--rs-text-xs);
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-normal);
+  letter-spacing: var(--rs-tracking-widest);
+  text-transform: uppercase;
+  color: var(--rs-text-secondary);
+}
+
+.rs-label {
+  font-size: var(--rs-text-sm);
+  font-weight: var(--rs-font-medium);
+  line-height: var(--rs-leading-normal);
+  color: var(--rs-text-primary);
+}
+
+.rs-label-sm {
+  font-size: var(--rs-text-xs);
+  font-weight: var(--rs-font-medium);
+  line-height: var(--rs-leading-normal);
+  color: var(--rs-text-secondary);
+}
+
+// --------------------------------------------------------
+// Inline modifiers
+// --------------------------------------------------------
+
+.rs-text-muted {
+  color: var(--rs-text-secondary);
+}
+
+.rs-text-subtle {
+  color: var(--rs-text-tertiary);
+}
+
+.rs-text-link {
+  color: var(--rs-text-link);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--rs-text-link-hover);
+    text-decoration: underline;
+  }
+}
+
+.rs-text-success { color: var(--rs-color-success-600); }
+.rs-text-warning { color: var(--rs-color-warning-600); }
+.rs-text-error   { color: var(--rs-color-error-600); }
+.rs-text-info    { color: var(--rs-color-info-500); }
+
+.rs-text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rs-text-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rs-text-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

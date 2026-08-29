@@ -1,12 +1,136 @@
-<div>
-  <mat-toolbar class="footer">
-  <div class='cr-con' style="font-size: 10px;">Copyright &copy; 2025 RentSphere | Made by Anukrit</div>
+<footer class="rs-footer" role="contentinfo">
   
-  <!-- <button matIconButton class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-    <mat-icon>favorite</mat-icon>
-  </button>
-  <button matIconButton class="example-icon" aria-label="Example icon-button with share icon">
-    <mat-icon>share</mat-icon>
-  </button> -->
-  </mat-toolbar>
-</div>
+  <!-- Trust & Value Proposition Banner -->
+  <div class="rs-footer-banner">
+    <div class="rs-container--wide rs-footer-banner__inner">
+      <div class="rs-footer-banner__item">
+        <div class="rs-footer-banner__icon">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <div>
+          <div class="rs-footer-banner__title">100% Verified Equipment</div>
+          <div class="rs-footer-banner__desc">Inspected fleet owners & telematics checked</div>
+        </div>
+      </div>
+
+      <div class="rs-footer-banner__item">
+        <div class="rs-footer-banner__icon">
+          <mat-icon>security</mat-icon>
+        </div>
+        <div>
+          <div class="rs-footer-banner__title">Secure Escrow & Deposit</div>
+          <div class="rs-footer-banner__desc">Transparent pricing with zero hidden fees</div>
+        </div>
+      </div>
+
+      <div class="rs-footer-banner__item">
+        <div class="rs-footer-banner__icon">
+          <mat-icon>support_agent</mat-icon>
+        </div>
+        <div>
+          <div class="rs-footer-banner__title">On-Site Logistics & Support</div>
+          <div class="rs-footer-banner__desc">24/7 site assistance & quick operator support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Footer Content -->
+  <div class="rs-container--wide rs-footer__main">
+    <div class="rs-footer__grid">
+      
+      <!-- Brand & Positioning Column -->
+      <div class="rs-footer__brand-col">
+        <a routerLink="/" class="rs-brand rs-brand--light">
+          <div class="rs-brand__icon-wrapper">
+            <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
+          </div>
+          <div class="rs-brand__text">
+            <span class="rs-brand__name">Rent<span class="rs-brand__accent">Sphere</span></span>
+            <span class="rs-brand__tagline">Heavy Equipment</span>
+          </div>
+        </a>
+
+        <p class="rs-footer__tagline">
+          "Your Project. Our Machinery."
+        </p>
+
+        <p class="rs-body-sm rs-footer__desc">
+          India's leading heavy machinery & asset leasing marketplace. We connect construction contractors and project developers with verified equipment owners for high-efficiency asset leasing.
+        </p>
+
+        <div class="rs-footer__contact-pill">
+          <mat-icon>phone_in_talk</mat-icon>
+          <div>
+            <span class="rs-caption">Toll-Free Fleet Helpline</span>
+            <strong>1800-889-7368 (RENT)</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Column -->
+      <div class="rs-footer__col">
+        <h3 class="rs-footer__heading">Equipment Fleet</h3>
+        <ul class="rs-footer__links">
+          @for (cat of popularCategories; track cat.name) {
+            <li>
+              <a [routerLink]="['/assets']" [queryParams]="{ category: cat.query }">
+                {{ cat.name }}
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <!-- For Renters & Leasers Column -->
+      <div class="rs-footer__col">
+        <h3 class="rs-footer__heading">Marketplace Solutions</h3>
+        <ul class="rs-footer__links">
+          <li><a routerLink="/assets">Explore Machinery Fleet</a></li>
+          <li><a routerLink="/auth/register" [queryParams]="{ role: 'leaser' }">List Your Equipment</a></li>
+          <li><a routerLink="/dashboard/renter">Renter Project Hub</a></li>
+          <li><a routerLink="/dashboard/leaser">Fleet Owner Portal</a></li>
+          <li><a routerLink="/auth/register">Create Enterprise Account</a></li>
+          <li><a routerLink="/admin">Platform Administration</a></li>
+        </ul>
+      </div>
+
+      <!-- Regional Hubs & Trust Column -->
+      <div class="rs-footer__col">
+        <h3 class="rs-footer__heading">Regional Hubs</h3>
+        <div class="rs-footer__locations">
+          @for (loc of topLocations; track loc) {
+            <span class="rs-badge rs-badge--neutral rs-footer__loc-badge">{{ loc }}</span>
+          }
+        </div>
+
+        <h3 class="rs-footer__heading rs-mt-4">Platform Trust</h3>
+        <ul class="rs-footer__links">
+          <li><span class="rs-footer__trust-item"><mat-icon>check</mat-icon> Verified Leaser Badges</span></li>
+          <li><span class="rs-footer__trust-item"><mat-icon>check</mat-icon> Standard Rental Contracts</span></li>
+          <li><span class="rs-footer__trust-item"><mat-icon>check</mat-icon> GST Compliant Invoicing</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Legal & Copyright Bar -->
+  <div class="rs-footer__bottom">
+    <div class="rs-container--wide rs-footer__bottom-inner">
+      <div class="rs-caption rs-footer__copyright">
+        &copy; {{ currentYear }} <strong>RentSphere Technologies Pvt. Ltd.</strong> All rights reserved. Made for professional construction & asset leasing.
+      </div>
+      <div class="rs-footer__legal-links">
+        <a href="javascript:void(0)" class="rs-caption">Privacy Policy</a>
+        <span class="rs-footer__dot">&bull;</span>
+        <a href="javascript:void(0)" class="rs-caption">Terms of Service</a>
+        <span class="rs-footer__dot">&bull;</span>
+        <a href="javascript:void(0)" class="rs-caption">Equipment Safety Guidelines</a>
+        <span class="rs-footer__dot">&bull;</span>
+        <a href="javascript:void(0)" class="rs-caption">GST Invoicing</a>
+      </div>
+    </div>
+  </div>
+
+</footer>
