@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AssetListComponent } from './features/assets/asset-list/asset-list';
 import { AssetCatalogComponent } from './features/assets/asset-catalog/asset-catalog';
 import { AssetDetail } from './features/assets/asset-detail/asset-detail';
+import { AssetForm } from './features/assets/asset-form/asset-form';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { RenterDashboard } from './features/dashboard/renter-dashboard/renter-dashboard';
@@ -27,6 +28,17 @@ export const routes: Routes = [
     component: LeaserDashboard,
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'leaser' },
+  },
+  {
+    path: 'dashboard/leaser/list-equipment',
+    component: AssetForm,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'leaser' },
+  },
+  {
+    path: 'list-equipment',
+    component: AssetForm,
+    canActivate: [AuthGuard],
   },
   {
     path: 'admin',

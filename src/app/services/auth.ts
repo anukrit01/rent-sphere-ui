@@ -56,7 +56,7 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     description: 'Marketplace platform administrator',
     user: {
       id: 999,
-      name: 'Priya Verma',
+      name: 'Anukrit Tiwari',
       email: 'admin@rentsphere.in',
       role: 'admin',
       phone: '+91 98110 55555',
@@ -93,7 +93,7 @@ export class AuthService {
   public isLeaser = computed(() => this.currentRole() === 'leaser');
   public isAdmin = computed(() => this.currentRole() === 'admin');
 
-  constructor() {}
+  constructor() { }
 
   private getInitialUser(): User | null {
     try {

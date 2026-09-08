@@ -1,1 +1,1331 @@
-<p>asset-form works!</p>
+<app-page-container
+  title="List New Equipment"
+  subtitle="Register heavy machinery to the RentSphere marketplace fleet with complete specifications, pricing, and availability."
+  [breadcrumbs]="breadcrumbs"
+  maxWidth="wide"
+>
+
+  <!-- ==================================================== -->
+  <!-- SUCCESS STATE: SUBMISSION CONFIRMATION               -->
+  <!-- ==================================================== -->
+  @if (isSubmitted()) {
+    <div class="rs-submit-success-card animate-fade-in">
+      <div class="rs-success-icon-badge">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <div class="rs-success-content">
+        <div class="rs-success-header">
+          <app-status-badge status="pending"></app-status-badge>
+          <span class="rs-ref-number">Listing Reference: #RS-{{ submittedAsset()?.id }}</span>
+        </div>
+
+        <h2 class="rs-success-title">Equipment Listing Submitted for Approval!</h2>
+        <p class="rs-success-desc">
+          Your <strong>{{ submittedAsset()?.title }}</strong> has been securely registered in RentSphere fleet records. Our machinery inspection and compliance desk is currently reviewing your listing specifications.
+        </p>
+
+        <!-- Verification Timeline -->
+        <div class="rs-audit-timeline">
+          <div class="rs-timeline-item rs-timeline-item--done">
+            <div class="rs-timeline-indicator">
+              <mat-icon>check</mat-icon>
+            </div>
+            <div class="rs-timeline-info">
+              <h4>Listing Details Submitted</h4>
+              <p>Technical specs, daily rate ₹{{ submittedAsset()?.pricePerDay | number }}, and images verified</p>
+            </div>
+          </div>
+
+          <div class="rs-timeline-item rs-timeline-item--active">
+            <div class="rs-timeline-indicator">
+              <mat-icon>engineering</mat-icon>
+            </div>
+            <div class="rs-timeline-info">
+              <h4>Engineer Technical Audit</h4>
+              <p>RentSphere operations team verifies serial validity & yard accessibility (turnaround &lt; 24h)</p>
+            </div>
+          </div>
+
+          <div class="rs-timeline-item">
+            <div class="rs-timeline-indicator">
+              <mat-icon>storefront</mat-icon>
+            </div>
+            <div class="rs-timeline-info">
+              <h4>Marketplace Fleet Publishing</h4>
+              <p>Machine becomes searchable by 2,500+ verified contractors across regional infrastructure hubs</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="rs-success-actions">
+          <a routerLink="/dashboard/leaser" class="rs-btn rs-btn--primary rs-btn--lg">
+            <mat-icon class="rs-btn-icon">dashboard</mat-icon>
+            <span>Go to Fleet Dashboard</span>
+          </a>
+
+          <button type="button" (click)="listAnother()" class="rs-btn rs-btn--outline rs-btn--lg">
+            <mat-icon class="rs-btn-icon">add_circle_outline</mat-icon>
+            <span>List Another Machine</span>
+          </button>
+
+          <a routerLink="/assets" class="rs-btn rs-btn--ghost rs-btn--lg">
+            <mat-icon class="rs-btn-icon">search</mat-icon>
+            <span>Browse Marketplace</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================================================== -->
+  <!-- ACTIVE WIZARD STATE                                  -->
+  <!-- ==================================================== -->
+  @if (!isSubmitted()) {
+    <div class="rs-wizard-layout">
+
+      <!-- Top Utility Controls: Quick Preset Loaders -->
+      <div class="rs-wizard-topbar">
+        <div class="rs-wizard-topbar__info">
+          <span class="rs-step-counter">Step {{ currentStep() }} of 7</span>
+          <span class="rs-step-name-current">{{ steps[currentStep() - 1].title }}</span>
+        </div>
+
+        <div class="rs-wizard-topbar__actions">
+          <span class="rs-preset-label">Quick Demo Presets:</span>
+          <div class="rs-preset-buttons">
+            <button
+              type="button"
+              class="rs-btn rs-btn--ghost rs-btn--xs"
+              (click)="loadTemplateData('Excavators')"
+              title="Load Excavator preset"
+            >
+              <mat-icon class="rs-btn-icon">construction</mat-icon>
+              <span>Excavator</span>
+            </button>
+            <button
+              type="button"
+              class="rs-btn rs-btn--ghost rs-btn--xs"
+              (click)="loadTemplateData('Backhoe & Wheel Loaders')"
+              title="Load Loader preset"
+            >
+              <mat-icon class="rs-btn-icon">front_loader</mat-icon>
+              <span>JCB Loader</span>
+            </button>
+            <button
+              type="button"
+              class="rs-btn rs-btn--ghost rs-btn--xs"
+              (click)="loadTemplateData('Cranes & Lifters')"
+              title="Load Crane preset"
+            >
+              <mat-icon class="rs-btn-icon">forklift</mat-icon>
+              <span>Hydra Crane</span>
+            </button>
+            <button
+              type="button"
+              class="rs-btn rs-btn--ghost rs-btn--xs"
+              (click)="loadTemplateData('Diesel Generators')"
+              title="Load Generator preset"
+            >
+              <mat-icon class="rs-btn-icon">power</mat-icon>
+              <span>DG Set</span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            class="rs-btn rs-btn--outline rs-btn--xs rs-clear-draft-btn"
+            (click)="clearDraft()"
+            title="Reset form to defaults"
+          >
+            <mat-icon class="rs-btn-icon">restart_alt</mat-icon>
+            <span>Reset Draft</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================================== -->
+      <!-- 7-STEP PROGRESS INDICATOR TRACKER                  -->
+      <!-- ================================================== -->
+      <nav class="rs-stepper-track" aria-label="Equipment listing steps">
+        @for (step of steps; track step.number) {
+          <div
+            class="rs-step-node"
+            [class.rs-step-node--active]="currentStep() === step.number"
+            [class.rs-step-node--completed]="completedSteps().has(step.number)"
+            [class.rs-step-node--clickable]="step.number < currentStep() || completedSteps().has(step.number - 1)"
+            (click)="goToStep(step.number)"
+          >
+            <div class="rs-step-circle">
+              @if (completedSteps().has(step.number) && currentStep() !== step.number) {
+                <mat-icon class="rs-step-icon-check">check</mat-icon>
+              } @else {
+                <mat-icon class="rs-step-icon">{{ step.icon }}</mat-icon>
+              }
+            </div>
+
+            <div class="rs-step-text">
+              <span class="rs-step-title">{{ step.title }}</span>
+              <span class="rs-step-subtitle">{{ step.subtitle }}</span>
+            </div>
+
+            @if (step.number < 7) {
+              <div class="rs-step-connector" [class.rs-step-connector--filled]="completedSteps().has(step.number)"></div>
+            }
+          </div>
+        }
+      </nav>
+
+      <!-- ================================================== -->
+      <!-- WIZARD STEP BODY                                   -->
+      <!-- ================================================== -->
+      <div class="rs-wizard-body">
+
+        <!-- ================================================ -->
+        <!-- STEP 1: BASIC INFORMATION                        -->
+        <!-- ================================================ -->
+        @if (currentStep() === 1) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-1-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 1</div>
+              <h2 id="step-1-heading" class="rs-step-panel__title">Basic Equipment Information</h2>
+              <p class="rs-step-panel__desc">
+                Provide the core identification, category classification, and operating description for your machine.
+              </p>
+            </div>
+
+            <div class="rs-form-grid">
+              <!-- Equipment Title -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label" for="eq-title">
+                  Equipment Title / Listing Name <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">precision_manufacturing</mat-icon>
+                  <input
+                    id="eq-title"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. Komatsu PC210-10M0 Heavy Crawler Excavator"
+                    [(ngModel)]="formData.title"
+                    required
+                  />
+                </div>
+                <span class="rs-form-hint">
+                  Include brand, model number, and key distinction for maximum search discoverability.
+                </span>
+              </div>
+
+              <!-- Category -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="eq-category">
+                  Machinery Category <span class="rs-req">*</span>
+                </label>
+                <div class="rs-select-wrapper">
+                  <mat-icon class="rs-input-icon">category</mat-icon>
+                  <select
+                    id="eq-category"
+                    class="rs-form-select"
+                    [(ngModel)]="formData.category"
+                    (change)="loadCategoryPresetImages()"
+                  >
+                    @for (cat of categories; track cat.id) {
+                      <option [value]="cat.name">{{ cat.name }} ({{ cat.assetCount }} in market)</option>
+                    }
+                  </select>
+                </div>
+                <span class="rs-form-hint">Specifies catalog classification &amp; search filters.</span>
+              </div>
+
+              <!-- Tagline -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="eq-tagline">
+                  Marketing Tagline / Headline
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">label</mat-icon>
+                  <input
+                    id="eq-tagline"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. 21-Ton Hydraulic Excavator with Rock Breaker Piping"
+                    [(ngModel)]="formData.tagline"
+                  />
+                </div>
+                <span class="rs-form-hint">One-line punchy highlight for search results cards.</span>
+              </div>
+
+              <!-- Description -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label" for="eq-desc">
+                  Detailed Operational Description <span class="rs-req">*</span>
+                </label>
+                <textarea
+                  id="eq-desc"
+                  rows="4"
+                  class="rs-form-textarea"
+                  placeholder="Describe your machinery: suitable applications (e.g. trenching, mining, grading), engine health, attachment availability, maintenance log status, operator cabin comfort, and site mobilization readiness..."
+                  [(ngModel)]="formData.description"
+                  required
+                ></textarea>
+                <div class="rs-textarea-footer">
+                  <span class="rs-form-hint">Be thorough. Contractors prioritize listings with comprehensive maintenance history.</span>
+                  <span class="rs-char-count">{{ formData.description.length }} characters</span>
+                </div>
+              </div>
+
+              <!-- Equipment Condition (Interactive Cards) -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label">
+                  Equipment Operating Condition <span class="rs-req">*</span>
+                </label>
+                <div class="rs-condition-cards-grid">
+                  @for (opt of conditionOptions; track opt.value) {
+                    <div
+                      class="rs-condition-card"
+                      [class.rs-condition-card--selected]="formData.condition === opt.value"
+                      (click)="formData.condition = opt.value"
+                    >
+                      <div class="rs-condition-card__radio">
+                        <div class="rs-radio-indicator" [class.rs-radio-indicator--checked]="formData.condition === opt.value"></div>
+                      </div>
+                      <div class="rs-condition-card__content">
+                        <span class="rs-condition-card__label">{{ opt.label }}</span>
+                        <p class="rs-condition-card__desc">{{ opt.desc }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ================================================ -->
+        <!-- STEP 2: SPECIFICATIONS                          -->
+        <!-- ================================================ -->
+        @if (currentStep() === 2) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-2-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 2</div>
+              <h2 id="step-2-heading" class="rs-step-panel__title">Technical Specifications</h2>
+              <p class="rs-step-panel__desc">
+                Engineering specifications enable contractors to verify site payload, reach, and powertrain compatibility.
+              </p>
+            </div>
+
+            <div class="rs-form-grid">
+              <!-- Brand -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-brand">
+                  Manufacturer Brand <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">badge</mat-icon>
+                  <input
+                    id="spec-brand"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. Caterpillar, Komatsu, JCB, Volvo"
+                    [(ngModel)]="formData.brand"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Model -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-model">
+                  Model Designation <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">build</mat-icon>
+                  <input
+                    id="spec-model"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. PC210-10M0 or 320D3"
+                    [(ngModel)]="formData.model"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Manufacturing Year -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-year">
+                  Manufacturing Year <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">event</mat-icon>
+                  <input
+                    id="spec-year"
+                    type="number"
+                    min="1990"
+                    max="2027"
+                    class="rs-form-input"
+                    placeholder="2023"
+                    [(ngModel)]="formData.year"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Operating Hours -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-hours">
+                  Operating Hours Meter Reading
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">timer</mat-icon>
+                  <input
+                    id="spec-hours"
+                    type="number"
+                    min="0"
+                    class="rs-form-input"
+                    placeholder="e.g. 1450"
+                    [(ngModel)]="formData.operatingHours"
+                  />
+                </div>
+                <span class="rs-form-hint">Hours logged on certified engine meter.</span>
+              </div>
+
+              <!-- Rated Capacity -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-cap">
+                  Bucket / Lifting / Power Capacity
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">scale</mat-icon>
+                  <input
+                    id="spec-cap"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. 1.2 m³ Heavy Bucket or 25 Ton Safe Load"
+                    [(ngModel)]="formData.capacity"
+                  />
+                </div>
+              </div>
+
+              <!-- Operating Weight -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-weight">
+                  Operating Weight
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">fitness_center</mat-icon>
+                  <input
+                    id="spec-weight"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. 21,200 kg (21.2 Ton)"
+                    [(ngModel)]="formData.operatingWeight"
+                  />
+                </div>
+              </div>
+
+              <!-- Engine Power -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-power">
+                  Engine Power Output
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">electric_bolt</mat-icon>
+                  <input
+                    id="spec-power"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. 165 HP @ 2000 rpm"
+                    [(ngModel)]="formData.enginePower"
+                  />
+                </div>
+              </div>
+
+              <!-- Fuel Type -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="spec-fuel">
+                  Powertrain / Fuel Type
+                </label>
+                <div class="rs-select-wrapper">
+                  <mat-icon class="rs-input-icon">local_gas_station</mat-icon>
+                  <select id="spec-fuel" class="rs-form-select" [(ngModel)]="formData.fuelType">
+                    @for (ft of fuelTypes; track ft) {
+                      <option [value]="ft">{{ ft }} Powered</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <!-- Key Features / Inclusions -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label">
+                  Included Attachments &amp; Cabin Features
+                </label>
+                <div class="rs-chips-manager">
+                  <div class="rs-chips-list">
+                    @for (feat of formData.features; track feat; let idx = $index) {
+                      <div class="rs-chip-item">
+                        <mat-icon class="rs-chip-check">check</mat-icon>
+                        <span>{{ feat }}</span>
+                        <button type="button" class="rs-chip-remove" (click)="removeFeature(idx)" aria-label="Remove feature">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="rs-chips-input-bar">
+                    <input
+                      type="text"
+                      class="rs-form-input rs-chip-input"
+                      placeholder="Add custom feature (e.g. Heavy Rock Breaker piping, Auto-Lube System)..."
+                      [(ngModel)]="customFeature"
+                      (keyup.enter)="addFeature()"
+                    />
+                    <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="addFeature()">
+                      <mat-icon class="rs-btn-icon">add</mat-icon>
+                      <span>Add Feature</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ================================================ -->
+        <!-- STEP 3: PRICING & TERMS                          -->
+        <!-- ================================================ -->
+        @if (currentStep() === 3) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-3-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 3</div>
+              <h2 id="step-3-heading" class="rs-step-panel__title">Rental Pricing &amp; Financial Terms</h2>
+              <p class="rs-step-panel__desc">
+                Set transparent daily &amp; weekly rates. All security deposits are held in RBI-compliant escrow for full payment security.
+              </p>
+            </div>
+
+            <div class="rs-form-grid">
+              <!-- Daily Rate -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="price-daily">
+                  Daily Rental Rate (₹/day) <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <span class="rs-currency-symbol">₹</span>
+                  <input
+                    id="price-daily"
+                    type="number"
+                    min="500"
+                    step="500"
+                    class="rs-form-input rs-input--currency"
+                    placeholder="8500"
+                    [(ngModel)]="formData.pricePerDay"
+                    (ngModelChange)="onPriceChange()"
+                    required
+                  />
+                  <span class="rs-input-suffix">/ day</span>
+                </div>
+                <span class="rs-form-hint">Standard rate for 8-hour operating shift.</span>
+              </div>
+
+              <!-- Weekly Rate -->
+              <div class="rs-form-group">
+                <div class="rs-label-with-action">
+                  <label class="rs-form-label" for="price-weekly">
+                    Weekly Rental Rate (₹/week)
+                  </label>
+                  <button type="button" class="rs-link-action" (click)="toggleAutoCalcWeekly()">
+                    {{ formData.autoCalcWeekly ? '✓ Auto-calculated (6x days)' : 'Manual weekly rate' }}
+                  </button>
+                </div>
+                <div class="rs-input-wrapper">
+                  <span class="rs-currency-symbol">₹</span>
+                  <input
+                    id="price-weekly"
+                    type="number"
+                    min="1000"
+                    class="rs-form-input rs-input--currency"
+                    placeholder="51000"
+                    [(ngModel)]="formData.pricePerWeek"
+                    [disabled]="formData.autoCalcWeekly"
+                  />
+                  <span class="rs-input-suffix">/ 7 days</span>
+                </div>
+                <span class="rs-form-hint">
+                  @if (formData.autoCalcWeekly) {
+                    Includes standard ~14% weekly discount incentive for contractor projects.
+                  } @else {
+                    Custom weekly package pricing.
+                  }
+                </span>
+              </div>
+
+              <!-- Security Deposit -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="price-deposit">
+                  Refundable Security Deposit (₹) <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <span class="rs-currency-symbol">₹</span>
+                  <input
+                    id="price-deposit"
+                    type="number"
+                    min="0"
+                    step="1000"
+                    class="rs-form-input rs-input--currency"
+                    placeholder="30000"
+                    [(ngModel)]="formData.securityDeposit"
+                    required
+                  />
+                </div>
+                <span class="rs-form-hint">Escrow held; released 24h after machine return inspection.</span>
+              </div>
+
+              <!-- Minimum Rental Days -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="price-mindays">
+                  Minimum Rental Period (Days)
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">date_range</mat-icon>
+                  <input
+                    id="price-mindays"
+                    type="number"
+                    min="1"
+                    max="30"
+                    class="rs-form-input"
+                    placeholder="2"
+                    [(ngModel)]="formData.minimumRentalDays"
+                  />
+                  <span class="rs-input-suffix">days</span>
+                </div>
+                <span class="rs-form-hint">Shortest duration you accept per booking dispatch.</span>
+              </div>
+
+              <!-- Addon Options: Operator & Delivery -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label">Operational Services &amp; Delivery Logistics</label>
+                <div class="rs-addon-cards-grid">
+                  <!-- Operator Option -->
+                  <div class="rs-addon-card" [class.rs-addon-card--active]="formData.operatorProvided">
+                    <div class="rs-addon-card__top">
+                      <mat-slide-toggle
+                        [(ngModel)]="formData.operatorProvided"
+                        color="primary"
+                        aria-label="Toggle certified operator inclusion"
+                      ></mat-slide-toggle>
+                      <div class="rs-addon-card__title-box">
+                        <span class="rs-addon-title">Certified Operator Provided</span>
+                        <span class="rs-addon-desc">Leaser dispatches machine with licensed heavy equipment driver.</span>
+                      </div>
+                    </div>
+                    @if (formData.operatorProvided) {
+                      <div class="rs-addon-fee-row animate-fade-in">
+                        <label for="operator-fee" class="rs-fee-label">Operator Daily Allowance:</label>
+                        <div class="rs-input-wrapper rs-input-wrapper--compact">
+                          <span class="rs-currency-symbol">₹</span>
+                          <input
+                            id="operator-fee"
+                            type="number"
+                            class="rs-form-input"
+                            [(ngModel)]="formData.operatorDailyFee"
+                            placeholder="800"
+                          />
+                          <span class="rs-input-suffix">/ day</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Delivery Option -->
+                  <div class="rs-addon-card" [class.rs-addon-card--active]="formData.deliveryAvailable">
+                    <div class="rs-addon-card__top">
+                      <mat-slide-toggle
+                        [(ngModel)]="formData.deliveryAvailable"
+                        color="primary"
+                        aria-label="Toggle low-bed mobilization delivery"
+                      ></mat-slide-toggle>
+                      <div class="rs-addon-card__title-box">
+                        <span class="rs-addon-title">Site Mobilization Delivery Available</span>
+                        <span class="rs-addon-desc">Leaser coordinates flatbed transport to contractor's work site.</span>
+                      </div>
+                    </div>
+                    @if (formData.deliveryAvailable) {
+                      <div class="rs-addon-fee-row animate-fade-in">
+                        <label for="delivery-fee" class="rs-fee-label">Flat Mobilization / Transit Fee:</label>
+                        <div class="rs-input-wrapper rs-input-wrapper--compact">
+                          <span class="rs-currency-symbol">₹</span>
+                          <input
+                            id="delivery-fee"
+                            type="number"
+                            class="rs-form-input"
+                            [(ngModel)]="formData.deliveryFee"
+                            placeholder="3500"
+                          />
+                          <span class="rs-input-suffix">one-way</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rental Terms & Rules -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label">Rental Terms &amp; Site Rules</label>
+                <div class="rs-chips-manager">
+                  <div class="rs-chips-list">
+                    @for (term of formData.rentalTerms; track term; let idx = $index) {
+                      <div class="rs-chip-item rs-chip-item--term">
+                        <mat-icon class="rs-chip-check">gavel</mat-icon>
+                        <span>{{ term }}</span>
+                        <button type="button" class="rs-chip-remove" (click)="removeTerm(idx)" aria-label="Remove term">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="rs-chips-input-bar">
+                    <input
+                      type="text"
+                      class="rs-form-input rs-chip-input"
+                      placeholder="Add standard rental clause (e.g. Overtime billed at ₹900/hr, Demobilization clean wash mandatory)..."
+                      [(ngModel)]="customTerm"
+                      (keyup.enter)="addTerm()"
+                    />
+                    <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="addTerm()">
+                      <mat-icon class="rs-btn-icon">add</mat-icon>
+                      <span>Add Clause</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ================================================ -->
+        <!-- STEP 4: AVAILABILITY & SCHEDULE                  -->
+        <!-- ================================================ -->
+        @if (currentStep() === 4) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-4-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 4</div>
+              <h2 id="step-4-heading" class="rs-step-panel__title">Availability Calendar &amp; Scheduling</h2>
+              <p class="rs-step-panel__desc">
+                Define the listing deployment schedule and prevent booking clashes with blocked maintenance dates.
+              </p>
+            </div>
+
+            <div class="rs-form-grid">
+              <!-- Available From -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="avail-from">
+                  Available From Date <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">today</mat-icon>
+                  <input
+                    id="avail-from"
+                    type="date"
+                    class="rs-form-input"
+                    [(ngModel)]="formData.availableFrom"
+                    required
+                  />
+                </div>
+                <span class="rs-form-hint">Earliest day contractors can request machine mobilization.</span>
+              </div>
+
+              <!-- Available Until -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="avail-until">
+                  Available Until Date (Optional)
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">event_available</mat-icon>
+                  <input
+                    id="avail-until"
+                    type="date"
+                    class="rs-form-input"
+                    [(ngModel)]="formData.availableUntil"
+                  />
+                </div>
+                <span class="rs-form-hint">Leave blank if available indefinitely for continuous rental.</span>
+              </div>
+
+              <!-- Advance Notice -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="avail-notice">
+                  Minimum Advance Notice Required
+                </label>
+                <div class="rs-select-wrapper">
+                  <mat-icon class="rs-input-icon">alarm</mat-icon>
+                  <select id="avail-notice" class="rs-form-select" [(ngModel)]="formData.advanceNoticeHours">
+                    <option [value]="12">12 Hours (Rapid Dispatch)</option>
+                    <option [value]="24">24 Hours (Standard 1 Day)</option>
+                    <option [value]="48">48 Hours (2 Days Lead Time)</option>
+                    <option [value]="72">72 Hours (3 Days Mobilization)</option>
+                  </select>
+                </div>
+                <span class="rs-form-hint">Ensures you have sufficient buffer to ready trailer transport.</span>
+              </div>
+
+              <!-- Blocked Dates / Maintenance Windows -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label">
+                  Blocked Dates &amp; Scheduled Maintenance Overhauls
+                </label>
+                <p class="rs-form-subhint">
+                  Specify periods when this machine is committed to internal jobs, monsoon pause, or workshop maintenance.
+                </p>
+
+                <div class="rs-chips-manager">
+                  <div class="rs-chips-list">
+                    @for (blocked of formData.blockedDates; track blocked; let idx = $index) {
+                      <div class="rs-chip-item rs-chip-item--blocked">
+                        <mat-icon class="rs-chip-check">event_busy</mat-icon>
+                        <span>{{ blocked }}</span>
+                        <button type="button" class="rs-chip-remove" (click)="removeBlockedDate(idx)" aria-label="Remove blocked date">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="rs-chips-input-bar">
+                    <input
+                      type="text"
+                      class="rs-form-input rs-chip-input"
+                      placeholder="Add blocked date or period (e.g. 2026-11-10 to 2026-11-15 - Diwali Festival Closure)..."
+                      [(ngModel)]="newBlockedDate"
+                      (keyup.enter)="addBlockedDate()"
+                    />
+                    <button type="button" class="rs-btn rs-btn--secondary rs-btn--sm" (click)="addBlockedDate()">
+                      <mat-icon class="rs-btn-icon">add</mat-icon>
+                      <span>Block Period</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ================================================ -->
+        <!-- STEP 5: LOCATION & DISPATCH YARD                 -->
+        <!-- ================================================ -->
+        @if (currentStep() === 5) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-5-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 5</div>
+              <h2 id="step-5-heading" class="rs-step-panel__title">Location &amp; Dispatch Yard</h2>
+              <p class="rs-step-panel__desc">
+                Accurate yard location helps nearby contractors calculate low-bed mobilization transit times and freight costs.
+              </p>
+            </div>
+
+            <div class="rs-form-grid">
+              <!-- Regional Hub Selector -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="loc-hub">
+                  Marketplace Regional Hub <span class="rs-req">*</span>
+                </label>
+                <div class="rs-select-wrapper">
+                  <mat-icon class="rs-input-icon">near_me</mat-icon>
+                  <select
+                    id="loc-hub"
+                    class="rs-form-select"
+                    [ngModel]="formData.city"
+                    (ngModelChange)="onHubSelected($event)"
+                  >
+                    @for (hub of locationHubs; track hub.id) {
+                      <option [value]="hub.city">{{ hub.city }}, {{ hub.state }} ({{ hub.activeMachineryCount }} assets)</option>
+                    }
+                  </select>
+                </div>
+                <span class="rs-form-hint">Primary logistics base for contractor proximity matching.</span>
+              </div>
+
+              <!-- State -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="loc-state">
+                  State / Territory <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">map</mat-icon>
+                  <input
+                    id="loc-state"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="Madhya Pradesh"
+                    [(ngModel)]="formData.state"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- PIN Code -->
+              <div class="rs-form-group">
+                <label class="rs-form-label" for="loc-pin">
+                  Postal PIN Code <span class="rs-req">*</span>
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">pin_drop</mat-icon>
+                  <input
+                    id="loc-pin"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. 452010"
+                    [(ngModel)]="formData.pinCode"
+                    maxlength="6"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Yard Address -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label" for="loc-yard">
+                  Dispatch Depot / Yard Physical Address
+                </label>
+                <div class="rs-input-wrapper">
+                  <mat-icon class="rs-input-icon">warehouse</mat-icon>
+                  <input
+                    id="loc-yard"
+                    type="text"
+                    class="rs-form-input"
+                    placeholder="e.g. Plot 18-B, Sanwer Road Industrial Area, Sector C, Near Toll Naka"
+                    [(ngModel)]="formData.yardAddress"
+                  />
+                </div>
+                <span class="rs-form-hint">Physical yard location where trailer loading and pre-dispatch inspection take place.</span>
+              </div>
+
+              <!-- Site Access Notes -->
+              <div class="rs-form-group rs-form-group--full">
+                <label class="rs-form-label" for="loc-notes">
+                  Depot Access &amp; Trailer Mobilization Notes
+                </label>
+                <textarea
+                  id="loc-notes"
+                  rows="3"
+                  class="rs-form-textarea"
+                  placeholder="e.g. Yard accommodates 40-foot low-bed trailers; concrete loading ramp on premises; 24/7 security gate clearance required with driver Aadhaar..."
+                  [(ngModel)]="formData.accessNotes"
+                ></textarea>
+                <span class="rs-form-hint">Critical for heavy haulage logistics partners.</span>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ================================================ -->
+        <!-- STEP 6: IMAGES & MEDIA                           -->
+        <!-- ================================================ -->
+        @if (currentStep() === 6) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-6-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 6</div>
+              <h2 id="step-6-heading" class="rs-step-panel__title">Machinery Photos &amp; Media Gallery</h2>
+              <p class="rs-step-panel__desc">
+                Upload clear, high-resolution photos of your equipment. Listings with multiple angles and cabin views receive 3x more bookings.
+              </p>
+            </div>
+
+            <!-- Upload Dropzone -->
+            <div class="rs-upload-dropzone">
+              <mat-icon class="rs-upload-icon">cloud_upload</mat-icon>
+              <div class="rs-upload-text">
+                <h3>Drag &amp; drop equipment photos here, or browse</h3>
+                <p>Supports JPG, PNG, WEBP up to 10MB per image. Minimum 1200x800 resolution recommended.</p>
+              </div>
+
+              <div class="rs-upload-actions">
+                <label class="rs-btn rs-btn--primary rs-btn--md rs-file-label">
+                  <mat-icon class="rs-btn-icon">add_photo_alternate</mat-icon>
+                  <span>Select Files to Upload</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    class="rs-sr-only"
+                    (change)="onFileInput($event)"
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  class="rs-btn rs-btn--secondary rs-btn--md"
+                  (click)="loadCategoryPresetImages()"
+                >
+                  <mat-icon class="rs-btn-icon">auto_awesome</mat-icon>
+                  <span>Load {{ formData.category }} Preset Photos</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Images Gallery Grid -->
+            <div class="rs-gallery-section">
+              <div class="rs-gallery-header">
+                <h3>Uploaded Fleet Photos ({{ formData.images.length }})</h3>
+                <span class="rs-gallery-hint">
+                  <mat-icon class="rs-hint-icon">info</mat-icon>
+                  The cover image will appear on marketplace search cards and hero banners.
+                </span>
+              </div>
+
+              <div class="rs-image-thumbnails-grid">
+                @for (img of formData.images; track img; let idx = $index) {
+                  <div
+                    class="rs-image-card"
+                    [class.rs-image-card--cover]="idx === formData.coverImageIndex"
+                  >
+                    <div class="rs-image-card__img-box">
+                      <img [src]="img" [alt]="formData.title + ' photo ' + (idx + 1)" loading="lazy" />
+
+                      @if (idx === formData.coverImageIndex) {
+                        <div class="rs-cover-badge">
+                          <mat-icon>star</mat-icon>
+                          <span>Cover Photo</span>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="rs-image-card__toolbar">
+                      <!-- Cover Selector Button -->
+                      @if (idx !== formData.coverImageIndex) {
+                        <button
+                          type="button"
+                          class="rs-tool-btn rs-tool-btn--cover"
+                          (click)="setCoverImage(idx)"
+                          title="Set as cover photo"
+                        >
+                          <mat-icon>star_border</mat-icon>
+                          <span>Set Cover</span>
+                        </button>
+                      } @else {
+                        <span class="rs-is-cover-tag">Primary Cover</span>
+                      }
+
+                      <div class="rs-tool-btn-group">
+                        <!-- Move Left -->
+                        <button
+                          type="button"
+                          class="rs-icon-btn"
+                          [disabled]="idx === 0"
+                          (click)="moveImage(idx, 'left')"
+                          title="Move left"
+                        >
+                          <mat-icon>chevron_left</mat-icon>
+                        </button>
+
+                        <!-- Move Right -->
+                        <button
+                          type="button"
+                          class="rs-icon-btn"
+                          [disabled]="idx === formData.images.length - 1"
+                          (click)="moveImage(idx, 'right')"
+                          title="Move right"
+                        >
+                          <mat-icon>chevron_right</mat-icon>
+                        </button>
+
+                        <!-- Remove Image -->
+                        <button
+                          type="button"
+                          class="rs-icon-btn rs-icon-btn--danger"
+                          (click)="removeImage(idx)"
+                          title="Delete photo"
+                        >
+                          <mat-icon>delete_outline</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ================================================ -->
+        <!-- STEP 7: REVIEW & SUBMIT (RENTER PREVIEW)         -->
+        <!-- ================================================ -->
+        @if (currentStep() === 7) {
+          <section class="rs-step-panel animate-fade-in" aria-labelledby="step-7-heading">
+            <div class="rs-step-panel__header">
+              <div class="rs-step-panel__badge">Step 7</div>
+              <h2 id="step-7-heading" class="rs-step-panel__title">Review Listing &amp; Renter Preview</h2>
+              <p class="rs-step-panel__desc">
+                Review your equipment presentation exactly as verified contractors will view it on the RentSphere marketplace.
+              </p>
+            </div>
+
+            <!-- MANDATORY REQUIREMENT: ADMIN APPROVAL NOTICE -->
+            <div class="rs-admin-approval-notice">
+              <div class="rs-notice-icon-box">
+                <mat-icon>verified_user</mat-icon>
+              </div>
+              <div class="rs-notice-text">
+                <h4>Admin Verification &amp; Approval Process</h4>
+                <p>
+                  To uphold industrial safety standards on RentSphere, all new equipment listings undergo a thorough verification audit by marketplace operations engineers within <strong>24 business hours</strong> before being activated publicly.
+                </p>
+                <div class="rs-notice-highlights">
+                  <span>✓ Physical yard validation</span>
+                  <span>✓ RC &amp; Insurance verification</span>
+                  <span>✓ Escrow payout account linkage</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- HIGH FIDELITY RENTER VIEW PREVIEW -->
+            <div class="rs-renter-preview-card">
+              <div class="rs-preview-badge-bar">
+                <span class="rs-preview-label">
+                  <mat-icon>visibility</mat-icon>
+                  Contractor Marketplace Live Preview
+                </span>
+                <app-status-badge status="pending"></app-status-badge>
+              </div>
+
+              <!-- Hero Preview -->
+              <div class="rs-preview-hero">
+                <div class="rs-preview-cover-box">
+                  <img [src]="getCoverImageUrl()" [alt]="formData.title" />
+                  <div class="rs-preview-overlay-badges">
+                    <span class="rs-badge rs-badge--primary">{{ formData.category }}</span>
+                    <span class="rs-badge rs-badge--info">{{ formData.condition }}</span>
+                  </div>
+                </div>
+
+                <div class="rs-preview-thumbnails-strip">
+                  @for (thumb of formData.images; track thumb; let i = $index) {
+                    <div
+                      class="rs-preview-thumb"
+                      [class.rs-preview-thumb--active]="i === formData.coverImageIndex"
+                      (click)="setCoverImage(i)"
+                    >
+                      <img [src]="thumb" [alt]="'Thumbnail ' + (i + 1)" />
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Core Details Body -->
+              <div class="rs-preview-body">
+                <div class="rs-preview-primary-info">
+                  <div class="rs-preview-brand-tag">{{ formData.brand }} &bull; {{ formData.model }} &bull; Year {{ formData.year }}</div>
+                  <h3 class="rs-preview-title">{{ formData.title }}</h3>
+                  @if (formData.tagline) {
+                    <p class="rs-preview-tagline">{{ formData.tagline }}</p>
+                  }
+
+                  <div class="rs-preview-meta-row">
+                    <div class="rs-meta-pill">
+                      <mat-icon>location_on</mat-icon>
+                      <span>{{ formData.city }}, {{ formData.state }} ({{ formData.pinCode }})</span>
+                    </div>
+
+                    <div class="rs-meta-pill">
+                      <mat-icon>timer</mat-icon>
+                      <span>{{ formData.operatingHours | number }} Meter Hours</span>
+                    </div>
+
+                    <div class="rs-meta-pill">
+                      <mat-icon>local_gas_station</mat-icon>
+                      <span>{{ formData.fuelType }} Engine</span>
+                    </div>
+                  </div>
+
+                  <div class="rs-preview-desc-box">
+                    <h4>Overview &amp; Applications</h4>
+                    <p>{{ formData.description }}</p>
+                  </div>
+
+                  <!-- Technical Specs Grid -->
+                  <div class="rs-preview-specs-box">
+                    <h4>Technical Specifications</h4>
+                    <div class="rs-specs-table-grid">
+                      <div class="rs-spec-row">
+                        <span class="rs-spec-k">Manufacturer:</span>
+                        <span class="rs-spec-v">{{ formData.brand }}</span>
+                      </div>
+                      <div class="rs-spec-row">
+                        <span class="rs-spec-k">Model:</span>
+                        <span class="rs-spec-v">{{ formData.model }}</span>
+                      </div>
+                      <div class="rs-spec-row">
+                        <span class="rs-spec-k">Year:</span>
+                        <span class="rs-spec-v">{{ formData.year }}</span>
+                      </div>
+                      <div class="rs-spec-row">
+                        <span class="rs-spec-k">Operating Hours:</span>
+                        <span class="rs-spec-v">{{ formData.operatingHours | number }} hrs</span>
+                      </div>
+                      @if (formData.capacity) {
+                        <div class="rs-spec-row">
+                          <span class="rs-spec-k">Rated Capacity:</span>
+                          <span class="rs-spec-v">{{ formData.capacity }}</span>
+                        </div>
+                      }
+                      @if (formData.operatingWeight) {
+                        <div class="rs-spec-row">
+                          <span class="rs-spec-k">Operating Weight:</span>
+                          <span class="rs-spec-v">{{ formData.operatingWeight }}</span>
+                        </div>
+                      }
+                      @if (formData.enginePower) {
+                        <div class="rs-spec-row">
+                          <span class="rs-spec-k">Engine Power:</span>
+                          <span class="rs-spec-v">{{ formData.enginePower }}</span>
+                        </div>
+                      }
+                      <div class="rs-spec-row">
+                        <span class="rs-spec-k">Condition:</span>
+                        <span class="rs-spec-v">{{ formData.condition }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Features -->
+                  @if (formData.features.length > 0) {
+                    <div class="rs-preview-features-box">
+                      <h4>Included Features &amp; Attachments</h4>
+                      <div class="rs-preview-feature-tags">
+                        @for (f of formData.features; track f) {
+                          <span class="rs-tag-pill">
+                            <mat-icon>check_circle</mat-icon>
+                            {{ f }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- Pricing & Terms Sidebar Box -->
+                <div class="rs-preview-pricing-sidebar">
+                  <div class="rs-price-card">
+                    <span class="rs-price-card__label">Daily Rental Rate</span>
+                    <div class="rs-price-card__amount">
+                      <span class="rs-amount-val">₹{{ formData.pricePerDay | number }}</span>
+                      <span class="rs-amount-unit">/ day</span>
+                    </div>
+
+                    <div class="rs-price-subdetails">
+                      <div class="rs-price-subrow">
+                        <span>Weekly Rate (7d):</span>
+                        <strong>₹{{ formData.pricePerWeek | number }}</strong>
+                      </div>
+                      <div class="rs-price-subrow">
+                        <span>Security Deposit:</span>
+                        <strong>₹{{ formData.securityDeposit | number }}</strong>
+                      </div>
+                      <div class="rs-price-subrow">
+                        <span>Min Duration:</span>
+                        <strong>{{ formData.minimumRentalDays }} Days</strong>
+                      </div>
+                    </div>
+
+                    <div class="rs-logistics-badges">
+                      <div class="rs-log-badge" [class.rs-log-badge--yes]="formData.operatorProvided">
+                        <mat-icon>{{ formData.operatorProvided ? 'person' : 'person_off' }}</mat-icon>
+                        <span>{{ formData.operatorProvided ? 'Operator Available (₹' + formData.operatorDailyFee + '/d)' : 'Dry Lease Only' }}</span>
+                      </div>
+
+                      <div class="rs-log-badge" [class.rs-log-badge--yes]="formData.deliveryAvailable">
+                        <mat-icon>{{ formData.deliveryAvailable ? 'local_shipping' : 'storefront' }}</mat-icon>
+                        <span>{{ formData.deliveryAvailable ? 'Site Delivery (₹' + formData.deliveryFee + ' flat)' : 'Depot Pickup Only' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="rs-yard-summary">
+                      <mat-icon class="rs-yard-icon">warehouse</mat-icon>
+                      <div class="rs-yard-info">
+                        <strong>Dispatch Depot:</strong>
+                        <p>{{ formData.yardAddress || (formData.city + ' Logistics Depot') }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Owner Preview Badge -->
+                  <div class="rs-owner-preview-card">
+                    <div class="rs-owner-avatar">
+                      <mat-icon>shield</mat-icon>
+                    </div>
+                    <div class="rs-owner-details">
+                      <div class="rs-owner-name">Shree Krishna Heavy Earthmovers</div>
+                      <div class="rs-owner-sub">Verified Fleet Leaser &bull; 4.9 ★ (42 rentals)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- ================================================== -->
+      <!-- WIZARD FOOTER NAVIGATION BUTTONS                   -->
+      <!-- ================================================== -->
+      <footer class="rs-wizard-footer">
+        <div class="rs-wizard-footer__left">
+          @if (currentStep() > 1) {
+            <button
+              type="button"
+              class="rs-btn rs-btn--outline rs-btn--lg"
+              (click)="prevStep()"
+              [disabled]="submitting()"
+            >
+              <mat-icon class="rs-btn-icon">arrow_back</mat-icon>
+              <span>Back</span>
+            </button>
+          } @else {
+            <a routerLink="/dashboard/leaser" class="rs-btn rs-btn--ghost rs-btn--lg">
+              <mat-icon class="rs-btn-icon">close</mat-icon>
+              <span>Cancel</span>
+            </a>
+          }
+        </div>
+
+        <div class="rs-wizard-footer__right">
+          <!-- Next Step Button (Steps 1 to 6) -->
+          @if (currentStep() < 7) {
+            <button
+              type="button"
+              class="rs-btn rs-btn--primary rs-btn--lg"
+              (click)="nextStep()"
+            >
+              <span>Continue to {{ steps[currentStep()].title }}</span>
+              <mat-icon class="rs-btn-icon">arrow_forward</mat-icon>
+            </button>
+          }
+
+          <!-- Submit CTA (Step 7) -->
+          @if (currentStep() === 7) {
+            <button
+              type="button"
+              class="rs-btn rs-btn--accent rs-btn--lg rs-submit-btn"
+              [disabled]="submitting()"
+              (click)="submitListing()"
+            >
+              @if (submitting()) {
+                <mat-progress-spinner mode="indeterminate" diameter="22" class="rs-submit-spinner"></mat-progress-spinner>
+                <span>Submitting for Audit...</span>
+              } @else {
+                <mat-icon class="rs-btn-icon">cloud_upload</mat-icon>
+                <span>Submit for Approval</span>
+              }
+            </button>
+          }
+        </div>
+      </footer>
+    </div>
+  }
+
+</app-page-container>
