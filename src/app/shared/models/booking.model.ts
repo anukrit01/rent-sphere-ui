@@ -1,7 +1,7 @@
 import { Asset } from './asset.model';
 import { User } from './user.model';
 
-export type BookingStatus = 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
+export type BookingStatus = 'pending' | 'approved' | 'active' | 'rejected' | 'completed' | 'cancelled';
 
 export interface Booking {
   id: number;

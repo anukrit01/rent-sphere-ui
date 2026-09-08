@@ -186,12 +186,20 @@ export class AssetService {
     throw new Error('Asset not found');
   }
 
-  public adminApprove(id: number): Observable<Asset> {
-    return this.updateAsset(id, { status: 'approved', available: true });
+  public getAllAssetsAdmin(): Observable<Asset[]> {
+    return of([...this.assets]).pipe(delay(100));
   }
 
-  public adminReject(id: number): Observable<Asset> {
-    return this.updateAsset(id, { status: 'rejected', available: false });
+  public adminApprove(id: number): Observable<Asset> {
+    return this.updateAsset(id, { status: 'approved', available: true, auditReason: undefined });
+  }
+
+  public adminReject(id: number, reason: string): Observable<Asset> {
+    return this.updateAsset(id, { status: 'rejected', available: false, auditReason: reason });
+  }
+
+  public adminRequestChanges(id: number, notes: string): Observable<Asset> {
+    return this.updateAsset(id, { status: 'changes_requested', available: false, adminNotes: notes });
   }
 
   // Favorite toggle

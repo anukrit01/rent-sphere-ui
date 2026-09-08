@@ -1,1 +1,1179 @@
-<p>admin-dashboard works!</p>
+<app-page-container
+  title="Platform Administration"
+  subtitle="Monitor marketplace fleet, audit pending equipment listings, manage users, oversee escrow deployments, and track platform revenue."
+  [breadcrumbs]="breadcrumbs"
+  maxWidth="wide"
+>
+
+  <!-- ==================================================== -->
+  <!-- 5 ADMIN OVERVIEW KPI CARDS                           -->
+  <!-- ==================================================== -->
+  <section class="rs-admin-kpi-grid animate-fade-in" aria-label="Platform Overview Metrics">
+    <!-- KPI 1: Total Users -->
+    <div class="rs-admin-kpi-card" (click)="activeTab.set('users')">
+      <div class="rs-admin-kpi-card__top">
+        <span class="rs-admin-kpi-label">Registered Members</span>
+        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--blue">
+          <mat-icon>people</mat-icon>
+        </div>
+      </div>
+      <div class="rs-admin-kpi-value">{{ totalUsersCount() }}</div>
+      <div class="rs-admin-kpi-sub">
+        <span class="rs-kpi-pill rs-kpi-pill--success">Contractors &amp; Leasers</span>
+        <span class="rs-kpi-meta">Verified KYC directory</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: Total Equipment -->
+    <div class="rs-admin-kpi-card" (click)="activeTab.set('categories')">
+      <div class="rs-admin-kpi-card__top">
+        <span class="rs-admin-kpi-label">Marketplace Fleet</span>
+        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--indigo">
+          <mat-icon>precision_manufacturing</mat-icon>
+        </div>
+      </div>
+      <div class="rs-admin-kpi-value">{{ totalEquipmentCount() }}</div>
+      <div class="rs-admin-kpi-sub">
+        <span class="rs-kpi-pill rs-kpi-pill--neutral">{{ categories().length }} Categories</span>
+        <span class="rs-kpi-meta">Heavy earthmovers &amp; lifters</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: Pending Approvals (High Priority) -->
+    <div
+      class="rs-admin-kpi-card"
+      [class.rs-admin-kpi-card--alert]="pendingApprovalsCount() > 0"
+      (click)="activeTab.set('approvals')"
+    >
+      <div class="rs-admin-kpi-card__top">
+        <span class="rs-admin-kpi-label">Pending Audits</span>
+        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--amber">
+          <mat-icon>pending_actions</mat-icon>
+        </div>
+      </div>
+      <div class="rs-admin-kpi-value rs-admin-kpi-value--amber">{{ pendingApprovalsCount() }}</div>
+      <div class="rs-admin-kpi-sub">
+        @if (pendingApprovalsCount() > 0) {
+          <span class="rs-kpi-pill rs-kpi-pill--warning">Action Required</span>
+          <span class="rs-kpi-meta">Awaiting engineer audit</span>
+        } @else {
+          <span class="rs-kpi-pill rs-kpi-pill--success">Queue Clear</span>
+          <span class="rs-kpi-meta">All listings processed</span>
+        }
+      </div>
+    </div>
+
+    <!-- KPI 4: Active Rentals -->
+    <div class="rs-admin-kpi-card" (click)="activeTab.set('bookings')">
+      <div class="rs-admin-kpi-card__top">
+        <span class="rs-admin-kpi-label">Active Deployments</span>
+        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--green">
+          <mat-icon>bolt</mat-icon>
+        </div>
+      </div>
+      <div class="rs-admin-kpi-value">{{ activeRentalsCount() }}</div>
+      <div class="rs-admin-kpi-sub">
+        <span class="rs-kpi-pill rs-kpi-pill--success">On Site Now</span>
+        <span class="rs-kpi-meta">Live telematics tracking</span>
+      </div>
+    </div>
+
+    <!-- KPI 5: Platform Revenue & Escrow -->
+    <div class="rs-admin-kpi-card" (click)="activeTab.set('reports')">
+      <div class="rs-admin-kpi-card__top">
+        <span class="rs-admin-kpi-label">Gross Platform Volume</span>
+        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--gold">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+      </div>
+      <div class="rs-admin-kpi-value">₹{{ (totalRevenue() / 1000) | number:'1.0-1' }}k</div>
+      <div class="rs-admin-kpi-sub">
+        <span class="rs-kpi-pill rs-kpi-pill--gold">8% Comm: ₹{{ platformCommission() | number }}</span>
+        <span class="rs-kpi-meta">₹{{ (escrowHeldBalance() / 1000) | number:'1.0-0' }}k in Escrow</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================== -->
+  <!-- MAIN ADMIN NAVIGATION TABS                           -->
+  <!-- ==================================================== -->
+  <div class="rs-admin-tabs-nav">
+    <button
+      type="button"
+      class="rs-admin-tab-btn"
+      [class.rs-admin-tab-btn--active]="activeTab() === 'approvals'"
+      (click)="activeTab.set('approvals')"
+    >
+      <mat-icon class="rs-tab-icon">fact_check</mat-icon>
+      <span>Equipment Approval</span>
+      @if (pendingApprovalsCount() > 0) {
+        <span class="rs-tab-badge rs-tab-badge--amber">{{ pendingApprovalsCount() }}</span>
+      }
+    </button>
+
+    <button
+      type="button"
+      class="rs-admin-tab-btn"
+      [class.rs-admin-tab-btn--active]="activeTab() === 'users'"
+      (click)="activeTab.set('users')"
+    >
+      <mat-icon class="rs-tab-icon">manage_accounts</mat-icon>
+      <span>Users Directory</span>
+      <span class="rs-tab-badge">{{ users().length }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="rs-admin-tab-btn"
+      [class.rs-admin-tab-btn--active]="activeTab() === 'bookings'"
+      (click)="activeTab.set('bookings')"
+    >
+      <mat-icon class="rs-tab-icon">receipt_long</mat-icon>
+      <span>Bookings &amp; Escrow</span>
+      <span class="rs-tab-badge">{{ bookings().length }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="rs-admin-tab-btn"
+      [class.rs-admin-tab-btn--active]="activeTab() === 'categories'"
+      (click)="activeTab.set('categories')"
+    >
+      <mat-icon class="rs-tab-icon">category</mat-icon>
+      <span>Machinery Categories</span>
+      <span class="rs-tab-badge">{{ categories().length }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="rs-admin-tab-btn"
+      [class.rs-admin-tab-btn--active]="activeTab() === 'reports'"
+      (click)="activeTab.set('reports')"
+    >
+      <mat-icon class="rs-tab-icon">analytics</mat-icon>
+      <span>Financial Reports</span>
+    </button>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- AREA 1: EQUIPMENT APPROVAL WORKFLOW                  -->
+  <!-- ==================================================== -->
+  @if (activeTab() === 'approvals') {
+    <section class="rs-admin-section animate-fade-in" aria-labelledby="approvals-heading">
+      <div class="rs-section-header">
+        <div>
+          <h2 id="approvals-heading" class="rs-section-title">Equipment Verification &amp; Approval Desk</h2>
+          <p class="rs-section-desc">
+            Audit specifications, engine serial validity, and yard location compliance before activating machinery in the marketplace.
+          </p>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="rs-filter-pills-bar">
+          <button
+            type="button"
+            class="rs-pill-btn"
+            [class.rs-pill-btn--active]="approvalFilter() === 'pending'"
+            (click)="approvalFilter.set('pending')"
+          >
+            <span>Pending Audit</span>
+            <span class="rs-pill-count">{{ pendingApprovalsCount() }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="rs-pill-btn"
+            [class.rs-pill-btn--active]="approvalFilter() === 'all'"
+            (click)="approvalFilter.set('all')"
+          >
+            <span>All Fleet</span>
+            <span class="rs-pill-count">{{ assets().length }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="rs-pill-btn"
+            [class.rs-pill-btn--active]="approvalFilter() === 'approved'"
+            (click)="approvalFilter.set('approved')"
+          >
+            <span>Approved</span>
+          </button>
+
+          <button
+            type="button"
+            class="rs-pill-btn"
+            [class.rs-pill-btn--active]="approvalFilter() === 'changes_requested'"
+            (click)="approvalFilter.set('changes_requested')"
+          >
+            <span>Changes Requested</span>
+          </button>
+
+          <button
+            type="button"
+            class="rs-pill-btn"
+            [class.rs-pill-btn--active]="approvalFilter() === 'rejected'"
+            (click)="approvalFilter.set('rejected')"
+          >
+            <span>Rejected</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Split Layout: Queue List (Left) + Detailed Inspector (Right) -->
+      <div class="rs-approval-split-layout">
+        <!-- Left: Machinery List -->
+        <div class="rs-approval-list-pane">
+          @if (filteredApprovalAssets().length === 0) {
+            <div class="rs-empty-approval-box">
+              <mat-icon class="rs-empty-icon">check_circle_outline</mat-icon>
+              <h3>No listings match this filter</h3>
+              <p>All submitted machinery records in this view have been processed.</p>
+              <button
+                type="button"
+                class="rs-btn rs-btn--secondary rs-btn--sm"
+                (click)="approvalFilter.set('all')"
+              >
+                View All Fleet
+              </button>
+            </div>
+          }
+
+          <div class="rs-approval-cards-col">
+            @for (asset of filteredApprovalAssets(); track asset.id) {
+              <div
+                class="rs-approval-item-card"
+                [class.rs-approval-item-card--selected]="inspectingAsset()?.id === asset.id"
+                [class.rs-approval-item-card--pending]="asset.status === 'pending'"
+                (click)="openInspect(asset)"
+              >
+                <div class="rs-approval-item-thumb">
+                  <img [src]="asset.coverImage || asset.images[0]" [alt]="asset.title" loading="lazy" />
+                  <span class="rs-item-id-badge">#{{ asset.id }}</span>
+                </div>
+
+                <div class="rs-approval-item-info">
+                  <div class="rs-item-header-row">
+                    <span class="rs-item-category">{{ asset.category }}</span>
+                    <app-status-badge [status]="asset.status"></app-status-badge>
+                  </div>
+
+                  <h4 class="rs-item-title">{{ asset.title }}</h4>
+
+                  <div class="rs-item-owner-meta">
+                    <mat-icon class="rs-meta-ico">storefront</mat-icon>
+                    <span>{{ asset.owner.companyName || asset.owner.name }}</span>
+                    <span class="rs-bullet">&bull;</span>
+                    <span>{{ asset.city }}, {{ asset.state }}</span>
+                  </div>
+
+                  <div class="rs-item-bottom-row">
+                    <div class="rs-item-price">
+                      <strong>₹{{ asset.pricePerDay | number }}</strong>
+                      <span>/ day</span>
+                    </div>
+
+                    <div class="rs-item-actions-quick" (click)="$event.stopPropagation()">
+                      @if (asset.status === 'pending') {
+                        <button
+                          type="button"
+                          class="rs-btn rs-btn--primary rs-btn--xs"
+                          (click)="approveEquipment(asset)"
+                          title="Quick Approve"
+                        >
+                          <mat-icon class="rs-btn-icon">check</mat-icon>
+                          <span>Approve</span>
+                        </button>
+                      }
+
+                      <button
+                        type="button"
+                        class="rs-btn rs-btn--ghost rs-btn--xs"
+                        (click)="openInspect(asset)"
+                      >
+                        <mat-icon class="rs-btn-icon">visibility</mat-icon>
+                        <span>Inspect</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Right: Full Inspector Drawer Preview -->
+        <div class="rs-inspector-pane">
+          @if (inspectingAsset(); as selected) {
+            <div class="rs-inspector-card animate-fade-in">
+              <!-- Inspector Header -->
+              <div class="rs-inspector-header">
+                <div class="rs-inspector-header__left">
+                  <span class="rs-inspector-id">Listing Audit Docket #RS-{{ selected.id }}</span>
+                  <div class="rs-inspector-title-row">
+                    <h3>{{ selected.title }}</h3>
+                    <app-status-badge [status]="selected.status"></app-status-badge>
+                  </div>
+                </div>
+
+                <div class="rs-inspector-header__right">
+                  <button
+                    type="button"
+                    class="rs-btn rs-btn--ghost rs-btn--xs"
+                    (click)="closeInspect()"
+                    aria-label="Close inspector"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Reason / Audit History Box (if rejected or changes requested) -->
+              @if (selected.auditReason) {
+                <div class="rs-audit-note-box rs-audit-note-box--danger">
+                  <mat-icon>error_outline</mat-icon>
+                  <div>
+                    <strong>Previous Rejection Reason:</strong>
+                    <p>{{ selected.auditReason }}</p>
+                  </div>
+                </div>
+              }
+              @if (selected.adminNotes) {
+                <div class="rs-audit-note-box rs-audit-note-box--warning">
+                  <mat-icon>warning_amber</mat-icon>
+                  <div>
+                    <strong>Requested Amendments:</strong>
+                    <p>{{ selected.adminNotes }}</p>
+                  </div>
+                </div>
+              }
+
+              <!-- Visual Gallery Preview -->
+              <div class="rs-inspector-gallery">
+                <div class="rs-inspector-main-img">
+                  <img
+                    [src]="selected.images[previewCoverIndex()] || selected.coverImage"
+                    [alt]="selected.title"
+                  />
+                  <div class="rs-inspector-badge-overlay">
+                    <span class="rs-badge rs-badge--primary">{{ selected.category }}</span>
+                    <span class="rs-badge rs-badge--info">{{ selected.condition }}</span>
+                  </div>
+                </div>
+
+                @if (selected.images.length > 1) {
+                  <div class="rs-inspector-thumbs-strip">
+                    @for (img of selected.images; track img; let i = $index) {
+                      <div
+                        class="rs-thumb-box"
+                        [class.rs-thumb-box--active]="previewCoverIndex() === i"
+                        (click)="previewCoverIndex.set(i)"
+                      >
+                        <img [src]="img" [alt]="'Photo ' + (i + 1)" />
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Inspector Specs & Details -->
+              <div class="rs-inspector-body">
+                <!-- Commercial Highlights Card -->
+                <div class="rs-inspector-commercial-grid">
+                  <div class="rs-comm-box">
+                    <span class="rs-comm-label">Daily Rental</span>
+                    <span class="rs-comm-val">₹{{ selected.pricePerDay | number }}</span>
+                  </div>
+                  <div class="rs-comm-box">
+                    <span class="rs-comm-label">Weekly Rate</span>
+                    <span class="rs-comm-val">₹{{ selected.pricePerWeek | number }}</span>
+                  </div>
+                  <div class="rs-comm-box">
+                    <span class="rs-comm-label">Security Escrow</span>
+                    <span class="rs-comm-val rs-comm-val--gold">₹{{ selected.securityDeposit | number }}</span>
+                  </div>
+                  <div class="rs-comm-box">
+                    <span class="rs-comm-label">Min Duration</span>
+                    <span class="rs-comm-val">{{ selected.minimumRentalDays || 2 }} Days</span>
+                  </div>
+                </div>
+
+                <!-- Technical Specs Table -->
+                <div class="rs-inspector-section">
+                  <h4 class="rs-ins-sec-title">Technical Specifications</h4>
+                  <div class="rs-inspector-specs-table">
+                    <div class="rs-ins-spec-row">
+                      <span>Brand / OEM:</span>
+                      <strong>{{ selected.specifications.brand }}</strong>
+                    </div>
+                    <div class="rs-ins-spec-row">
+                      <span>Model:</span>
+                      <strong>{{ selected.specifications.model }}</strong>
+                    </div>
+                    <div class="rs-ins-spec-row">
+                      <span>Manufacturing Year:</span>
+                      <strong>{{ selected.specifications.year }}</strong>
+                    </div>
+                    <div class="rs-ins-spec-row">
+                      <span>Operating Meter Hours:</span>
+                      <strong>{{ selected.specifications.operatingHours ? (selected.specifications.operatingHours | number) + ' hrs' : 'Verified' }}</strong>
+                    </div>
+                    @if (selected.specifications.capacity) {
+                      <div class="rs-ins-spec-row">
+                        <span>Rated Capacity:</span>
+                        <strong>{{ selected.specifications.capacity }}</strong>
+                      </div>
+                    }
+                    @if (selected.specifications.operatingWeight) {
+                      <div class="rs-ins-spec-row">
+                        <span>Operating Weight:</span>
+                        <strong>{{ selected.specifications.operatingWeight }}</strong>
+                      </div>
+                    }
+                    @if (selected.specifications.enginePower) {
+                      <div class="rs-ins-spec-row">
+                        <span>Engine Power:</span>
+                        <strong>{{ selected.specifications.enginePower }}</strong>
+                      </div>
+                    }
+                    <div class="rs-ins-spec-row">
+                      <span>Powertrain / Fuel:</span>
+                      <strong>{{ selected.specifications.fuelType || 'Diesel' }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="rs-inspector-section">
+                  <h4 class="rs-ins-sec-title">Listing Description</h4>
+                  <p class="rs-inspector-desc-text">{{ selected.description }}</p>
+                </div>
+
+                <!-- Fleet Owner Credentials -->
+                <div class="rs-inspector-section">
+                  <h4 class="rs-ins-sec-title">Fleet Owner Profile</h4>
+                  <div class="rs-inspector-owner-card">
+                    <div class="rs-owner-avatar-icon">
+                      <mat-icon>business</mat-icon>
+                    </div>
+                    <div class="rs-owner-info-text">
+                      <div class="rs-owner-company-name">
+                        {{ selected.owner.companyName || selected.owner.name }}
+                        @if (selected.owner.verified) {
+                          <span class="rs-verified-badge" title="Verified Fleet Partner">
+                            <mat-icon>verified</mat-icon> Verified
+                          </span>
+                        }
+                      </div>
+                      <div class="rs-owner-meta-sub">
+                        Contact: {{ selected.owner.name }} &bull; Member since {{ selected.owner.memberSince }} &bull; {{ selected.owner.rating }} ★ ({{ selected.owner.completedRentals }} rentals)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Dispatch Yard Location -->
+                <div class="rs-inspector-section">
+                  <h4 class="rs-ins-sec-title">Logistics &amp; Dispatch Depot</h4>
+                  <div class="rs-depot-box">
+                    <mat-icon class="rs-depot-ico">location_on</mat-icon>
+                    <div>
+                      <strong>{{ selected.location }} (PIN: {{ selected.pinCode || '452010' }})</strong>
+                      <p>Depot yard access for low-bed trailer trailers and crane mobilization verified.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Auditor Action Footer Toolbar -->
+              <div class="rs-inspector-footer-toolbar">
+                <button
+                  type="button"
+                  class="rs-btn rs-btn--primary rs-btn--md"
+                  (click)="approveEquipment(selected)"
+                  [disabled]="selected.status === 'approved'"
+                >
+                  <mat-icon class="rs-btn-icon">verified</mat-icon>
+                  <span>Approve &amp; Publish Fleet</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="rs-btn rs-btn--outline rs-btn--md rs-btn--warning-outline"
+                  (click)="openRequestChangesModal(selected)"
+                >
+                  <mat-icon class="rs-btn-icon">rate_review</mat-icon>
+                  <span>Request Changes</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="rs-btn rs-btn--outline rs-btn--md rs-btn--danger-outline"
+                  (click)="openRejectModal(selected)"
+                  [disabled]="selected.status === 'rejected'"
+                >
+                  <mat-icon class="rs-btn-icon">cancel</mat-icon>
+                  <span>Decline Listing</span>
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="rs-no-inspector-selected">
+              <mat-icon>touch_app</mat-icon>
+              <h3>Select a Machinery Listing</h3>
+              <p>Click any equipment card from the queue on the left to inspect technical specifications, photos, and compliance credentials.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ==================================================== -->
+  <!-- AREA 2: USERS DIRECTORY MANAGEMENT                   -->
+  <!-- ==================================================== -->
+  @if (activeTab() === 'users') {
+    <section class="rs-admin-section animate-fade-in" aria-labelledby="users-heading">
+      <div class="rs-section-header">
+        <div>
+          <h2 id="users-heading" class="rs-section-title">Marketplace Members Directory</h2>
+          <p class="rs-section-desc">
+            Manage registered contractors, fleet owners, verified badges, and platform account access.
+          </p>
+        </div>
+
+        <!-- Search & Role Filter Bar -->
+        <div class="rs-table-controls-bar">
+          <div class="rs-input-wrapper rs-search-input-wrap">
+            <mat-icon class="rs-input-icon">search</mat-icon>
+            <input
+              type="text"
+              class="rs-form-input"
+              placeholder="Search by name, company, email, or city..."
+              [ngModel]="userSearchQuery()"
+              (ngModelChange)="userSearchQuery.set($event)"
+            />
+          </div>
+
+          <div class="rs-select-wrapper rs-filter-select-wrap">
+            <mat-icon class="rs-input-icon">filter_alt</mat-icon>
+            <select
+              class="rs-form-select"
+              [ngModel]="userRoleFilter()"
+              (ngModelChange)="userRoleFilter.set($event)"
+            >
+              <option value="all">All Member Roles ({{ users().length }})</option>
+              <option value="renter">Contractors / Renters</option>
+              <option value="leaser">Fleet Owners / Leasers</option>
+              <option value="admin">Platform Administrators</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="rs-table-card">
+        <div class="rs-table-responsive">
+          <table class="rs-admin-table" aria-label="Marketplace users table">
+            <thead>
+              <tr>
+                <th>Member / Company</th>
+                <th>Platform Role</th>
+                <th>Location &amp; Phone</th>
+                <th>Member Since</th>
+                <th>Rentals</th>
+                <th>KYC Verification</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of filteredUsers(); track user.id) {
+                <tr>
+                  <!-- Member Name & Company -->
+                  <td>
+                    <div class="rs-user-col">
+                      <div class="rs-user-avatar">
+                        {{ user.name.charAt(0) }}
+                      </div>
+                      <div class="rs-user-text">
+                        <strong>{{ user.name }}</strong>
+                        <span class="rs-company-sub">{{ user.companyName }}</span>
+                        <span class="rs-email-sub">{{ user.email }}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Role Badge -->
+                  <td>
+                    @if (user.role === 'renter') {
+                      <span class="rs-badge rs-badge--primary">Contractor</span>
+                    } @else if (user.role === 'leaser') {
+                      <span class="rs-badge rs-badge--accent">Fleet Owner</span>
+                    } @else {
+                      <span class="rs-badge rs-badge--info">Admin</span>
+                    }
+                  </td>
+
+                  <!-- Location & Phone -->
+                  <td>
+                    <div class="rs-loc-text">
+                      <span>{{ user.location }}</span>
+                      <span class="rs-phone-sub">{{ user.phone }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Member Since -->
+                  <td>
+                    <span class="rs-date-sub">{{ user.memberSince }}</span>
+                  </td>
+
+                  <!-- Rentals Completed -->
+                  <td>
+                    <div class="rs-rentals-stat">
+                      <strong>{{ user.completedRentals }}</strong>
+                      <span class="rs-rating-tag">{{ user.rating }} ★</span>
+                    </div>
+                  </td>
+
+                  <!-- Verification Toggle -->
+                  <td>
+                    <button
+                      type="button"
+                      class="rs-verify-toggle-btn"
+                      [class.rs-verify-toggle-btn--verified]="user.verified"
+                      (click)="toggleUserVerification(user)"
+                      title="Click to toggle verified status"
+                    >
+                      <mat-icon>{{ user.verified ? 'verified' : 'hourglass_empty' }}</mat-icon>
+                      <span>{{ user.verified ? 'VERIFIED' : 'PENDING' }}</span>
+                    </button>
+                  </td>
+
+                  <!-- Status -->
+                  <td>
+                    <span
+                      class="rs-status-tag"
+                      [class.rs-status-tag--active]="user.active"
+                      [class.rs-status-tag--suspended]="!user.active"
+                    >
+                      {{ user.active ? 'ACTIVE' : 'SUSPENDED' }}
+                    </span>
+                  </td>
+
+                  <!-- Actions -->
+                  <td>
+                    <div class="rs-row-actions">
+                      <button
+                        type="button"
+                        class="rs-btn rs-btn--ghost rs-btn--xs"
+                        [class.rs-text--danger]="user.active"
+                        (click)="toggleUserStatus(user)"
+                        [title]="user.active ? 'Suspend member account' : 'Re-activate account'"
+                      >
+                        <mat-icon>{{ user.active ? 'block' : 'restore' }}</mat-icon>
+                        <span>{{ user.active ? 'Suspend' : 'Activate' }}</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ==================================================== -->
+  <!-- AREA 3: BOOKINGS & ESCROW OVERSIGHT                  -->
+  <!-- ==================================================== -->
+  @if (activeTab() === 'bookings') {
+    <section class="rs-admin-section animate-fade-in" aria-labelledby="bookings-heading">
+      <div class="rs-section-header">
+        <div>
+          <h2 id="bookings-heading" class="rs-section-title">Bookings &amp; Escrow Settlement Ledger</h2>
+          <p class="rs-section-desc">
+            Track ongoing machinery deployments, verify site dates, and audit security deposits held in RBI-compliant escrow.
+          </p>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="rs-table-controls-bar">
+          <div class="rs-input-wrapper rs-search-input-wrap">
+            <mat-icon class="rs-input-icon">search</mat-icon>
+            <input
+              type="text"
+              class="rs-form-input"
+              placeholder="Search by booking #, contractor, equipment, or project..."
+              [ngModel]="bookingSearchQuery()"
+              (ngModelChange)="bookingSearchQuery.set($event)"
+            />
+          </div>
+
+          <div class="rs-select-wrapper rs-filter-select-wrap">
+            <mat-icon class="rs-input-icon">tune</mat-icon>
+            <select
+              class="rs-form-select"
+              [ngModel]="bookingStatusFilter()"
+              (ngModelChange)="bookingStatusFilter.set($event)"
+            >
+              <option value="all">All Bookings ({{ bookings().length }})</option>
+              <option value="approved">Active On Site</option>
+              <option value="pending">Pending Approval</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bookings Table -->
+      <div class="rs-table-card">
+        <div class="rs-table-responsive">
+          <table class="rs-admin-table" aria-label="Marketplace bookings table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Equipment Deployed</th>
+                <th>Contractor (Renter)</th>
+                <th>Site Duration</th>
+                <th>Rental Total</th>
+                <th>Escrow Deposit</th>
+                <th>Booking Status</th>
+                <th>Escrow Audit</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (booking of filteredBookings(); track booking.id) {
+                <tr>
+                  <!-- Booking ID -->
+                  <td>
+                    <span class="rs-booking-id">#RS-{{ booking.id }}</span>
+                    <span class="rs-date-sub">{{ booking.createdAt }}</span>
+                  </td>
+
+                  <!-- Equipment -->
+                  <td>
+                    <div class="rs-booking-eq-cell">
+                      <img
+                        [src]="booking.asset?.coverImage || booking.asset?.images?.[0] || 'https://images.unsplash.com/photo-1579829366248-204fe8413f31?auto=format&fit=crop&w=1200&q=80'"
+                        [alt]="booking.asset?.title || 'Equipment'"
+                      />
+                      <div>
+                        <strong>{{ booking.asset?.title || 'Heavy Machinery' }}</strong>
+                        <span class="rs-company-sub">{{ booking.projectLocation || 'Regional Infrastructure Site' }}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Contractor -->
+                  <td>
+                    <div class="rs-contractor-cell">
+                      <strong>{{ booking.renterName }}</strong>
+                      <span class="rs-company-sub">{{ booking.renterCompany }}</span>
+                      <span class="rs-phone-sub">{{ booking.renterPhone }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Duration -->
+                  <td>
+                    <div class="rs-duration-cell">
+                      <strong>{{ booking.durationDays }} Days</strong>
+                      <span class="rs-date-sub">{{ booking.startDate }} &rarr; {{ booking.endDate }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Total Amount -->
+                  <td>
+                    <div class="rs-amount-cell">
+                      <strong>₹{{ booking.estimatedTotal | number }}</strong>
+                      <span class="rs-date-sub">₹{{ booking.dailyRate | number }}/day</span>
+                    </div>
+                  </td>
+
+                  <!-- Escrow Deposit -->
+                  <td>
+                    <div class="rs-escrow-cell">
+                      <span class="rs-escrow-val">₹{{ booking.securityDeposit | number }}</span>
+                      @if (booking.status === 'approved' || booking.status === 'active') {
+                        <span class="rs-escrow-tag rs-escrow-tag--held">HELD IN ESCROW</span>
+                      } @else if (booking.status === 'completed') {
+                        <span class="rs-escrow-tag rs-escrow-tag--refunded">REFUNDED POST-AUDIT</span>
+                      } @else {
+                        <span class="rs-escrow-tag rs-escrow-tag--pending">AWAITING LOCK</span>
+                      }
+                    </div>
+                  </td>
+
+                  <!-- Status -->
+                  <td>
+                    <app-status-badge [status]="booking.status"></app-status-badge>
+                  </td>
+
+                  <!-- Actions -->
+                  <td>
+                    <button
+                      type="button"
+                      class="rs-btn rs-btn--ghost rs-btn--xs"
+                      (click)="auditBookingEscrow(booking)"
+                      title="Inspect escrow settlement"
+                    >
+                      <mat-icon>shield</mat-icon>
+                      <span>Audit</span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ==================================================== -->
+  <!-- AREA 4: MACHINERY CATEGORIES MANAGEMENT              -->
+  <!-- ==================================================== -->
+  @if (activeTab() === 'categories') {
+    <section class="rs-admin-section animate-fade-in" aria-labelledby="categories-heading">
+      <div class="rs-section-header">
+        <div>
+          <h2 id="categories-heading" class="rs-section-title">Machinery Categories &amp; Asset Taxonomy</h2>
+          <p class="rs-section-desc">
+            Organize marketplace classification, active equipment counts, and popular fleet models.
+          </p>
+        </div>
+
+        <button type="button" class="rs-btn rs-btn--primary rs-btn--md" (click)="openAddCategory()">
+          <mat-icon class="rs-btn-icon">add_circle_outline</mat-icon>
+          <span>Add New Category</span>
+        </button>
+      </div>
+
+      <div class="rs-categories-grid">
+        @for (cat of categories(); track cat.id) {
+          <div class="rs-cat-admin-card">
+            <div class="rs-cat-card-top">
+              <div class="rs-cat-icon-circle">
+                <mat-icon>{{ cat.icon }}</mat-icon>
+              </div>
+
+              <span class="rs-badge rs-badge--primary">
+                {{ cat.assetCount }} Active Assets
+              </span>
+            </div>
+
+            <h3 class="rs-cat-card-title">{{ cat.name }}</h3>
+            <p class="rs-cat-card-desc">{{ cat.description }}</p>
+
+            @if (cat.popularModels && cat.popularModels.length > 0) {
+              <div class="rs-cat-models-box">
+                <span class="rs-cat-models-label">Benchmark Models:</span>
+                <div class="rs-cat-models-tags">
+                  @for (m of cat.popularModels; track m) {
+                    <span class="rs-model-tag">{{ m }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- ==================================================== -->
+  <!-- AREA 5: FINANCIAL REPORTS & ANALYTICS                -->
+  <!-- ==================================================== -->
+  @if (activeTab() === 'reports') {
+    <section class="rs-admin-section animate-fade-in" aria-labelledby="reports-heading">
+      <div class="rs-section-header">
+        <div>
+          <h2 id="reports-heading" class="rs-section-title">Platform Financials &amp; Regional Performance</h2>
+          <p class="rs-section-desc">
+            Audited financial breakdown across Gross Merchandise Value (GMV), 8% platform revenue, and logistics hub utilization.
+          </p>
+        </div>
+
+        <div class="rs-export-btn-group">
+          <button type="button" class="rs-btn rs-btn--outline rs-btn--sm" (click)="exportReport('csv')">
+            <mat-icon class="rs-btn-icon">table_view</mat-icon>
+            <span>Export CSV</span>
+          </button>
+          <button type="button" class="rs-btn rs-btn--primary rs-btn--sm" (click)="exportReport('pdf')">
+            <mat-icon class="rs-btn-icon">picture_as_pdf</mat-icon>
+            <span>Download Audit PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Financial Metrics Grid -->
+      <div class="rs-reports-metrics-grid">
+        <div class="rs-report-metric-card">
+          <span class="rs-rep-label">Gross Marketplace Volume (GMV)</span>
+          <div class="rs-rep-val">₹{{ totalRevenue() | number }}</div>
+          <p class="rs-rep-desc">Total cumulative rental billing across all completed &amp; active contracts</p>
+        </div>
+
+        <div class="rs-report-metric-card rs-report-metric-card--accent">
+          <span class="rs-rep-label">Platform Take-Rate Revenue (8%)</span>
+          <div class="rs-rep-val rs-rep-val--accent">₹{{ platformCommission() | number }}</div>
+          <p class="rs-rep-desc">Net operating commission retained by RentSphere marketplace</p>
+        </div>
+
+        <div class="rs-report-metric-card">
+          <span class="rs-rep-label">Active Escrow Balance</span>
+          <div class="rs-rep-val rs-rep-val--gold">₹{{ escrowHeldBalance() | number }}</div>
+          <p class="rs-rep-desc">Held in nodal banking escrow account; 100% RBI compliant</p>
+        </div>
+
+        <div class="rs-report-metric-card">
+          <span class="rs-rep-label">Fleet Owner Payouts</span>
+          <div class="rs-rep-val rs-rep-val--green">₹{{ (totalRevenue() - platformCommission()) | number }}</div>
+          <p class="rs-rep-desc">Disbursed to heavy machinery owners following post-rental inspection</p>
+        </div>
+      </div>
+
+      <!-- Regional Logistics Hubs Table -->
+      <div class="rs-table-card rs-mt-6">
+        <div class="rs-table-header-bar">
+          <h3>Regional Hub Deployment Breakdown</h3>
+          <span class="rs-subtext">Active machinery density by regional industrial cluster</span>
+        </div>
+
+        <div class="rs-table-responsive">
+          <table class="rs-admin-table" aria-label="Regional hubs performance table">
+            <thead>
+              <tr>
+                <th>Logistics Hub City</th>
+                <th>State</th>
+                <th>Hub Code</th>
+                <th>Active Machinery Units</th>
+                <th>Market Share</th>
+                <th>Fleet Health Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (hub of locationHubs; track hub.id) {
+                <tr>
+                  <td>
+                    <strong>{{ hub.city }}</strong>
+                  </td>
+                  <td>{{ hub.state }}</td>
+                  <td>
+                    <span class="rs-code-badge">{{ hub.code }}</span>
+                  </td>
+                  <td>
+                    <strong>{{ hub.activeMachineryCount }} Units</strong>
+                  </td>
+                  <td>
+                    <div class="rs-progress-bar-wrap">
+                      <div
+                        class="rs-progress-fill"
+                        [style.width.%]="(hub.activeMachineryCount / 320) * 100"
+                      ></div>
+                      <span class="rs-progress-num">{{ ((hub.activeMachineryCount / 320) * 100) | number:'1.1-1' }}%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="rs-badge rs-badge--success">Optimal Availability</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ==================================================== -->
+  <!-- MODAL 1: REASON ACTION MODAL (REJECT / REQUEST CHANGES)-->
+  <!-- ==================================================== -->
+  @if (showReasonModal()) {
+    <div class="rs-modal-backdrop animate-fade-in" (click)="closeReasonModal()">
+      <div class="rs-modal-card" (click)="$event.stopPropagation()">
+        <div class="rs-modal-header">
+          <div class="rs-modal-icon-box" [class.rs-modal-icon-box--danger]="reasonActionType() === 'reject'">
+            <mat-icon>{{ reasonActionType() === 'reject' ? 'cancel' : 'rate_review' }}</mat-icon>
+          </div>
+          <div>
+            <h3>
+              {{ reasonActionType() === 'reject' ? 'Decline Equipment Listing' : 'Request Changes from Fleet Owner' }}
+            </h3>
+            <p>
+              {{ targetAsset()?.title }} &bull; Listed by {{ targetAsset()?.owner?.companyName }}
+            </p>
+          </div>
+        </div>
+
+        <div class="rs-modal-body">
+          <label class="rs-form-label" for="reason-input">
+            {{ reasonActionType() === 'reject' ? 'Rejection Reason (Sent to Leaser)' : 'Required Amendments Description' }}
+            <span class="rs-req">*</span>
+          </label>
+          <textarea
+            id="reason-input"
+            rows="4"
+            class="rs-form-textarea"
+            placeholder="Provide clear technical feedback for the fleet owner (e.g. Please upload clear photo of engine hour meter, update insurance fitness certificate expiration, verify yard PIN code)..."
+            [ngModel]="reasonText()"
+            (ngModelChange)="reasonText.set($event)"
+          ></textarea>
+
+          <!-- Quick Reason Presets -->
+          <div class="rs-quick-reasons-box">
+            <span class="rs-quick-title">Common Templates:</span>
+            <div class="rs-quick-chips">
+              <button
+                type="button"
+                class="rs-quick-chip-btn"
+                (click)="reasonText.set('Missing valid RC / Commercial Insurance certificate. Please upload updated documents.')"
+              >
+                + RC / Insurance Missing
+              </button>
+              <button
+                type="button"
+                class="rs-quick-chip-btn"
+                (click)="reasonText.set('Photographs are low resolution or blurred. Please upload clear daylight photos of undercarriage and cabin.')"
+              >
+                + Poor Photo Quality
+              </button>
+              <button
+                type="button"
+                class="rs-quick-chip-btn"
+                (click)="reasonText.set('Dispatch depot address is incomplete. Please provide full yard plot and low-bed trailer access notes.')"
+              >
+                + Incomplete Yard Address
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-modal-footer">
+          <button type="button" class="rs-btn rs-btn--ghost rs-btn--md" (click)="closeReasonModal()">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="rs-btn rs-btn--md"
+            [class.rs-btn--danger]="reasonActionType() === 'reject'"
+            [class.rs-btn--accent]="reasonActionType() === 'request_changes'"
+            (click)="submitReasonAction()"
+          >
+            <mat-icon class="rs-btn-icon">{{ reasonActionType() === 'reject' ? 'cancel' : 'send' }}</mat-icon>
+            <span>{{ reasonActionType() === 'reject' ? 'Submit Decline Notice' : 'Send Change Request' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================================================== -->
+  <!-- MODAL 2: CONFIRMATION DIALOG (DESTRUCTIVE ACTIONS)   -->
+  <!-- ==================================================== -->
+  @if (showConfirmDialog()) {
+    <div class="rs-modal-backdrop animate-fade-in" (click)="onConfirmDialogCancel()">
+      <div class="rs-modal-card rs-modal-card--sm" (click)="$event.stopPropagation()">
+        <div class="rs-modal-header">
+          <div class="rs-modal-icon-box" [class.rs-modal-icon-box--danger]="confirmButtonType() === 'danger'">
+            <mat-icon>{{ confirmButtonType() === 'danger' ? 'warning' : 'info' }}</mat-icon>
+          </div>
+          <div>
+            <h3>{{ confirmTitle() }}</h3>
+            <p>{{ confirmMessage() }}</p>
+          </div>
+        </div>
+
+        <div class="rs-modal-footer">
+          <button type="button" class="rs-btn rs-btn--ghost rs-btn--md" (click)="onConfirmDialogCancel()">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="rs-btn rs-btn--md"
+            [class.rs-btn--danger]="confirmButtonType() === 'danger'"
+            [class.rs-btn--primary]="confirmButtonType() === 'primary'"
+            (click)="onConfirmDialogAccept()"
+          >
+            {{ confirmButtonText() }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ==================================================== -->
+  <!-- MODAL 3: ADD CATEGORY MODAL                          -->
+  <!-- ==================================================== -->
+  @if (showAddCategoryModal()) {
+    <div class="rs-modal-backdrop animate-fade-in" (click)="closeAddCategory()">
+      <div class="rs-modal-card" (click)="$event.stopPropagation()">
+        <div class="rs-modal-header">
+          <div class="rs-modal-icon-box">
+            <mat-icon>category</mat-icon>
+          </div>
+          <div>
+            <h3>Add New Equipment Category</h3>
+            <p>Expand the RentSphere marketplace classification taxonomy for future asset segments.</p>
+          </div>
+        </div>
+
+        <div class="rs-modal-body rs-form-grid">
+          <div class="rs-form-group rs-form-group--full">
+            <label class="rs-form-label" for="cat-name">Category Title <span class="rs-req">*</span></label>
+            <input
+              id="cat-name"
+              type="text"
+              class="rs-form-input"
+              placeholder="e.g. Agricultural Tractors &amp; Harvesters"
+              [ngModel]="newCategoryName()"
+              (ngModelChange)="newCategoryName.set($event)"
+            />
+          </div>
+
+          <div class="rs-form-group">
+            <label class="rs-form-label" for="cat-icon">Material Icon Name</label>
+            <select
+              id="cat-icon"
+              class="rs-form-select"
+              [ngModel]="newCategoryIcon()"
+              (ngModelChange)="newCategoryIcon.set($event)"
+            >
+              <option value="agriculture">agriculture</option>
+              <option value="construction">construction</option>
+              <option value="local_shipping">local_shipping</option>
+              <option value="forklift">forklift</option>
+              <option value="electric_car">electric_car</option>
+              <option value="solar_power">solar_power</option>
+              <option value="precision_manufacturing">precision_manufacturing</option>
+            </select>
+          </div>
+
+          <div class="rs-form-group rs-form-group--full">
+            <label class="rs-form-label" for="cat-desc">Category Description</label>
+            <textarea
+              id="cat-desc"
+              rows="3"
+              class="rs-form-textarea"
+              placeholder="Brief description of machinery types and work applications covered by this category..."
+              [ngModel]="newCategoryDesc()"
+              (ngModelChange)="newCategoryDesc.set($event)"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="rs-modal-footer">
+          <button type="button" class="rs-btn rs-btn--ghost rs-btn--md" (click)="closeAddCategory()">
+            Cancel
+          </button>
+          <button type="button" class="rs-btn rs-btn--primary rs-btn--md" (click)="submitAddCategory()">
+            <mat-icon class="rs-btn-icon">check</mat-icon>
+            <span>Create Category</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</app-page-container>

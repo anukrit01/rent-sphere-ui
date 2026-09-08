@@ -1,4 +1,4 @@
-export type EquipmentStatus = 'available' | 'rented' | 'maintenance' | 'pending' | 'approved' | 'rejected';
+export type EquipmentStatus = 'available' | 'rented' | 'maintenance' | 'pending' | 'approved' | 'rejected' | 'changes_requested';
 export type EquipmentCondition = 'Excellent (Like New)' | 'Good (Fully Serviced)' | 'Certified Rebuilt' | 'Working';
 
 export interface AssetSpecification {
@@ -74,4 +74,6 @@ export interface Asset {
   deliveryFee?: number;
   createdAt?: string;
   leaserId?: number;
+  adminNotes?: string;
+  auditReason?: string;
 }
