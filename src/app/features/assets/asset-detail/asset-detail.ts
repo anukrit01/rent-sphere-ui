@@ -10,6 +10,7 @@ import { RatingComponent } from '../../../shared/components/rating/rating';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state';
 import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton';
+import { ErrorStateComponent } from '../../../shared/components/error-state/error-state';
 import { BookingDialog } from '../../bookings/booking-dialog/booking-dialog';
 import { AssetService } from '../../../services/asset';
 import { BookingService } from '../../../services/booking';
@@ -30,6 +31,7 @@ import { Asset } from '../../../shared/models/asset.model';
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingSkeletonComponent,
+    ErrorStateComponent,
   ],
   templateUrl: './asset-detail.html',
   styleUrl: './asset-detail.scss',
@@ -45,6 +47,8 @@ export class AssetDetail implements OnInit {
 
   public asset = signal<Asset | undefined>(undefined);
   public loading = signal<boolean>(true);
+  public error = signal<string | null>(null);
+  public currentAssetId = signal<number | null>(null);
   public activeImageIndex = signal<number>(0);
 
   // Sticky Booking Widget state
@@ -60,6 +64,7 @@ export class AssetDetail implements OnInit {
     this.route.params.subscribe((params) => {
       const id = Number(params['id']);
       if (id) {
+        this.currentAssetId.set(id);
         this.loadAsset(id);
       }
     });
@@ -76,8 +81,16 @@ export class AssetDetail implements OnInit {
     this.endDate.set(end.toISOString().split('T')[0]);
   }
 
+  public reloadAsset(): void {
+    const id = this.currentAssetId();
+    if (id) {
+      this.loadAsset(id);
+    }
+  }
+
   private loadAsset(id: number): void {
     this.loading.set(true);
+    this.error.set(null);
     this.assetService.getAsset(id).subscribe({
       next: (found) => {
         this.asset.set(found);
@@ -88,6 +101,7 @@ export class AssetDetail implements OnInit {
         this.loading.set(false);
       },
       error: () => {
+        this.error.set('Failed to load machinery details. Please check your connection and retry.');
         this.loading.set(false);
       },
     });

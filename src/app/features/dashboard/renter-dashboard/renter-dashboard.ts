@@ -7,6 +7,7 @@ import { PageContainerComponent } from '../../../core/components/page-container/
 import { AssetCardComponent } from '../../../shared/components/asset-card/asset-card';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state';
 import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton';
+import { ErrorStateComponent } from '../../../shared/components/error-state/error-state';
 import { AuthService } from '../../../services/auth';
 import { BookingService } from '../../../services/booking';
 import { AssetService } from '../../../services/asset';
@@ -25,6 +26,7 @@ import { Asset } from '../../../shared/models/asset.model';
     AssetCardComponent,
     EmptyStateComponent,
     LoadingSkeletonComponent,
+    ErrorStateComponent,
   ],
   templateUrl: './renter-dashboard.html',
   styleUrl: './renter-dashboard.scss',
@@ -39,6 +41,7 @@ export class RenterDashboard implements OnInit {
   public bookings = signal<Booking[]>([]);
   public savedAssets = signal<Asset[]>([]);
   public loading = signal<boolean>(true);
+  public error = signal<string | null>(null);
   public activeTab = signal<'active' | 'pending' | 'all' | 'completed' | 'saved' | 'escrow'>('active');
 
   public breadcrumbs = [
@@ -52,17 +55,29 @@ export class RenterDashboard implements OnInit {
 
   public loadRenterData(): void {
     this.loading.set(true);
+    this.error.set(null);
     const user = this.auth.getCurrentUser();
     const userId = user?.id || 101;
 
-    this.bookingService.getBookingsForUser(userId).subscribe((list) => {
-      this.bookings.set(list);
-      this.loading.set(false);
+    this.bookingService.getBookingsForUser(userId).subscribe({
+      next: (list) => {
+        this.bookings.set(list);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load your project rentals. Please check your connection and retry.');
+        this.loading.set(false);
+      },
     });
 
-    this.assetService.getAssets().subscribe((res) => {
-      const favs = res.data.filter((a) => this.assetService.isFavorite(a.id));
-      this.savedAssets.set(favs.length > 0 ? favs : res.data.slice(0, 2));
+    this.assetService.getAssets().subscribe({
+      next: (res) => {
+        const favs = res.data.filter((a) => this.assetService.isFavorite(a.id));
+        this.savedAssets.set(favs.length > 0 ? favs : res.data.slice(0, 2));
+      },
+      error: () => {
+        // non-critical
+      },
     });
   }
 

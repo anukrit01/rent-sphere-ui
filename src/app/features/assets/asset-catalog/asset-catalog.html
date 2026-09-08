@@ -152,13 +152,21 @@
 
       </div>
 
+      <!-- Error State -->
+      @if (error()) {
+        <app-error-state
+          [message]="error()!"
+          (retryClick)="fetchResults()"
+        ></app-error-state>
+      }
+
       <!-- Loading State -->
       @if (loading()) {
         <app-loading-skeleton type="card-grid" [count]="6"></app-loading-skeleton>
       }
 
       <!-- Results Grid -->
-      @if (!loading() && assets().length > 0) {
+      @if (!loading() && !error() && assets().length > 0) {
         <div
           class="rs-grid rs-gap-6"
           [class.rs-grid--3]="viewMode() === 'grid'"
@@ -171,7 +179,7 @@
       }
 
       <!-- Empty State -->
-      @if (!loading() && assets().length === 0) {
+      @if (!loading() && !error() && assets().length === 0) {
         <app-empty-state
           icon="search_off"
           title="No machinery matches your criteria"

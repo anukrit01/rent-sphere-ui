@@ -5,6 +5,14 @@
   maxWidth="wide"
 >
 
+  <!-- Error Banner if any -->
+  @if (error()) {
+    <app-error-state
+      [message]="error()!"
+      (retryClick)="loadLeaserData()"
+    ></app-error-state>
+  }
+
   <!-- ========================================================== -->
   <!--  1. LEASER PROFILE & KPI HERO BAR                          -->
   <!-- ========================================================== -->

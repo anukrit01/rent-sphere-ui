@@ -8,6 +8,7 @@ import { AssetCardComponent } from '../../../shared/components/asset-card/asset-
 import { FilterPanelComponent, FilterState } from '../../../shared/components/filter-panel/filter-panel';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state';
 import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton';
+import { ErrorStateComponent } from '../../../shared/components/error-state/error-state';
 import { AssetService, AssetQueryParams } from '../../../services/asset';
 import { Asset } from '../../../shared/models/asset.model';
 
@@ -23,6 +24,7 @@ import { Asset } from '../../../shared/models/asset.model';
     FilterPanelComponent,
     EmptyStateComponent,
     LoadingSkeletonComponent,
+    ErrorStateComponent,
   ],
   templateUrl: './asset-catalog.html',
   styleUrl: './asset-catalog.scss',
@@ -35,6 +37,7 @@ export class AssetCatalogComponent implements OnInit {
   public assets = signal<Asset[]>([]);
   public totalResults = signal(0);
   public loading = signal(true);
+  public error = signal<string | null>(null);
   public mobileFilterOpen = signal(false);
   public viewMode = signal<'grid' | 'list'>('grid');
 
@@ -105,20 +108,27 @@ export class AssetCatalogComponent implements OnInit {
       sortBy: this.selectedSort(),
     };
 
-    this.assetService.getAssets(queryParams).subscribe((res) => {
-      let filtered = res.data;
+    this.error.set(null);
+    this.assetService.getAssets(queryParams).subscribe({
+      next: (res) => {
+        let filtered = res.data;
 
-      // In-memory filter enhancements for rating & operator
-      if (f.minRating > 0) {
-        filtered = filtered.filter((a) => a.rating >= f.minRating);
-      }
-      if (f.operatorRequired) {
-        filtered = filtered.filter((a) => a.operatorProvided);
-      }
+        // In-memory filter enhancements for rating & operator
+        if (f.minRating > 0) {
+          filtered = filtered.filter((a) => a.rating >= f.minRating);
+        }
+        if (f.operatorRequired) {
+          filtered = filtered.filter((a) => a.operatorProvided);
+        }
 
-      this.assets.set(filtered);
-      this.totalResults.set(filtered.length);
-      this.loading.set(false);
+        this.assets.set(filtered);
+        this.totalResults.set(filtered.length);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load fleet catalog. Please check your network connection and retry.');
+        this.loading.set(false);
+      },
     });
   }
 

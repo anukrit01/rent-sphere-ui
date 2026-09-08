@@ -4,15 +4,25 @@
   [noPadding]="true"
 >
 
+  <!-- Error State -->
+  @if (error()) {
+    <div class="rs-container rs-p-6">
+      <app-error-state
+        [message]="error()!"
+        (retryClick)="reloadAsset()"
+      ></app-error-state>
+    </div>
+  }
+
   <!-- Loading State -->
   @if (loading()) {
     <div class="rs-container rs-p-6">
-      <app-loading-skeleton type="card-grid" [count]="1"></app-loading-skeleton>
+      <app-loading-skeleton type="detail"></app-loading-skeleton>
     </div>
   }
 
   <!-- Asset Not Found Empty State -->
-  @if (!loading() && !asset()) {
+  @if (!loading() && !error() && !asset()) {
     <div class="rs-container rs-p-6">
       <app-empty-state
         icon="search_off"
@@ -25,7 +35,7 @@
   }
 
   <!-- Main Asset Detail Content -->
-  @if (!loading() && asset()) {
+  @if (!loading() && !error() && asset()) {
     <div class="rs-asset-detail rs-container rs-p-6">
       
       <!-- Top Title & Action Header -->

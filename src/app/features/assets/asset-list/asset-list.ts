@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { MaterialModule } from '../../../shared/material/material-module';
 import { AssetService } from '../../../services/asset';
 import { AuthService } from '../../../services/auth';
@@ -10,6 +11,8 @@ import { Category, LocationHub } from '../../../shared/models/category.model';
 import { MARKETPLACE_CATEGORIES, MARKETPLACE_LOCATIONS } from '../../../shared/data/marketplace.data';
 import { AssetCardComponent } from '../../../shared/components/asset-card/asset-card';
 import { CategoryCardComponent } from '../../../shared/components/category-card/category-card';
+import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton';
+import { ErrorStateComponent } from '../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-asset-list',
@@ -21,6 +24,8 @@ import { CategoryCardComponent } from '../../../shared/components/category-card/
     MaterialModule,
     AssetCardComponent,
     CategoryCardComponent,
+    LoadingSkeletonComponent,
+    ErrorStateComponent,
   ],
   templateUrl: './asset-list.html',
   styleUrl: './asset-list.scss',
@@ -41,6 +46,7 @@ export class AssetListComponent implements OnInit {
   public heroCategory = signal('All');
   public heroLocation = signal('All Locations');
   public loading = signal(true);
+  public error = signal<string | null>(null);
 
   // Trust Statistics
   public trustStats = [
@@ -116,15 +122,23 @@ export class AssetListComponent implements OnInit {
     this.loadMarketplaceData();
   }
 
-  private loadMarketplaceData(): void {
+  public loadMarketplaceData(): void {
     this.loading.set(true);
-    this.assetService.getPopularAssets().subscribe((popular) => {
-      this.popularAssets.set(popular);
-    });
+    this.error.set(null);
 
-    this.assetService.getNewArrivals().subscribe((news) => {
-      this.newArrivals.set(news);
-      this.loading.set(false);
+    forkJoin({
+      popular: this.assetService.getPopularAssets(),
+      news: this.assetService.getNewArrivals(),
+    }).subscribe({
+      next: ({ popular, news }) => {
+        this.popularAssets.set(popular);
+        this.newArrivals.set(news);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load marketplace machinery. Please verify your connection and try again.');
+        this.loading.set(false);
+      },
     });
   }
 

@@ -5,6 +5,14 @@
   maxWidth="wide"
 >
 
+  <!-- Error Banner if any -->
+  @if (error()) {
+    <app-error-state
+      [message]="error()!"
+      (retryClick)="loadRenterData()"
+    ></app-error-state>
+  }
+
   <!-- 1. CONTRACTOR PROFILE & STATS HERO BAR -->
   <div class="rs-renter-hero rs-card rs-card--elevated rs-mb-6">
     <div class="rs-renter-hero__profile">

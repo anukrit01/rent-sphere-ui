@@ -14,6 +14,10 @@ import { Booking } from '../../../shared/models/booking.model';
 import { Category, LocationHub } from '../../../shared/models/category.model';
 import { MARKETPLACE_CATEGORIES, MARKETPLACE_LOCATIONS } from '../../../shared/data/marketplace.data';
 
+import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state';
+import { ErrorStateComponent } from '../../../shared/components/error-state/error-state';
+
 export interface AdminUser {
   id: number;
   name: string;
@@ -34,11 +38,13 @@ export interface AdminUser {
   standalone: true,
   imports: [
     CommonModule,
-
     FormsModule,
     MaterialModule,
     PageContainerComponent,
     StatusBadgeComponent,
+    LoadingSkeletonComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
   ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss',
@@ -65,6 +71,7 @@ export class AdminDashboard implements OnInit {
   public categories = signal<Category[]>([...MARKETPLACE_CATEGORIES]);
   public locationHubs: LocationHub[] = MARKETPLACE_LOCATIONS.filter((l) => l.id !== 'loc-all');
   public loading = signal<boolean>(true);
+  public error = signal<string | null>(null);
 
   // Users Directory Database
   public users = signal<AdminUser[]>([
@@ -279,6 +286,7 @@ export class AdminDashboard implements OnInit {
 
   public loadAdminData(): void {
     this.loading.set(true);
+    this.error.set(null);
 
     this.assetService.getAllAssetsAdmin().subscribe({
       next: (assets) => {
@@ -290,11 +298,18 @@ export class AdminDashboard implements OnInit {
           this.openInspect(pending);
         }
       },
+      error: () => {
+        this.error.set('Failed to load fleet listings. Please check connection and retry.');
+      },
     });
 
     this.bookingService.getAllBookings().subscribe({
       next: (bookings) => {
         this.bookings.set(bookings);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load platform bookings. Please check connection and retry.');
         this.loading.set(false);
       },
     });

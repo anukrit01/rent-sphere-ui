@@ -5,94 +5,108 @@
   maxWidth="wide"
 >
 
+  <!-- Admin Error Banner -->
+  @if (error()) {
+    <app-error-state
+      [message]="error()!"
+      (retryClick)="loadAdminData()"
+    ></app-error-state>
+  }
+
   <!-- ==================================================== -->
   <!-- 5 ADMIN OVERVIEW KPI CARDS                           -->
   <!-- ==================================================== -->
-  <section class="rs-admin-kpi-grid animate-fade-in" aria-label="Platform Overview Metrics">
-    <!-- KPI 1: Total Users -->
-    <div class="rs-admin-kpi-card" (click)="activeTab.set('users')">
-      <div class="rs-admin-kpi-card__top">
-        <span class="rs-admin-kpi-label">Registered Members</span>
-        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--blue">
-          <mat-icon>people</mat-icon>
+  @if (loading()) {
+    <div class="rs-mb-6">
+      <app-loading-skeleton type="kpi" [count]="5"></app-loading-skeleton>
+    </div>
+  } @else {
+    <section class="rs-admin-kpi-grid animate-fade-in" aria-label="Platform Overview Metrics">
+      <!-- KPI 1: Total Users -->
+      <div class="rs-admin-kpi-card" (click)="activeTab.set('users')">
+        <div class="rs-admin-kpi-card__top">
+          <span class="rs-admin-kpi-label">Registered Members</span>
+          <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--blue">
+            <mat-icon>people</mat-icon>
+          </div>
+        </div>
+        <div class="rs-admin-kpi-value">{{ totalUsersCount() }}</div>
+        <div class="rs-admin-kpi-sub">
+          <span class="rs-kpi-pill rs-kpi-pill--success">Contractors &amp; Leasers</span>
+          <span class="rs-kpi-meta">Verified KYC directory</span>
         </div>
       </div>
-      <div class="rs-admin-kpi-value">{{ totalUsersCount() }}</div>
-      <div class="rs-admin-kpi-sub">
-        <span class="rs-kpi-pill rs-kpi-pill--success">Contractors &amp; Leasers</span>
-        <span class="rs-kpi-meta">Verified KYC directory</span>
-      </div>
-    </div>
 
-    <!-- KPI 2: Total Equipment -->
-    <div class="rs-admin-kpi-card" (click)="activeTab.set('categories')">
-      <div class="rs-admin-kpi-card__top">
-        <span class="rs-admin-kpi-label">Marketplace Fleet</span>
-        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--indigo">
-          <mat-icon>precision_manufacturing</mat-icon>
+      <!-- KPI 2: Total Equipment -->
+      <div class="rs-admin-kpi-card" (click)="activeTab.set('categories')">
+        <div class="rs-admin-kpi-card__top">
+          <span class="rs-admin-kpi-label">Marketplace Fleet</span>
+          <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--indigo">
+            <mat-icon>precision_manufacturing</mat-icon>
+          </div>
+        </div>
+        <div class="rs-admin-kpi-value">{{ totalEquipmentCount() }}</div>
+        <div class="rs-admin-kpi-sub">
+          <span class="rs-kpi-pill rs-kpi-pill--neutral">{{ categories().length }} Categories</span>
+          <span class="rs-kpi-meta">Heavy earthmovers &amp; lifters</span>
         </div>
       </div>
-      <div class="rs-admin-kpi-value">{{ totalEquipmentCount() }}</div>
-      <div class="rs-admin-kpi-sub">
-        <span class="rs-kpi-pill rs-kpi-pill--neutral">{{ categories().length }} Categories</span>
-        <span class="rs-kpi-meta">Heavy earthmovers &amp; lifters</span>
-      </div>
-    </div>
 
-    <!-- KPI 3: Pending Approvals (High Priority) -->
-    <div
-      class="rs-admin-kpi-card"
-      [class.rs-admin-kpi-card--alert]="pendingApprovalsCount() > 0"
-      (click)="activeTab.set('approvals')"
-    >
-      <div class="rs-admin-kpi-card__top">
-        <span class="rs-admin-kpi-label">Pending Audits</span>
-        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--amber">
-          <mat-icon>pending_actions</mat-icon>
+      <!-- KPI 3: Pending Approvals (High Priority) -->
+      <div
+        class="rs-admin-kpi-card"
+        [class.rs-admin-kpi-card--alert]="pendingApprovalsCount() > 0"
+        (click)="activeTab.set('approvals')"
+      >
+        <div class="rs-admin-kpi-card__top">
+          <span class="rs-admin-kpi-label">Pending Audits</span>
+          <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--amber">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+        </div>
+        <div class="rs-admin-kpi-value rs-admin-kpi-value--amber">{{ pendingApprovalsCount() }}</div>
+        <div class="rs-admin-kpi-sub">
+          @if (pendingApprovalsCount() > 0) {
+            <span class="rs-kpi-pill rs-kpi-pill--warning">Action Required</span>
+            <span class="rs-kpi-meta">Awaiting engineer audit</span>
+          } @else {
+            <span class="rs-kpi-pill rs-kpi-pill--success">Queue Clear</span>
+            <span class="rs-kpi-meta">All listings processed</span>
+          }
         </div>
       </div>
-      <div class="rs-admin-kpi-value rs-admin-kpi-value--amber">{{ pendingApprovalsCount() }}</div>
-      <div class="rs-admin-kpi-sub">
-        @if (pendingApprovalsCount() > 0) {
-          <span class="rs-kpi-pill rs-kpi-pill--warning">Action Required</span>
-          <span class="rs-kpi-meta">Awaiting engineer audit</span>
-        } @else {
-          <span class="rs-kpi-pill rs-kpi-pill--success">Queue Clear</span>
-          <span class="rs-kpi-meta">All listings processed</span>
-        }
-      </div>
-    </div>
 
-    <!-- KPI 4: Active Rentals -->
-    <div class="rs-admin-kpi-card" (click)="activeTab.set('bookings')">
-      <div class="rs-admin-kpi-card__top">
-        <span class="rs-admin-kpi-label">Active Deployments</span>
-        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--green">
-          <mat-icon>bolt</mat-icon>
+      <!-- KPI 4: Active Rentals -->
+      <div class="rs-admin-kpi-card" (click)="activeTab.set('bookings')">
+        <div class="rs-admin-kpi-card__top">
+          <span class="rs-admin-kpi-label">Active Deployments</span>
+          <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--green">
+            <mat-icon>bolt</mat-icon>
+          </div>
+        </div>
+        <div class="rs-admin-kpi-value">{{ activeRentalsCount() }}</div>
+        <div class="rs-admin-kpi-sub">
+          <span class="rs-kpi-pill rs-kpi-pill--success">On Site Now</span>
+          <span class="rs-kpi-meta">Live telematics tracking</span>
         </div>
       </div>
-      <div class="rs-admin-kpi-value">{{ activeRentalsCount() }}</div>
-      <div class="rs-admin-kpi-sub">
-        <span class="rs-kpi-pill rs-kpi-pill--success">On Site Now</span>
-        <span class="rs-kpi-meta">Live telematics tracking</span>
-      </div>
-    </div>
 
-    <!-- KPI 5: Platform Revenue & Escrow -->
-    <div class="rs-admin-kpi-card" (click)="activeTab.set('reports')">
-      <div class="rs-admin-kpi-card__top">
-        <span class="rs-admin-kpi-label">Gross Platform Volume</span>
-        <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--gold">
-          <mat-icon>account_balance</mat-icon>
+      <!-- KPI 5: Platform Revenue & Escrow -->
+      <div class="rs-admin-kpi-card" (click)="activeTab.set('reports')">
+        <div class="rs-admin-kpi-card__top">
+          <span class="rs-admin-kpi-label">Gross Platform Volume</span>
+          <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--gold">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+        </div>
+        <div class="rs-admin-kpi-value">₹{{ (totalRevenue() / 1000) | number:'1.0-1' }}k</div>
+        <div class="rs-admin-kpi-sub">
+          <span class="rs-kpi-pill rs-kpi-pill--gold">8% Comm: ₹{{ platformCommission() | number }}</span>
+          <span class="rs-kpi-meta">₹{{ (escrowHeldBalance() / 1000) | number:'1.0-0' }}k in Escrow</span>
         </div>
       </div>
-      <div class="rs-admin-kpi-value">₹{{ (totalRevenue() / 1000) | number:'1.0-1' }}k</div>
-      <div class="rs-admin-kpi-sub">
-        <span class="rs-kpi-pill rs-kpi-pill--gold">8% Comm: ₹{{ platformCommission() | number }}</span>
-        <span class="rs-kpi-meta">₹{{ (escrowHeldBalance() / 1000) | number:'1.0-0' }}k in Escrow</span>
-      </div>
-    </div>
-  </section>
+    </section>
+  }
 
   <!-- ==================================================== -->
   <!-- MAIN ADMIN NAVIGATION TABS                           -->
@@ -570,117 +584,131 @@
         </div>
       </div>
 
-      <!-- Users Table -->
-      <div class="rs-table-card">
-        <div class="rs-table-responsive">
-          <table class="rs-admin-table" aria-label="Marketplace users table">
-            <thead>
-              <tr>
-                <th>Member / Company</th>
-                <th>Platform Role</th>
-                <th>Location &amp; Phone</th>
-                <th>Member Since</th>
-                <th>Rentals</th>
-                <th>KYC Verification</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (user of filteredUsers(); track user.id) {
+      <!-- Users Table or Empty State -->
+      @if (filteredUsers().length === 0) {
+        <app-empty-state
+          icon="people_outline"
+          title="No members found"
+          message="No registered contractors or fleet owners match your current search and role filters."
+          actionLabel="Reset Search & Filters"
+          (actionClick)="userSearchQuery.set(''); userRoleFilter.set('all')"
+        ></app-empty-state>
+      } @else {
+        <div class="rs-table-card">
+          <div class="rs-table-responsive">
+            <table class="rs-admin-table" aria-label="Marketplace users table">
+              <thead>
                 <tr>
-                  <!-- Member Name & Company -->
-                  <td>
-                    <div class="rs-user-col">
-                      <div class="rs-user-avatar">
-                        {{ user.name.charAt(0) }}
+                  <th>Member / Company</th>
+                  <th>Platform Role</th>
+                  <th>Location &amp; Phone</th>
+                  <th>Member Since</th>
+                  <th>Rentals</th>
+                  <th>KYC Verification</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of filteredUsers(); track user.id) {
+                  <tr>
+                    <!-- Member Name & Company -->
+                    <td>
+                      <div class="rs-user-col">
+                        <div class="rs-user-avatar">
+                          {{ user.name.charAt(0) }}
+                        </div>
+                        <div class="rs-user-text">
+                          <strong>{{ user.name }}</strong>
+                          <span class="rs-company-sub">{{ user.companyName }}</span>
+                          <span class="rs-email-sub">{{ user.email }}</span>
+                        </div>
                       </div>
-                      <div class="rs-user-text">
-                        <strong>{{ user.name }}</strong>
-                        <span class="rs-company-sub">{{ user.companyName }}</span>
-                        <span class="rs-email-sub">{{ user.email }}</span>
+                    </td>
+
+                    <!-- Platform Role -->
+                    <td>
+                      <span
+                        class="rs-role-pill"
+                        [class.rs-role-pill--renter]="user.role === 'renter'"
+                        [class.rs-role-pill--leaser]="user.role === 'leaser'"
+                        [class.rs-role-pill--admin]="user.role === 'admin'"
+                      >
+                        {{ user.role === 'renter' ? 'Contractor' : user.role === 'leaser' ? 'Fleet Owner' : 'Platform Admin' }}
+                      </span>
+                    </td>
+
+                    <!-- Location & Phone -->
+                    <td>
+                      <div class="rs-loc-col">
+                        <span>{{ user.location }}</span>
+                        <span class="rs-phone-sub">{{ user.phone }}</span>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <!-- Role Badge -->
-                  <td>
-                    @if (user.role === 'renter') {
-                      <span class="rs-badge rs-badge--primary">Contractor</span>
-                    } @else if (user.role === 'leaser') {
-                      <span class="rs-badge rs-badge--accent">Fleet Owner</span>
-                    } @else {
-                      <span class="rs-badge rs-badge--info">Admin</span>
-                    }
-                  </td>
+                    <!-- Member Since -->
+                    <td>
+                      <span class="rs-meta-val">{{ user.memberSince }}</span>
+                    </td>
 
-                  <!-- Location & Phone -->
-                  <td>
-                    <div class="rs-loc-text">
-                      <span>{{ user.location }}</span>
-                      <span class="rs-phone-sub">{{ user.phone }}</span>
-                    </div>
-                  </td>
+                    <!-- Rentals / Rating -->
+                    <td>
+                      <div class="rs-rentals-col">
+                        <strong>{{ user.completedRentals }} deals</strong>
+                        <span class="rs-rating-sub">
+                          <mat-icon class="rs-star-icon">star</mat-icon>
+                          {{ user.rating }}
+                        </span>
+                      </div>
+                    </td>
 
-                  <!-- Member Since -->
-                  <td>
-                    <span class="rs-date-sub">{{ user.memberSince }}</span>
-                  </td>
-
-                  <!-- Rentals Completed -->
-                  <td>
-                    <div class="rs-rentals-stat">
-                      <strong>{{ user.completedRentals }}</strong>
-                      <span class="rs-rating-tag">{{ user.rating }} ★</span>
-                    </div>
-                  </td>
-
-                  <!-- Verification Toggle -->
-                  <td>
-                    <button
-                      type="button"
-                      class="rs-verify-toggle-btn"
-                      [class.rs-verify-toggle-btn--verified]="user.verified"
-                      (click)="toggleUserVerification(user)"
-                      title="Click to toggle verified status"
-                    >
-                      <mat-icon>{{ user.verified ? 'verified' : 'hourglass_empty' }}</mat-icon>
-                      <span>{{ user.verified ? 'VERIFIED' : 'PENDING' }}</span>
-                    </button>
-                  </td>
-
-                  <!-- Status -->
-                  <td>
-                    <span
-                      class="rs-status-tag"
-                      [class.rs-status-tag--active]="user.active"
-                      [class.rs-status-tag--suspended]="!user.active"
-                    >
-                      {{ user.active ? 'ACTIVE' : 'SUSPENDED' }}
-                    </span>
-                  </td>
-
-                  <!-- Actions -->
-                  <td>
-                    <div class="rs-row-actions">
+                    <!-- KYC Verification -->
+                    <td>
                       <button
                         type="button"
-                        class="rs-btn rs-btn--ghost rs-btn--xs"
-                        [class.rs-text--danger]="user.active"
-                        (click)="toggleUserStatus(user)"
-                        [title]="user.active ? 'Suspend member account' : 'Re-activate account'"
+                        class="rs-verify-toggle-btn"
+                        [class.rs-verify-toggle-btn--verified]="user.verified"
+                        (click)="toggleUserVerification(user)"
+                        title="Click to toggle verified status"
                       >
-                        <mat-icon>{{ user.active ? 'block' : 'restore' }}</mat-icon>
-                        <span>{{ user.active ? 'Suspend' : 'Activate' }}</span>
+                        <mat-icon>{{ user.verified ? 'verified' : 'hourglass_empty' }}</mat-icon>
+                        <span>{{ user.verified ? 'VERIFIED' : 'PENDING' }}</span>
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                      <span
+                        class="rs-status-tag"
+                        [class.rs-status-tag--active]="user.active"
+                        [class.rs-status-tag--suspended]="!user.active"
+                      >
+                        {{ user.active ? 'ACTIVE' : 'SUSPENDED' }}
+                      </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td>
+                      <div class="rs-row-actions">
+                        <button
+                          type="button"
+                          class="rs-btn rs-btn--ghost rs-btn--xs"
+                          [class.rs-text--danger]="user.active"
+                          (click)="toggleUserStatus(user)"
+                          [title]="user.active ? 'Suspend member account' : 'Re-activate account'"
+                        >
+                          <mat-icon>{{ user.active ? 'block' : 'restore' }}</mat-icon>
+                          <span>{{ user.active ? 'Suspend' : 'Activate' }}</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      }
     </section>
   }
 
@@ -727,107 +755,117 @@
         </div>
       </div>
 
-      <!-- Bookings Table -->
-      <div class="rs-table-card">
-        <div class="rs-table-responsive">
-          <table class="rs-admin-table" aria-label="Marketplace bookings table">
-            <thead>
-              <tr>
-                <th>Booking ID</th>
-                <th>Equipment Deployed</th>
-                <th>Contractor (Renter)</th>
-                <th>Site Duration</th>
-                <th>Rental Total</th>
-                <th>Escrow Deposit</th>
-                <th>Booking Status</th>
-                <th>Escrow Audit</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (booking of filteredBookings(); track booking.id) {
+      <!-- Bookings Table or Empty State -->
+      @if (filteredBookings().length === 0) {
+        <app-empty-state
+          icon="receipt_long"
+          title="No bookings found"
+          message="No rental contracts or escrow deployments match your current search and status filters."
+          actionLabel="Reset Search & Filters"
+          (actionClick)="bookingSearchQuery.set(''); bookingStatusFilter.set('all')"
+        ></app-empty-state>
+      } @else {
+        <div class="rs-table-card">
+          <div class="rs-table-responsive">
+            <table class="rs-admin-table" aria-label="Marketplace bookings table">
+              <thead>
                 <tr>
-                  <!-- Booking ID -->
-                  <td>
-                    <span class="rs-booking-id">#RS-{{ booking.id }}</span>
-                    <span class="rs-date-sub">{{ booking.createdAt }}</span>
-                  </td>
-
-                  <!-- Equipment -->
-                  <td>
-                    <div class="rs-booking-eq-cell">
-                      <img
-                        [src]="booking.asset?.coverImage || booking.asset?.images?.[0] || 'https://images.unsplash.com/photo-1579829366248-204fe8413f31?auto=format&fit=crop&w=1200&q=80'"
-                        [alt]="booking.asset?.title || 'Equipment'"
-                      />
-                      <div>
-                        <strong>{{ booking.asset?.title || 'Heavy Machinery' }}</strong>
-                        <span class="rs-company-sub">{{ booking.projectLocation || 'Regional Infrastructure Site' }}</span>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Contractor -->
-                  <td>
-                    <div class="rs-contractor-cell">
-                      <strong>{{ booking.renterName }}</strong>
-                      <span class="rs-company-sub">{{ booking.renterCompany }}</span>
-                      <span class="rs-phone-sub">{{ booking.renterPhone }}</span>
-                    </div>
-                  </td>
-
-                  <!-- Duration -->
-                  <td>
-                    <div class="rs-duration-cell">
-                      <strong>{{ booking.durationDays }} Days</strong>
-                      <span class="rs-date-sub">{{ booking.startDate }} &rarr; {{ booking.endDate }}</span>
-                    </div>
-                  </td>
-
-                  <!-- Total Amount -->
-                  <td>
-                    <div class="rs-amount-cell">
-                      <strong>₹{{ booking.estimatedTotal | number }}</strong>
-                      <span class="rs-date-sub">₹{{ booking.dailyRate | number }}/day</span>
-                    </div>
-                  </td>
-
-                  <!-- Escrow Deposit -->
-                  <td>
-                    <div class="rs-escrow-cell">
-                      <span class="rs-escrow-val">₹{{ booking.securityDeposit | number }}</span>
-                      @if (booking.status === 'approved' || booking.status === 'active') {
-                        <span class="rs-escrow-tag rs-escrow-tag--held">HELD IN ESCROW</span>
-                      } @else if (booking.status === 'completed') {
-                        <span class="rs-escrow-tag rs-escrow-tag--refunded">REFUNDED POST-AUDIT</span>
-                      } @else {
-                        <span class="rs-escrow-tag rs-escrow-tag--pending">AWAITING LOCK</span>
-                      }
-                    </div>
-                  </td>
-
-                  <!-- Status -->
-                  <td>
-                    <app-status-badge [status]="booking.status"></app-status-badge>
-                  </td>
-
-                  <!-- Actions -->
-                  <td>
-                    <button
-                      type="button"
-                      class="rs-btn rs-btn--ghost rs-btn--xs"
-                      (click)="auditBookingEscrow(booking)"
-                      title="Inspect escrow settlement"
-                    >
-                      <mat-icon>shield</mat-icon>
-                      <span>Audit</span>
-                    </button>
-                  </td>
+                  <th>Booking ID</th>
+                  <th>Equipment Deployed</th>
+                  <th>Contractor (Renter)</th>
+                  <th>Site Duration</th>
+                  <th>Rental Total</th>
+                  <th>Escrow Deposit</th>
+                  <th>Booking Status</th>
+                  <th>Escrow Audit</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (booking of filteredBookings(); track booking.id) {
+                  <tr>
+                    <!-- Booking ID -->
+                    <td>
+                      <span class="rs-booking-id">#RS-{{ booking.id }}</span>
+                      <span class="rs-date-sub">{{ booking.createdAt }}</span>
+                    </td>
+
+                    <!-- Equipment -->
+                    <td>
+                      <div class="rs-booking-eq-cell">
+                        <img
+                          [src]="booking.asset?.coverImage || booking.asset?.images?.[0] || 'https://images.unsplash.com/photo-1579829366248-204fe8413f31?auto=format&fit=crop&w=1200&q=80'"
+                          [alt]="booking.asset?.title || 'Equipment'"
+                        />
+                        <div>
+                          <strong>{{ booking.asset?.title || 'Heavy Machinery' }}</strong>
+                          <span class="rs-company-sub">{{ booking.projectLocation || 'Regional Infrastructure Site' }}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Contractor -->
+                    <td>
+                      <div class="rs-contractor-cell">
+                        <strong>{{ booking.renterName }}</strong>
+                        <span class="rs-company-sub">{{ booking.renterCompany }}</span>
+                        <span class="rs-phone-sub">{{ booking.renterPhone }}</span>
+                      </div>
+                    </td>
+
+                    <!-- Duration -->
+                    <td>
+                      <div class="rs-duration-cell">
+                        <strong>{{ booking.durationDays }} Days</strong>
+                        <span class="rs-date-sub">{{ booking.startDate }} &rarr; {{ booking.endDate }}</span>
+                      </div>
+                    </td>
+
+                    <!-- Total Amount -->
+                    <td>
+                      <div class="rs-amount-cell">
+                        <strong>₹{{ booking.estimatedTotal | number }}</strong>
+                        <span class="rs-date-sub">₹{{ booking.dailyRate | number }}/day</span>
+                      </div>
+                    </td>
+
+                    <!-- Escrow Deposit -->
+                    <td>
+                      <div class="rs-escrow-cell">
+                        <span class="rs-escrow-val">₹{{ booking.securityDeposit | number }}</span>
+                        @if (booking.status === 'approved' || booking.status === 'active') {
+                          <span class="rs-escrow-tag rs-escrow-tag--held">HELD IN ESCROW</span>
+                        } @else if (booking.status === 'completed') {
+                          <span class="rs-escrow-tag rs-escrow-tag--refunded">REFUNDED POST-AUDIT</span>
+                        } @else {
+                          <span class="rs-escrow-tag rs-escrow-tag--pending">AWAITING LOCK</span>
+                        }
+                      </div>
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                      <app-status-badge [status]="booking.status"></app-status-badge>
+                    </td>
+
+                    <!-- Actions -->
+                    <td>
+                      <button
+                        type="button"
+                        class="rs-btn rs-btn--ghost rs-btn--xs"
+                        (click)="auditBookingEscrow(booking)"
+                        title="Inspect escrow settlement"
+                      >
+                        <mat-icon>shield</mat-icon>
+                        <span>Audit</span>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      }
     </section>
   }
 
@@ -850,35 +888,46 @@
         </button>
       </div>
 
-      <div class="rs-categories-grid">
-        @for (cat of categories(); track cat.id) {
-          <div class="rs-cat-admin-card">
-            <div class="rs-cat-card-top">
-              <div class="rs-cat-icon-circle">
-                <mat-icon>{{ cat.icon }}</mat-icon>
-              </div>
-
-              <span class="rs-badge rs-badge--primary">
-                {{ cat.assetCount }} Active Assets
-              </span>
-            </div>
-
-            <h3 class="rs-cat-card-title">{{ cat.name }}</h3>
-            <p class="rs-cat-card-desc">{{ cat.description }}</p>
-
-            @if (cat.popularModels && cat.popularModels.length > 0) {
-              <div class="rs-cat-models-box">
-                <span class="rs-cat-models-label">Benchmark Models:</span>
-                <div class="rs-cat-models-tags">
-                  @for (m of cat.popularModels; track m) {
-                    <span class="rs-model-tag">{{ m }}</span>
-                  }
+      @if (categories().length === 0) {
+        <app-empty-state
+          icon="category"
+          title="No categories defined"
+          message="No machinery categories currently exist in the platform taxonomy."
+          actionLabel="Add Category"
+          actionIcon="add"
+          (actionClick)="openAddCategory()"
+        ></app-empty-state>
+      } @else {
+        <div class="rs-categories-grid">
+          @for (cat of categories(); track cat.id) {
+            <div class="rs-cat-admin-card">
+              <div class="rs-cat-card-top">
+                <div class="rs-cat-icon-circle">
+                  <mat-icon>{{ cat.icon }}</mat-icon>
                 </div>
+
+                <span class="rs-badge rs-badge--primary">
+                  {{ cat.assetCount }} Active Assets
+                </span>
               </div>
-            }
-          </div>
-        }
-      </div>
+
+              <h3 class="rs-cat-card-title">{{ cat.name }}</h3>
+              <p class="rs-cat-card-desc">{{ cat.description }}</p>
+
+              @if (cat.popularModels && cat.popularModels.length > 0) {
+                <div class="rs-cat-models-box">
+                  <span class="rs-cat-models-label">Benchmark Models:</span>
+                  <div class="rs-cat-models-tags">
+                    @for (m of cat.popularModels; track m) {
+                      <span class="rs-model-tag">{{ m }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
     </section>
   }
 

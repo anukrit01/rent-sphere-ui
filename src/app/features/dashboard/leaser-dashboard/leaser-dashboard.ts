@@ -7,6 +7,7 @@ import { PageContainerComponent } from '../../../core/components/page-container/
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state';
 import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton';
+import { ErrorStateComponent } from '../../../shared/components/error-state/error-state';
 import { AuthService } from '../../../services/auth';
 import { BookingService } from '../../../services/booking';
 import { AssetService } from '../../../services/asset';
@@ -26,6 +27,7 @@ import { Asset } from '../../../shared/models/asset.model';
     StatusBadgeComponent,
     EmptyStateComponent,
     LoadingSkeletonComponent,
+    ErrorStateComponent,
   ],
   templateUrl: './leaser-dashboard.html',
   styleUrl: './leaser-dashboard.scss',
@@ -40,6 +42,7 @@ export class LeaserDashboard implements OnInit {
   public bookings = signal<Booking[]>([]);
   public fleetAssets = signal<Asset[]>([]);
   public loading = signal<boolean>(true);
+  public error = signal<string | null>(null);
   public activeTab = signal<'fleet' | 'incoming' | 'active' | 'earnings' | 'history'>('fleet');
   public rejectionReason = signal<string>('');
   public showRejectDialog = signal<number | null>(null);
@@ -55,18 +58,30 @@ export class LeaserDashboard implements OnInit {
 
   public loadLeaserData(): void {
     this.loading.set(true);
+    this.error.set(null);
 
     // Load all bookings (the leaser owns assets, so filter by owner id)
-    this.bookingService.getAllBookings().subscribe((allBookings) => {
-      // For demo: leaser sees all bookings (in production, filtered by owner)
-      this.bookings.set(allBookings);
-      this.loading.set(false);
+    this.bookingService.getAllBookings().subscribe({
+      next: (allBookings) => {
+        // For demo: leaser sees all bookings (in production, filtered by owner)
+        this.bookings.set(allBookings);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load fleet booking records. Please check your connection and retry.');
+        this.loading.set(false);
+      },
     });
 
     // Load fleet: assets owned by this leaser
-    this.assetService.getAssets().subscribe((res) => {
-      // For demo: show first 6 as "leaser's fleet"
-      this.fleetAssets.set(res.data.slice(0, 6));
+    this.assetService.getAssets().subscribe({
+      next: (res) => {
+        // For demo: show first 6 as "leaser's fleet"
+        this.fleetAssets.set(res.data.slice(0, 6));
+      },
+      error: () => {
+        // non-critical
+      },
     });
   }
 

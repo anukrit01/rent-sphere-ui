@@ -8,6 +8,7 @@ import { Register } from './features/auth/register/register';
 import { RenterDashboard } from './features/dashboard/renter-dashboard/renter-dashboard';
 import { LeaserDashboard } from './features/dashboard/leaser-dashboard/leaser-dashboard';
 import { AdminDashboard } from './features/admin/admin-dashboard/admin-dashboard';
+import { NotFoundComponent } from './features/not-found/not-found';
 import { AuthGuard } from './guards/auth-guard';
 import { RoleGuard } from './guards/role-guard';
 
@@ -46,5 +47,5 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'admin' },
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', component: NotFoundComponent },
 ];

@@ -203,19 +203,31 @@
         </a>
       </div>
 
-      <!-- Asset Grid -->
-      <div class="rs-grid rs-grid--3 rs-gap-6">
-        @for (asset of popularAssets(); track asset.id) {
-          <app-asset-card [asset]="asset"></app-asset-card>
-        }
-      </div>
+      <!-- Error Banner if any -->
+      @if (error()) {
+        <app-error-state
+          [message]="error()!"
+          (retryClick)="loadMarketplaceData()"
+        ></app-error-state>
+      }
 
-      <div class="rs-mt-8 rs-text-center">
-        <a routerLink="/assets" class="rs-btn rs-btn--primary rs-btn--lg">
-          <span>View Complete Marketplace Fleet (500+ Assets)</span>
-          <mat-icon>arrow_forward</mat-icon>
-        </a>
-      </div>
+      <!-- Asset Grid or Skeleton -->
+      @if (loading()) {
+        <app-loading-skeleton type="card-grid" [count]="3"></app-loading-skeleton>
+      } @else if (!error()) {
+        <div class="rs-grid rs-grid--3 rs-gap-6">
+          @for (asset of popularAssets(); track asset.id) {
+            <app-asset-card [asset]="asset"></app-asset-card>
+          }
+        </div>
+
+        <div class="rs-mt-8 rs-text-center">
+          <a routerLink="/assets" class="rs-btn rs-btn--primary rs-btn--lg">
+            <span>View Complete Marketplace Fleet (500+ Assets)</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      }
 
     </div>
   </section>
@@ -241,12 +253,16 @@
         </a>
       </div>
 
-      <!-- Asset Grid: 4 columns on large screens -->
-      <div class="rs-grid rs-grid--4 rs-gap-6">
-        @for (asset of newArrivals(); track asset.id) {
-          <app-asset-card [asset]="asset"></app-asset-card>
-        }
-      </div>
+      <!-- Asset Grid or Skeleton -->
+      @if (loading()) {
+        <app-loading-skeleton type="card-grid" [count]="4"></app-loading-skeleton>
+      } @else if (!error()) {
+        <div class="rs-grid rs-grid--4 rs-gap-6">
+          @for (asset of newArrivals(); track asset.id) {
+            <app-asset-card [asset]="asset"></app-asset-card>
+          }
+        </div>
+      }
 
     </div>
   </section>
