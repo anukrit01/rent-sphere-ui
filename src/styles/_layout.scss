@@ -240,3 +240,55 @@
 .rs-divider--lg {
   margin: var(--rs-space-8) 0;
 }
+
+// --------------------------------------------------------
+// Responsive Table Wrapper
+// --------------------------------------------------------
+
+.rs-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rs-border-default) transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--rs-border-strong);
+    border-radius: var(--rs-radius-full);
+  }
+}
+
+// --------------------------------------------------------
+// Mobile Ergonomics & Utilities
+// --------------------------------------------------------
+
+.rs-btn--mobile-full {
+  @include bp-below-sm {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+.rs-flex--mobile-col {
+  @include bp-below-sm {
+    flex-direction: column !important;
+  }
+}
+
+.rs-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.rs-safe-bottom {
+  padding-bottom: max(var(--rs-space-4), env(safe-area-inset-bottom));
+}

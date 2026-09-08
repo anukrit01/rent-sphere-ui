@@ -38,6 +38,10 @@
   justify-content: center;
   box-shadow: var(--rs-shadow-lg);
 
+  @include bp-below-md {
+    display: none;
+  }
+
   @include bp-lg {
     padding: var(--rs-space-12);
   }
@@ -115,6 +119,11 @@
   padding: var(--rs-space-8);
   box-shadow: var(--rs-shadow-xl);
 
+  @include bp-below-sm {
+    padding: var(--rs-space-5) var(--rs-space-4);
+    border-radius: var(--rs-radius-xl);
+  }
+
   &__header {
     margin-bottom: var(--rs-space-5);
   }
@@ -152,6 +161,7 @@
   background-color: var(--rs-surface-default);
   cursor: pointer;
   transition: border-color var(--rs-transition-fast), background-color var(--rs-transition-fast);
+  min-height: 44px;
 
   &:hover {
     border-color: var(--rs-border-strong);

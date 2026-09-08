@@ -132,8 +132,15 @@
     gap: var(--rs-space-2);
     padding: var(--rs-space-3);
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
     background-color: var(--rs-color-gray-50);
     border-top: 1px solid var(--rs-border-subtle);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   &__thumb {
@@ -146,6 +153,7 @@
     flex-shrink: 0;
     padding: 0;
     background: none;
+    scroll-snap-align: start;
     transition: border-color var(--rs-transition-fast), transform var(--rs-transition-fast);
 
     img {
@@ -480,6 +488,7 @@
   border-top: 1px solid var(--rs-border-default);
   box-shadow: var(--rs-shadow-xl);
   padding: var(--rs-space-3) var(--rs-space-4);
+  padding-bottom: max(var(--rs-space-3), env(safe-area-inset-bottom));
   z-index: var(--rs-z-sticky);
 
   &__inner {

@@ -65,9 +65,22 @@ html {
 // Dialog
 .mat-mdc-dialog-container {
   border-radius: var(--rs-radius-xl) !important;
+  max-width: 96vw !important;
 
   .mat-mdc-dialog-surface {
     border-radius: var(--rs-radius-xl) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+.cdk-overlay-pane {
+  max-width: 96vw !important;
+
+  @media (max-width: 576px) {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    margin: 10px auto !important;
   }
 }
 

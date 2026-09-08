@@ -38,6 +38,10 @@
   justify-content: center;
   box-shadow: var(--rs-shadow-lg);
 
+  @include bp-below-md {
+    display: none;
+  }
+
   @include bp-lg {
     padding: var(--rs-space-12);
   }
@@ -114,6 +118,11 @@
   border-radius: var(--rs-radius-2xl);
   padding: var(--rs-space-8);
   box-shadow: var(--rs-shadow-xl);
+
+  @include bp-below-sm {
+    padding: var(--rs-space-5) var(--rs-space-4);
+    border-radius: var(--rs-radius-xl);
+  }
 
   &__header {
     margin-bottom: var(--rs-space-6);

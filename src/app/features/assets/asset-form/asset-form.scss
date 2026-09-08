@@ -89,10 +89,21 @@
   padding: var(--rs-space-4) var(--rs-space-6);
   box-shadow: var(--rs-shadow-sm);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   gap: var(--rs-space-2);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @include bp-below-lg {
     padding: var(--rs-space-3) var(--rs-space-4);
+  }
+
+  @include bp-below-md {
+    padding: var(--rs-space-2-5) var(--rs-space-3);
+    gap: var(--rs-space-1);
   }
 }
 
@@ -147,6 +158,10 @@
   .rs-step-text {
     display: flex;
     flex-direction: column;
+
+    @include bp-below-md {
+      display: none;
+    }
 
     .rs-step-title {
       font-size: var(--rs-text-sm);
@@ -804,6 +819,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--rs-space-4);
+
+  @include bp-below-sm {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--rs-space-3);
+  }
 }
 
 .rs-image-card {
@@ -1450,6 +1470,21 @@
     padding: var(--rs-space-3) var(--rs-space-4);
   }
 
+  @include bp-below-sm {
+    flex-direction: column-reverse;
+    gap: var(--rs-space-3);
+
+    &__left,
+    &__right {
+      width: 100%;
+    }
+
+    .rs-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
   &__left,
   &__right {
     display: flex;
@@ -1459,6 +1494,11 @@
 
   .rs-submit-btn {
     min-width: 200px;
+
+    @include bp-below-sm {
+      min-width: unset;
+      width: 100%;
+    }
 
     .rs-submit-spinner {
       margin-right: var(--rs-space-2);

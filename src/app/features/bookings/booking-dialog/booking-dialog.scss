@@ -14,6 +14,10 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--rs-space-4) var(--rs-space-6);
+
+    @include bp-below-sm {
+      padding: var(--rs-space-3) var(--rs-space-4);
+    }
   }
 
   &__thumb {
@@ -43,6 +47,13 @@
     padding: var(--rs-space-6);
     max-height: 70vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @include bp-below-sm {
+      padding: var(--rs-space-4);
+      gap: var(--rs-space-4);
+      max-height: calc(85vh - 130px);
+    }
 
     @include bp-md {
       grid-template-columns: 1.2fr 1fr;
@@ -85,6 +96,17 @@
     gap: var(--rs-space-3);
     padding: var(--rs-space-4) var(--rs-space-6);
     background-color: var(--rs-color-gray-50);
+
+    @include bp-below-sm {
+      flex-direction: column-reverse;
+      padding: var(--rs-space-3) var(--rs-space-4);
+      gap: var(--rs-space-2);
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   }
 }
 
