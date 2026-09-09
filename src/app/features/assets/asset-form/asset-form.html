@@ -156,6 +156,12 @@
             [class.rs-step-node--completed]="completedSteps().has(step.number)"
             [class.rs-step-node--clickable]="step.number < currentStep() || completedSteps().has(step.number - 1)"
             (click)="goToStep(step.number)"
+            (keydown.enter)="goToStep(step.number)"
+            (keydown.space)="goToStep(step.number); $event.preventDefault()"
+            role="button"
+            tabindex="0"
+            [attr.aria-current]="currentStep() === step.number ? 'step' : null"
+            [attr.aria-label]="'Step ' + step.number + ': ' + step.title + (completedSteps().has(step.number) ? ' (Completed)' : currentStep() === step.number ? ' (Current step)' : '')"
           >
             <div class="rs-step-circle">
               @if (completedSteps().has(step.number) && currentStep() !== step.number) {

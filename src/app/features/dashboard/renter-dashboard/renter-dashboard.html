@@ -82,10 +82,12 @@
 
   <!-- 2. TABBED NAVIGATION -->
   <div class="rs-dashboard-tabs rs-card rs-mb-6">
-    <div class="rs-tabs-nav">
+    <div class="rs-tabs-nav" role="tablist" aria-label="Renter project sections">
       <button
         type="button"
         class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'active'"
         [class.rs-tab-btn--active]="activeTab() === 'active'"
         (click)="activeTab.set('active')"
       >
@@ -98,6 +100,8 @@
       <button
         type="button"
         class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'pending'"
         [class.rs-tab-btn--active]="activeTab() === 'pending'"
         (click)="activeTab.set('pending')"
       >
@@ -110,6 +114,8 @@
       <button
         type="button"
         class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'all'"
         [class.rs-tab-btn--active]="activeTab() === 'all'"
         (click)="activeTab.set('all')"
       >
@@ -119,6 +125,8 @@
       <button
         type="button"
         class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'saved'"
         [class.rs-tab-btn--active]="activeTab() === 'saved'"
         (click)="activeTab.set('saved')"
       >
@@ -128,6 +136,8 @@
       <button
         type="button"
         class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'escrow'"
         [class.rs-tab-btn--active]="activeTab() === 'escrow'"
         (click)="activeTab.set('escrow')"
       >

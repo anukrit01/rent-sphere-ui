@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -522,5 +522,24 @@ export class AdminDashboard implements OnInit {
   public onConfirmDialogCancel(): void {
     this.showConfirmDialog.set(false);
     this.confirmCallback = null;
+  }
+
+  @HostListener('window:keydown.escape')
+  public handleEscape(): void {
+    if (this.showConfirmDialog()) {
+      this.onConfirmDialogCancel();
+      return;
+    }
+    if (this.showReasonModal()) {
+      this.closeReasonModal();
+      return;
+    }
+    if (this.showAddCategoryModal()) {
+      this.closeAddCategory();
+      return;
+    }
+    if (this.inspectingAsset()) {
+      this.closeInspect();
+    }
   }
 }

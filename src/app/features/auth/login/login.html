@@ -97,14 +97,16 @@
               Email Address <span class="rs-required">*</span>
             </label>
             <div class="rs-input-wrapper">
-              <mat-icon class="rs-input-icon">mail_outline</mat-icon>
+              <mat-icon class="rs-input-icon" aria-hidden="true">mail_outline</mat-icon>
               <input id="login-email" type="email" class="rs-input"
                 [class.rs-input--error]="emailControl?.invalid && emailControl?.touched" formControlName="email"
-                placeholder="name@company.in" autocomplete="email" />
+                placeholder="name@company.in" autocomplete="email"
+                [attr.aria-invalid]="emailControl?.invalid && emailControl?.touched"
+                [attr.aria-describedby]="emailControl?.invalid && emailControl?.touched ? 'login-email-error' : null" />
             </div>
             @if (emailControl?.invalid && emailControl?.touched) {
-            <div class="rs-form-error">
-              <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+            <div class="rs-form-error" id="login-email-error" role="alert">
+              <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
               <span>Please enter a valid work email address</span>
             </div>
             }
@@ -121,20 +123,23 @@
               </button>
             </div>
             <div class="rs-input-wrapper">
-              <mat-icon class="rs-input-icon">lock_outline</mat-icon>
+              <mat-icon class="rs-input-icon" aria-hidden="true">lock_outline</mat-icon>
               <input id="login-password" [type]="showPassword() ? 'text' : 'password'" class="rs-input"
                 [class.rs-input--error]="passwordControl?.invalid && passwordControl?.touched"
-                formControlName="password" placeholder="••••••••" autocomplete="current-password" />
+                formControlName="password" placeholder="••••••••" autocomplete="current-password"
+                [attr.aria-invalid]="passwordControl?.invalid && passwordControl?.touched"
+                [attr.aria-describedby]="passwordControl?.invalid && passwordControl?.touched ? 'login-password-error' : null" />
               <button type="button" class="rs-input-suffix rs-btn rs-btn--ghost rs-btn--icon rs-btn--sm"
-                (click)="toggleShowPassword()" tabindex="-1" aria-label="Toggle password visibility">
-                <mat-icon style="font-size: 18px; width: 18px; height: 18px;">
+                (click)="toggleShowPassword()" [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+                [attr.aria-pressed]="showPassword()">
+                <mat-icon style="font-size: 18px; width: 18px; height: 18px;" aria-hidden="true">
                   {{ showPassword() ? 'visibility_off' : 'visibility' }}
                 </mat-icon>
               </button>
             </div>
             @if (passwordControl?.invalid && passwordControl?.touched) {
-            <div class="rs-form-error">
-              <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+            <div class="rs-form-error" id="login-password-error" role="alert">
+              <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
               <span>Password must be at least 6 characters</span>
             </div>
             }
@@ -142,8 +147,8 @@
 
           <!-- Remember Me -->
           <div class="rs-flex rs-justify-between rs-items-center rs-mb-4">
-            <label class="rs-checkbox">
-              <input type="checkbox" formControlName="rememberMe" />
+            <label class="rs-checkbox" for="login-remember-me">
+              <input id="login-remember-me" type="checkbox" formControlName="rememberMe" />
               <span class="rs-body-sm">Remember this device</span>
             </label>
           </div>

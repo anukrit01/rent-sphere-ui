@@ -56,14 +56,16 @@
     <!-- 2. LOCATION / REGION -->
     <div class="rs-filter-group">
       <div class="rs-filter-group__header">
-        <span class="rs-label">Rental Hub / Location</span>
+        <label for="filter-location-select" class="rs-label">Rental Hub / Location</label>
       </div>
       <div class="rs-input-wrapper">
-        <mat-icon class="rs-input-icon">place</mat-icon>
+        <mat-icon class="rs-input-icon" aria-hidden="true">place</mat-icon>
         <select
+          id="filter-location-select"
           class="rs-input rs-input--sm"
           [ngModel]="currentFilters.location"
           (ngModelChange)="setLocation($event)"
+          aria-label="Filter machinery by rental hub or location"
         >
           @for (loc of locations; track loc.id) {
             <option [value]="loc.city">{{ loc.city }}{{ loc.id !== 'loc-all' ? ', ' + loc.state : '' }}</option>
@@ -79,12 +81,13 @@
       <div class="rs-filter-group__header">
         <span class="rs-label">Daily Rental Rate (INR)</span>
       </div>
-      <div class="rs-price-presets">
+      <div class="rs-price-presets" role="group" aria-label="Rental rate price tiers">
         @for (preset of pricePresets; track preset.label) {
           <button
             type="button"
             class="rs-preset-chip"
             [class.rs-preset-chip--active]="currentFilters.minPrice === preset.min && currentFilters.maxPrice === preset.max"
+            [attr.aria-pressed]="currentFilters.minPrice === preset.min && currentFilters.maxPrice === preset.max"
             (click)="setPricePreset(preset)"
           >
             {{ preset.label }}
@@ -95,21 +98,25 @@
       <!-- Custom Min/Max Inputs -->
       <div class="rs-form-row rs-mt-3">
         <div class="rs-form-group rs-mb-0">
-          <label class="rs-label-sm">Min (₹)</label>
+          <label for="filter-price-min" class="rs-label-sm">Min (₹)</label>
           <input
+            id="filter-price-min"
             type="number"
             class="rs-input rs-input--sm"
             placeholder="0"
+            aria-label="Minimum daily rental rate in Indian rupees"
             [ngModel]="currentFilters.minPrice"
             (ngModelChange)="currentFilters.minPrice = $event; onFilterUpdate()"
           />
         </div>
         <div class="rs-form-group rs-mb-0">
-          <label class="rs-label-sm">Max (₹)</label>
+          <label for="filter-price-max" class="rs-label-sm">Max (₹)</label>
           <input
+            id="filter-price-max"
             type="number"
             class="rs-input rs-input--sm"
             placeholder="25000"
+            aria-label="Maximum daily rental rate in Indian rupees"
             [ngModel]="currentFilters.maxPrice"
             (ngModelChange)="currentFilters.maxPrice = $event; onFilterUpdate()"
           />
@@ -124,16 +131,18 @@
       <div class="rs-filter-group__header">
         <span class="rs-label">Availability & Logistics</span>
       </div>
-      <label class="rs-checkbox">
+      <label class="rs-checkbox" for="filter-avail-toggle">
         <input
+          id="filter-avail-toggle"
           type="checkbox"
           [ngModel]="currentFilters.availableOnly"
           (ngModelChange)="currentFilters.availableOnly = $event; onFilterUpdate()"
         />
         <span>Available for Immediate Dispatch</span>
       </label>
-      <label class="rs-checkbox rs-mt-2">
+      <label class="rs-checkbox rs-mt-2" for="filter-operator-toggle">
         <input
+          id="filter-operator-toggle"
           type="checkbox"
           [ngModel]="currentFilters.operatorRequired"
           (ngModelChange)="currentFilters.operatorRequired = $event; onFilterUpdate()"

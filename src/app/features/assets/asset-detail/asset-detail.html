@@ -84,9 +84,11 @@
             class="rs-btn rs-btn--secondary rs-btn--icon"
             [class.rs-btn--active-fav]="isFavorite"
             (click)="toggleFavorite()"
+            [attr.aria-label]="isFavorite ? 'Remove from favorites' : 'Save to favorites'"
+            [attr.aria-pressed]="isFavorite"
             [matTooltip]="isFavorite ? 'Remove from favorites' : 'Save to favorites'"
           >
-            <mat-icon [style.color]="isFavorite ? 'var(--rs-color-error-500)' : 'inherit'">
+            <mat-icon [style.color]="isFavorite ? 'var(--rs-color-error-500)' : 'inherit'" aria-hidden="true">
               {{ isFavorite ? 'favorite' : 'favorite_border' }}
             </mat-icon>
           </button>
@@ -94,9 +96,10 @@
             type="button"
             class="rs-btn rs-btn--secondary rs-btn--icon"
             (click)="shareAsset()"
+            aria-label="Share equipment listing link"
             matTooltip="Copy machine listing link"
           >
-            <mat-icon>share</mat-icon>
+            <mat-icon aria-hidden="true">share</mat-icon>
           </button>
         </div>
       </header>
@@ -123,15 +126,17 @@
 
             <!-- Thumbnail Selector Strip -->
             @if (asset()!.images.length > 1) {
-              <div class="rs-gallery__thumbs">
+              <div class="rs-gallery__thumbs" role="group" aria-label="Machine photo thumbnails">
                 @for (img of asset()!.images; track img; let idx = $index) {
                   <button
                     type="button"
                     class="rs-gallery__thumb"
                     [class.rs-gallery__thumb--active]="activeImageIndex() === idx"
+                    [attr.aria-label]="'View machine photo ' + (idx + 1) + ' of ' + asset()!.images.length"
+                    [attr.aria-pressed]="activeImageIndex() === idx"
                     (click)="activeImageIndex.set(idx)"
                   >
-                    <img [src]="img" [alt]="asset()!.title + ' preview ' + (idx + 1)" />
+                    <img [src]="img" [alt]="asset()!.title + ' preview photo ' + (idx + 1)" />
                   </button>
                 }
               </div>
@@ -175,10 +180,12 @@
 
           <!-- 3. TABBED INFORMATION SECTION -->
           <div class="rs-detail-tabs-container rs-card rs-mb-6">
-            <div class="rs-tabs-nav">
+            <div class="rs-tabs-nav" role="tablist" aria-label="Machinery specifications and details">
               <button
                 type="button"
                 class="rs-tab-btn"
+                role="tab"
+                [attr.aria-selected]="activeTab() === 'overview'"
                 [class.rs-tab-btn--active]="activeTab() === 'overview'"
                 (click)="activeTab.set('overview')"
               >
@@ -187,6 +194,8 @@
               <button
                 type="button"
                 class="rs-tab-btn"
+                role="tab"
+                [attr.aria-selected]="activeTab() === 'specs'"
                 [class.rs-tab-btn--active]="activeTab() === 'specs'"
                 (click)="activeTab.set('specs')"
               >
@@ -195,6 +204,8 @@
               <button
                 type="button"
                 class="rs-tab-btn"
+                role="tab"
+                [attr.aria-selected]="activeTab() === 'features'"
                 [class.rs-tab-btn--active]="activeTab() === 'features'"
                 (click)="activeTab.set('features')"
               >
@@ -203,6 +214,8 @@
               <button
                 type="button"
                 class="rs-tab-btn"
+                role="tab"
+                [attr.aria-selected]="activeTab() === 'terms'"
                 [class.rs-tab-btn--active]="activeTab() === 'terms'"
                 (click)="activeTab.set('terms')"
               >
@@ -211,6 +224,8 @@
               <button
                 type="button"
                 class="rs-tab-btn"
+                role="tab"
+                [attr.aria-selected]="activeTab() === 'reviews'"
                 [class.rs-tab-btn--active]="activeTab() === 'reviews'"
                 (click)="activeTab.set('reviews')"
               >

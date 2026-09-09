@@ -9,7 +9,7 @@ import { MaterialModule } from '../../material/material-module';
   template: `
     <div class="rs-error-state rs-card rs-animate-fade-in" role="alert">
       <div class="rs-error-state__icon-box">
-        <mat-icon>{{ icon }}</mat-icon>
+        <mat-icon aria-hidden="true">{{ icon }}</mat-icon>
       </div>
       <h3 class="rs-h3 rs-error-state__title">{{ title }}</h3>
       <p class="rs-body rs-error-state__desc">{{ message }}</p>
@@ -17,7 +17,7 @@ import { MaterialModule } from '../../material/material-module';
       @if (showRetry) {
         <div class="rs-error-state__actions">
           <button type="button" class="rs-btn rs-btn--secondary rs-btn--error" (click)="retryClick.emit()">
-            <mat-icon>refresh</mat-icon>
+            <mat-icon aria-hidden="true">refresh</mat-icon>
             <span>{{ retryLabel }}</span>
           </button>
         </div>

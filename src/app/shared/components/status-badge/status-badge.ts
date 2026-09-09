@@ -10,6 +10,8 @@ import { BookingStatus } from '../../models/booking.model';
   template: `
     <span
       class="rs-badge"
+      role="status"
+      [attr.aria-label]="'Status: ' + (label || getStatusLabel())"
       [class.rs-badge--success]="status === 'available' || status === 'approved' || status === 'active' || status === 'completed'"
       [class.rs-badge--warning]="status === 'rented' || status === 'changes_requested'"
       [class.rs-badge--error]="status === 'unavailable' || status === 'rejected' || status === 'cancelled'"
@@ -18,6 +20,7 @@ import { BookingStatus } from '../../models/booking.model';
     >
       <span
         class="rs-status-dot"
+        aria-hidden="true"
         [class.rs-status-dot--available]="status === 'available' || status === 'approved' || status === 'active' || status === 'completed'"
         [class.rs-status-dot--busy]="status === 'rented' || status === 'changes_requested'"
         [class.rs-status-dot--unavailable]="status === 'unavailable' || status === 'rejected' || status === 'cancelled'"

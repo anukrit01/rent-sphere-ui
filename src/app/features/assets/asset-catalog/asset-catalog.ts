@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -250,5 +250,12 @@ export class AssetCatalogComponent implements OnInit {
     }
 
     return pills;
+  }
+
+  @HostListener('window:keydown.escape')
+  public handleEscape(): void {
+    if (this.mobileFilterOpen()) {
+      this.mobileFilterOpen.set(false);
+    }
   }
 }

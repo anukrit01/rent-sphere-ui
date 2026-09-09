@@ -87,14 +87,18 @@
   <!--  2. TABBED NAVIGATION                                      -->
   <!-- ========================================================== -->
   <div class="rs-dashboard-tabs rs-card rs-mb-6">
-    <div class="rs-tabs-nav">
+    <div class="rs-tabs-nav" role="tablist" aria-label="Fleet management sections">
       <button type="button" class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'fleet'"
         [class.rs-tab-btn--active]="activeTab() === 'fleet'"
         (click)="activeTab.set('fleet')">
         <span>My Fleet ({{ fleetAssets().length }})</span>
       </button>
 
       <button type="button" class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'incoming'"
         [class.rs-tab-btn--active]="activeTab() === 'incoming'"
         (click)="activeTab.set('incoming')">
         <span>Incoming Requests</span>
@@ -104,6 +108,8 @@
       </button>
 
       <button type="button" class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'active'"
         [class.rs-tab-btn--active]="activeTab() === 'active'"
         (click)="activeTab.set('active')">
         <span>Active Deployments</span>
@@ -113,12 +119,16 @@
       </button>
 
       <button type="button" class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'earnings'"
         [class.rs-tab-btn--active]="activeTab() === 'earnings'"
         (click)="activeTab.set('earnings')">
         <span>Earnings & Settlements</span>
       </button>
 
       <button type="button" class="rs-tab-btn"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'history'"
         [class.rs-tab-btn--active]="activeTab() === 'history'"
         (click)="activeTab.set('history')">
         <span>Rental History</span>

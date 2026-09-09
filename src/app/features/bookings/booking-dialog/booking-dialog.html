@@ -1,4 +1,4 @@
-<div class="rs-booking-modal">
+<div class="rs-booking-modal" role="dialog" aria-modal="true" aria-labelledby="booking-dialog-title">
   
   <!-- Dialog Header -->
   <div class="rs-booking-modal__header">
@@ -8,7 +8,7 @@
       </div>
       <div>
         <span class="rs-badge rs-badge--primary rs-badge--sm">{{ asset.category }}</span>
-        <h2 class="rs-h4 rs-booking-modal__title">{{ asset.title }}</h2>
+        <h2 id="booking-dialog-title" class="rs-h4 rs-booking-modal__title">{{ asset.title }}</h2>
         <div class="rs-caption rs-text-muted rs-flex rs-items-center rs-gap-1">
           <mat-icon style="font-size: 14px; width: 14px; height: 14px;">place</mat-icon>
           <span>{{ asset.location }}</span>
@@ -74,6 +74,7 @@
               type="checkbox"
               [ngModel]="operatorRequired()"
               (ngModelChange)="operatorRequired.set($event)"
+              aria-label="Certified Machinery Operator (+₹800/day)"
             />
             <div>
               <strong>Certified Machinery Operator</strong>
@@ -92,6 +93,7 @@
               type="checkbox"
               [ngModel]="deliveryRequired()"
               (ngModelChange)="deliveryRequired.set($event)"
+              aria-label="Low-Bed Trailer Site Delivery (+₹2500 flat)"
             />
             <div>
               <strong>Low-Bed Trailer Site Delivery</strong>

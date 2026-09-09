@@ -4,8 +4,9 @@
     <!-- LEFT: Mobile Menu Toggle & Brand Wordmark -->
     <div class="rs-header__left">
       <button type="button" class="rs-header__mobile-toggle rs-btn rs-btn--ghost rs-btn--icon rs-hidden-desktop"
-        (click)="toggleMobileMenu()" aria-label="Toggle navigation menu" [attr.aria-expanded]="mobileMenuOpen()">
-        <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        (click)="toggleMobileMenu()" aria-label="Toggle navigation menu" [attr.aria-expanded]="mobileMenuOpen()"
+        aria-controls="mobile-nav-drawer">
+        <mat-icon aria-hidden="true">{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
       </button>
 
       <a routerLink="/" class="rs-brand" (click)="closeMobileMenu()">
@@ -391,7 +392,8 @@
 
   <!-- Mobile Full-Screen Navigation Drawer -->
   @if (mobileMenuOpen()) {
-  <div class="rs-mobile-drawer rs-animate-fade-in">
+  <div class="rs-mobile-drawer rs-animate-fade-in" id="mobile-nav-drawer" role="dialog" aria-modal="true"
+    aria-label="Navigation Menu" (keydown.escape)="closeMobileMenu()">
     <div class="rs-mobile-drawer__overlay" (click)="closeMobileMenu()"></div>
     <div class="rs-mobile-drawer__content rs-animate-slide-in-right">
 
@@ -399,36 +401,36 @@
       <div class="rs-mobile-drawer__header">
         <div class="rs-brand">
           <div class="rs-brand__icon-wrapper">
-            <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
+            <mat-icon class="rs-brand__icon" aria-hidden="true">precision_manufacturing</mat-icon>
           </div>
           <span class="rs-brand__name">Rent<span class="rs-brand__accent">Sphere</span></span>
         </div>
         <button type="button" class="rs-btn rs-btn--ghost rs-btn--icon" (click)="closeMobileMenu()"
           aria-label="Close menu">
-          <mat-icon>close</mat-icon>
+          <mat-icon aria-hidden="true">close</mat-icon>
         </button>
       </div>
 
       <!-- Mobile Search -->
       <div class="rs-mobile-drawer__search">
-        <form (ngSubmit)="onSearchSubmit()">
+        <form (ngSubmit)="onSearchSubmit()" role="search">
           <div class="rs-input-wrapper">
             <div class="rs-input-icon">
-              <mat-icon>search</mat-icon>
+              <mat-icon aria-hidden="true">search</mat-icon>
             </div>
             <input type="search" class="rs-input" placeholder="Search equipment..." [ngModel]="searchQuery()"
-              (ngModelChange)="searchQuery.set($event)" name="mobileSearch" />
+              (ngModelChange)="searchQuery.set($event)" name="mobileSearch" aria-label="Search machinery and equipment" />
           </div>
         </form>
       </div>
 
       <!-- Mobile Location Selector -->
       <div class="rs-mobile-drawer__location-box">
-        <div class="rs-overline">Selected Location</div>
+        <label for="mobile-location-select" class="rs-overline">Selected Location</label>
         <div class="rs-flex rs-items-center rs-gap-2 rs-mt-2">
-          <mat-icon class="rs-text-accent">place</mat-icon>
-          <select class="rs-input rs-input--sm" [ngModel]="selectedLocation().id"
-            (ngModelChange)="selectLocationById($event)">
+          <mat-icon class="rs-text-accent" aria-hidden="true">place</mat-icon>
+          <select id="mobile-location-select" class="rs-input rs-input--sm" [ngModel]="selectedLocation().id"
+            (ngModelChange)="selectLocationById($event)" aria-label="Select location hub">
             @for (loc of locations; track loc.id) {
             <option [value]="loc.id">{{ loc.city }}, {{ loc.state }}</option>
             }

@@ -10,7 +10,7 @@ import { MaterialModule } from '../../material/material-module';
   template: `
     <div class="rs-empty-state rs-card rs-animate-fade-in">
       <div class="rs-empty-state__icon-box">
-        <mat-icon>{{ icon }}</mat-icon>
+        <mat-icon aria-hidden="true">{{ icon }}</mat-icon>
       </div>
       <h3 class="rs-h3 rs-empty-state__title">{{ title }}</h3>
       <p class="rs-body rs-empty-state__desc">{{ message }}</p>
@@ -20,14 +20,14 @@ import { MaterialModule } from '../../material/material-module';
           @if (actionRoute) {
             <a [routerLink]="actionRoute" class="rs-btn rs-btn--primary">
               @if (actionIcon) {
-                <mat-icon>{{ actionIcon }}</mat-icon>
+                <mat-icon aria-hidden="true">{{ actionIcon }}</mat-icon>
               }
               <span>{{ actionLabel }}</span>
             </a>
           } @else {
             <button type="button" class="rs-btn rs-btn--primary" (click)="actionClick.emit()">
               @if (actionIcon) {
-                <mat-icon>{{ actionIcon }}</mat-icon>
+                <mat-icon aria-hidden="true">{{ actionIcon }}</mat-icon>
               }
               <span>{{ actionLabel }}</span>
             </button>

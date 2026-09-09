@@ -7,7 +7,7 @@
   <div class="rs-asset-card__media">
     <img
       [src]="asset.coverImage || (asset.images && asset.images[0]) || 'https://images.unsplash.com/photo-1579829366248-204fe8413f31?auto=format&fit=crop&w=800&q=80'"
-      [alt]="asset.title"
+      [alt]="asset.title + ' - ' + asset.category"
       class="rs-asset-card__img"
       loading="lazy"
     />
@@ -29,9 +29,10 @@
       class="rs-asset-card__fav"
       [class.rs-asset-card__fav--active]="isFavorite"
       (click)="toggleFavorite($event)"
-      [attr.aria-label]="isFavorite ? 'Remove from favorites' : 'Save to favorites'"
+      [attr.aria-label]="isFavorite ? 'Remove ' + asset.title + ' from favorites' : 'Save ' + asset.title + ' to favorites'"
+      [attr.aria-pressed]="isFavorite"
     >
-      <mat-icon>{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+      <mat-icon aria-hidden="true">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
     </button>
 
     <!-- Location Pill on Image Bottom -->
@@ -99,9 +100,10 @@
       [routerLink]="['/assets', asset.id]"
       class="rs-btn rs-btn--secondary rs-btn--sm rs-asset-card__cta"
       (click)="$event.stopPropagation()"
+      [attr.aria-label]="'View details for ' + asset.title"
     >
       <span>View Details</span>
-      <mat-icon style="font-size: 16px; width: 16px; height: 16px;">arrow_forward</mat-icon>
+      <mat-icon style="font-size: 16px; width: 16px; height: 16px;" aria-hidden="true">arrow_forward</mat-icon>
     </a>
   </div>
 

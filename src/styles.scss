@@ -51,6 +51,32 @@
   border: 0;
 }
 
+// Skip to main content link — accessible keyboard navigation
+.rs-skip-link {
+  position: fixed;
+  top: -100px;
+  left: var(--rs-space-4);
+  z-index: calc(var(--rs-z-modal) + 100);
+  background-color: var(--rs-color-primary-900);
+  color: var(--rs-color-white);
+  padding: var(--rs-space-3) var(--rs-space-5);
+  border: 2px solid var(--rs-color-accent-400);
+  border-radius: var(--rs-radius-md);
+  font-weight: var(--rs-font-semibold);
+  font-size: var(--rs-text-sm);
+  box-shadow: var(--rs-shadow-xl);
+  text-decoration: none;
+  transition: top var(--rs-transition-fast) ease;
+
+  &:focus,
+  &:focus-visible {
+    top: var(--rs-space-4);
+    outline: 2px solid var(--rs-border-focus);
+    outline-offset: 2px;
+    color: var(--rs-color-white);
+  }
+}
+
 // Main content wrapper — pushes content below fixed header
 .rs-main {
   min-height: calc(100vh - var(--rs-header-height));

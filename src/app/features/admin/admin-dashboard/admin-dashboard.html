@@ -23,11 +23,11 @@
   } @else {
     <section class="rs-admin-kpi-grid animate-fade-in" aria-label="Platform Overview Metrics">
       <!-- KPI 1: Total Users -->
-      <div class="rs-admin-kpi-card" (click)="activeTab.set('users')">
+      <div class="rs-admin-kpi-card" tabindex="0" role="button" aria-label="Registered Members: {{ totalUsersCount() }}, click to view Users Directory" (click)="activeTab.set('users')" (keydown.enter)="activeTab.set('users')" (keydown.space)="activeTab.set('users'); $event.preventDefault()">
         <div class="rs-admin-kpi-card__top">
           <span class="rs-admin-kpi-label">Registered Members</span>
           <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--blue">
-            <mat-icon>people</mat-icon>
+            <mat-icon aria-hidden="true">people</mat-icon>
           </div>
         </div>
         <div class="rs-admin-kpi-value">{{ totalUsersCount() }}</div>
@@ -38,11 +38,11 @@
       </div>
 
       <!-- KPI 2: Total Equipment -->
-      <div class="rs-admin-kpi-card" (click)="activeTab.set('categories')">
+      <div class="rs-admin-kpi-card" tabindex="0" role="button" aria-label="Marketplace Fleet: {{ totalEquipmentCount() }} machines across {{ categories().length }} categories, click to view Categories" (click)="activeTab.set('categories')" (keydown.enter)="activeTab.set('categories')" (keydown.space)="activeTab.set('categories'); $event.preventDefault()">
         <div class="rs-admin-kpi-card__top">
           <span class="rs-admin-kpi-label">Marketplace Fleet</span>
           <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--indigo">
-            <mat-icon>precision_manufacturing</mat-icon>
+            <mat-icon aria-hidden="true">precision_manufacturing</mat-icon>
           </div>
         </div>
         <div class="rs-admin-kpi-value">{{ totalEquipmentCount() }}</div>
@@ -55,13 +55,18 @@
       <!-- KPI 3: Pending Approvals (High Priority) -->
       <div
         class="rs-admin-kpi-card"
+        tabindex="0"
+        role="button"
+        aria-label="Pending Audits: {{ pendingApprovalsCount() }}, click to view Equipment Approvals"
         [class.rs-admin-kpi-card--alert]="pendingApprovalsCount() > 0"
         (click)="activeTab.set('approvals')"
+        (keydown.enter)="activeTab.set('approvals')"
+        (keydown.space)="activeTab.set('approvals'); $event.preventDefault()"
       >
         <div class="rs-admin-kpi-card__top">
           <span class="rs-admin-kpi-label">Pending Audits</span>
           <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--amber">
-            <mat-icon>pending_actions</mat-icon>
+            <mat-icon aria-hidden="true">pending_actions</mat-icon>
           </div>
         </div>
         <div class="rs-admin-kpi-value rs-admin-kpi-value--amber">{{ pendingApprovalsCount() }}</div>
@@ -77,11 +82,11 @@
       </div>
 
       <!-- KPI 4: Active Rentals -->
-      <div class="rs-admin-kpi-card" (click)="activeTab.set('bookings')">
+      <div class="rs-admin-kpi-card" tabindex="0" role="button" aria-label="Active Deployments: {{ activeRentalsCount() }}, click to view Bookings" (click)="activeTab.set('bookings')" (keydown.enter)="activeTab.set('bookings')" (keydown.space)="activeTab.set('bookings'); $event.preventDefault()">
         <div class="rs-admin-kpi-card__top">
           <span class="rs-admin-kpi-label">Active Deployments</span>
           <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--green">
-            <mat-icon>bolt</mat-icon>
+            <mat-icon aria-hidden="true">bolt</mat-icon>
           </div>
         </div>
         <div class="rs-admin-kpi-value">{{ activeRentalsCount() }}</div>
@@ -92,11 +97,11 @@
       </div>
 
       <!-- KPI 5: Platform Revenue & Escrow -->
-      <div class="rs-admin-kpi-card" (click)="activeTab.set('reports')">
+      <div class="rs-admin-kpi-card" tabindex="0" role="button" aria-label="Gross Platform Volume: {{ (totalRevenue() / 1000) | number:'1.0-1' }} thousand rupees, click to view Financial Reports" (click)="activeTab.set('reports')" (keydown.enter)="activeTab.set('reports')" (keydown.space)="activeTab.set('reports'); $event.preventDefault()">
         <div class="rs-admin-kpi-card__top">
           <span class="rs-admin-kpi-label">Gross Platform Volume</span>
           <div class="rs-admin-kpi-icon-box rs-admin-kpi-icon-box--gold">
-            <mat-icon>account_balance</mat-icon>
+            <mat-icon aria-hidden="true">account_balance</mat-icon>
           </div>
         </div>
         <div class="rs-admin-kpi-value">₹{{ (totalRevenue() / 1000) | number:'1.0-1' }}k</div>
@@ -111,14 +116,16 @@
   <!-- ==================================================== -->
   <!-- MAIN ADMIN NAVIGATION TABS                           -->
   <!-- ==================================================== -->
-  <div class="rs-admin-tabs-nav">
+  <div class="rs-admin-tabs-nav" role="tablist" aria-label="Admin Navigation Tabs">
     <button
       type="button"
       class="rs-admin-tab-btn"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'approvals'"
       [class.rs-admin-tab-btn--active]="activeTab() === 'approvals'"
       (click)="activeTab.set('approvals')"
     >
-      <mat-icon class="rs-tab-icon">fact_check</mat-icon>
+      <mat-icon class="rs-tab-icon" aria-hidden="true">fact_check</mat-icon>
       <span>Equipment Approval</span>
       @if (pendingApprovalsCount() > 0) {
         <span class="rs-tab-badge rs-tab-badge--amber">{{ pendingApprovalsCount() }}</span>
@@ -128,10 +135,12 @@
     <button
       type="button"
       class="rs-admin-tab-btn"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'users'"
       [class.rs-admin-tab-btn--active]="activeTab() === 'users'"
       (click)="activeTab.set('users')"
     >
-      <mat-icon class="rs-tab-icon">manage_accounts</mat-icon>
+      <mat-icon class="rs-tab-icon" aria-hidden="true">manage_accounts</mat-icon>
       <span>Users Directory</span>
       <span class="rs-tab-badge">{{ users().length }}</span>
     </button>
@@ -139,10 +148,12 @@
     <button
       type="button"
       class="rs-admin-tab-btn"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'bookings'"
       [class.rs-admin-tab-btn--active]="activeTab() === 'bookings'"
       (click)="activeTab.set('bookings')"
     >
-      <mat-icon class="rs-tab-icon">receipt_long</mat-icon>
+      <mat-icon class="rs-tab-icon" aria-hidden="true">receipt_long</mat-icon>
       <span>Bookings &amp; Escrow</span>
       <span class="rs-tab-badge">{{ bookings().length }}</span>
     </button>
@@ -150,10 +161,12 @@
     <button
       type="button"
       class="rs-admin-tab-btn"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'categories'"
       [class.rs-admin-tab-btn--active]="activeTab() === 'categories'"
       (click)="activeTab.set('categories')"
     >
-      <mat-icon class="rs-tab-icon">category</mat-icon>
+      <mat-icon class="rs-tab-icon" aria-hidden="true">category</mat-icon>
       <span>Machinery Categories</span>
       <span class="rs-tab-badge">{{ categories().length }}</span>
     </button>
@@ -161,10 +174,12 @@
     <button
       type="button"
       class="rs-admin-tab-btn"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'reports'"
       [class.rs-admin-tab-btn--active]="activeTab() === 'reports'"
       (click)="activeTab.set('reports')"
     >
-      <mat-icon class="rs-tab-icon">analytics</mat-icon>
+      <mat-icon class="rs-tab-icon" aria-hidden="true">analytics</mat-icon>
       <span>Financial Reports</span>
     </button>
   </div>
@@ -173,7 +188,7 @@
   <!-- AREA 1: EQUIPMENT APPROVAL WORKFLOW                  -->
   <!-- ==================================================== -->
   @if (activeTab() === 'approvals') {
-    <section class="rs-admin-section animate-fade-in" aria-labelledby="approvals-heading">
+    <section class="rs-admin-section animate-fade-in" role="tabpanel" aria-labelledby="approvals-heading">
       <div class="rs-section-header">
         <div>
           <h2 id="approvals-heading" class="rs-section-title">Equipment Verification &amp; Approval Desk</h2>
@@ -546,7 +561,7 @@
   <!-- AREA 2: USERS DIRECTORY MANAGEMENT                   -->
   <!-- ==================================================== -->
   @if (activeTab() === 'users') {
-    <section class="rs-admin-section animate-fade-in" aria-labelledby="users-heading">
+    <section class="rs-admin-section animate-fade-in" role="tabpanel" aria-labelledby="users-heading">
       <div class="rs-section-header">
         <div>
           <h2 id="users-heading" class="rs-section-title">Marketplace Members Directory</h2>
@@ -716,7 +731,7 @@
   <!-- AREA 3: BOOKINGS & ESCROW OVERSIGHT                  -->
   <!-- ==================================================== -->
   @if (activeTab() === 'bookings') {
-    <section class="rs-admin-section animate-fade-in" aria-labelledby="bookings-heading">
+    <section class="rs-admin-section animate-fade-in" role="tabpanel" aria-labelledby="bookings-heading">
       <div class="rs-section-header">
         <div>
           <h2 id="bookings-heading" class="rs-section-title">Bookings &amp; Escrow Settlement Ledger</h2>
@@ -873,7 +888,7 @@
   <!-- AREA 4: MACHINERY CATEGORIES MANAGEMENT              -->
   <!-- ==================================================== -->
   @if (activeTab() === 'categories') {
-    <section class="rs-admin-section animate-fade-in" aria-labelledby="categories-heading">
+    <section class="rs-admin-section animate-fade-in" role="tabpanel" aria-labelledby="categories-heading">
       <div class="rs-section-header">
         <div>
           <h2 id="categories-heading" class="rs-section-title">Machinery Categories &amp; Asset Taxonomy</h2>
@@ -935,7 +950,7 @@
   <!-- AREA 5: FINANCIAL REPORTS & ANALYTICS                -->
   <!-- ==================================================== -->
   @if (activeTab() === 'reports') {
-    <section class="rs-admin-section animate-fade-in" aria-labelledby="reports-heading">
+    <section class="rs-admin-section animate-fade-in" role="tabpanel" aria-labelledby="reports-heading">
       <div class="rs-section-header">
         <div>
           <h2 id="reports-heading" class="rs-section-title">Platform Financials &amp; Regional Performance</h2>
@@ -1040,14 +1055,14 @@
   <!-- MODAL 1: REASON ACTION MODAL (REJECT / REQUEST CHANGES)-->
   <!-- ==================================================== -->
   @if (showReasonModal()) {
-    <div class="rs-modal-backdrop animate-fade-in" (click)="closeReasonModal()">
+    <div class="rs-modal-backdrop animate-fade-in" (click)="closeReasonModal()" role="dialog" aria-modal="true" aria-labelledby="reason-modal-title">
       <div class="rs-modal-card" (click)="$event.stopPropagation()">
         <div class="rs-modal-header">
           <div class="rs-modal-icon-box" [class.rs-modal-icon-box--danger]="reasonActionType() === 'reject'">
-            <mat-icon>{{ reasonActionType() === 'reject' ? 'cancel' : 'rate_review' }}</mat-icon>
+            <mat-icon aria-hidden="true">{{ reasonActionType() === 'reject' ? 'cancel' : 'rate_review' }}</mat-icon>
           </div>
           <div>
-            <h3>
+            <h3 id="reason-modal-title">
               {{ reasonActionType() === 'reject' ? 'Decline Equipment Listing' : 'Request Changes from Fleet Owner' }}
             </h3>
             <p>
@@ -1077,6 +1092,7 @@
               <button
                 type="button"
                 class="rs-quick-chip-btn"
+                aria-label="Use preset: RC or Insurance certificate missing"
                 (click)="reasonText.set('Missing valid RC / Commercial Insurance certificate. Please upload updated documents.')"
               >
                 + RC / Insurance Missing
@@ -1084,6 +1100,7 @@
               <button
                 type="button"
                 class="rs-quick-chip-btn"
+                aria-label="Use preset: Poor photograph quality"
                 (click)="reasonText.set('Photographs are low resolution or blurred. Please upload clear daylight photos of undercarriage and cabin.')"
               >
                 + Poor Photo Quality
@@ -1091,6 +1108,7 @@
               <button
                 type="button"
                 class="rs-quick-chip-btn"
+                aria-label="Use preset: Incomplete dispatch yard address"
                 (click)="reasonText.set('Dispatch depot address is incomplete. Please provide full yard plot and low-bed trailer access notes.')"
               >
                 + Incomplete Yard Address
@@ -1110,7 +1128,7 @@
             [class.rs-btn--accent]="reasonActionType() === 'request_changes'"
             (click)="submitReasonAction()"
           >
-            <mat-icon class="rs-btn-icon">{{ reasonActionType() === 'reject' ? 'cancel' : 'send' }}</mat-icon>
+            <mat-icon class="rs-btn-icon" aria-hidden="true">{{ reasonActionType() === 'reject' ? 'cancel' : 'send' }}</mat-icon>
             <span>{{ reasonActionType() === 'reject' ? 'Submit Decline Notice' : 'Send Change Request' }}</span>
           </button>
         </div>
@@ -1122,15 +1140,15 @@
   <!-- MODAL 2: CONFIRMATION DIALOG (DESTRUCTIVE ACTIONS)   -->
   <!-- ==================================================== -->
   @if (showConfirmDialog()) {
-    <div class="rs-modal-backdrop animate-fade-in" (click)="onConfirmDialogCancel()">
+    <div class="rs-modal-backdrop animate-fade-in" (click)="onConfirmDialogCancel()" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title" aria-describedby="confirm-dialog-desc">
       <div class="rs-modal-card rs-modal-card--sm" (click)="$event.stopPropagation()">
         <div class="rs-modal-header">
           <div class="rs-modal-icon-box" [class.rs-modal-icon-box--danger]="confirmButtonType() === 'danger'">
-            <mat-icon>{{ confirmButtonType() === 'danger' ? 'warning' : 'info' }}</mat-icon>
+            <mat-icon aria-hidden="true">{{ confirmButtonType() === 'danger' ? 'warning' : 'info' }}</mat-icon>
           </div>
           <div>
-            <h3>{{ confirmTitle() }}</h3>
-            <p>{{ confirmMessage() }}</p>
+            <h3 id="confirm-dialog-title">{{ confirmTitle() }}</h3>
+            <p id="confirm-dialog-desc">{{ confirmMessage() }}</p>
           </div>
         </div>
 
@@ -1156,14 +1174,14 @@
   <!-- MODAL 3: ADD CATEGORY MODAL                          -->
   <!-- ==================================================== -->
   @if (showAddCategoryModal()) {
-    <div class="rs-modal-backdrop animate-fade-in" (click)="closeAddCategory()">
+    <div class="rs-modal-backdrop animate-fade-in" (click)="closeAddCategory()" role="dialog" aria-modal="true" aria-labelledby="add-cat-modal-title">
       <div class="rs-modal-card" (click)="$event.stopPropagation()">
         <div class="rs-modal-header">
           <div class="rs-modal-icon-box">
-            <mat-icon>category</mat-icon>
+            <mat-icon aria-hidden="true">category</mat-icon>
           </div>
           <div>
-            <h3>Add New Equipment Category</h3>
+            <h3 id="add-cat-modal-title">Add New Equipment Category</h3>
             <p>Expand the RentSphere marketplace classification taxonomy for future asset segments.</p>
           </div>
         </div>
@@ -1217,7 +1235,7 @@
             Cancel
           </button>
           <button type="button" class="rs-btn rs-btn--primary rs-btn--md" (click)="submitAddCategory()">
-            <mat-icon class="rs-btn-icon">check</mat-icon>
+            <mat-icon class="rs-btn-icon" aria-hidden="true">check</mat-icon>
             <span>Create Category</span>
           </button>
         </div>

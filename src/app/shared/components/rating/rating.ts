@@ -7,13 +7,17 @@ import { MaterialModule } from '../../material/material-module';
   standalone: true,
   imports: [CommonModule, MaterialModule],
   template: `
-    <div class="rs-rating" [class.rs-rating--sm]="size === 'sm'">
+    <div
+      class="rs-rating"
+      [class.rs-rating--sm]="size === 'sm'"
+      [attr.aria-label]="'Rated ' + (rating | number:'1.1-1') + ' out of 5 stars' + (reviewCount !== undefined ? ' based on ' + reviewCount + ' reviews' : '')"
+    >
       <div class="rs-rating__badge">
-        <mat-icon class="rs-rating__star">star</mat-icon>
+        <mat-icon class="rs-rating__star" aria-hidden="true">star</mat-icon>
         <span class="rs-rating__value">{{ rating | number:'1.1-1' }}</span>
       </div>
       @if (reviewCount !== undefined) {
-        <span class="rs-rating__count">({{ reviewCount }})</span>
+        <span class="rs-rating__count" aria-hidden="true">({{ reviewCount }})</span>
       }
     </div>
   `,

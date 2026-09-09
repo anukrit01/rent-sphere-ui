@@ -59,16 +59,20 @@
           
           <!-- 1. ACCOUNT TYPE SELECTOR -->
           <div class="rs-form-group rs-mb-4">
-            <label class="rs-form-label">I want to:</label>
-            <div class="rs-role-selector-grid">
+            <span class="rs-form-label" id="account-type-label">I want to:</span>
+            <div class="rs-role-selector-grid" role="radiogroup" aria-labelledby="account-type-label">
               
               <!-- Option 1: Renter -->
               <div
                 class="rs-role-card"
                 [class.rs-role-card--selected]="selectedRole() === 'renter'"
                 (click)="selectRole('renter')"
-                role="button"
+                (keydown.enter)="selectRole('renter')"
+                (keydown.space)="selectRole('renter'); $event.preventDefault()"
+                role="radio"
+                [attr.aria-checked]="selectedRole() === 'renter'"
                 tabindex="0"
+                aria-label="Rent Machinery - Contractor or Project Developer"
               >
                 <div class="rs-role-card__radio">
                   <div class="rs-radio-circle" [class.rs-radio-circle--checked]="selectedRole() === 'renter'"></div>
@@ -84,8 +88,12 @@
                 class="rs-role-card"
                 [class.rs-role-card--selected]="selectedRole() === 'leaser'"
                 (click)="selectRole('leaser')"
-                role="button"
+                (keydown.enter)="selectRole('leaser')"
+                (keydown.space)="selectRole('leaser'); $event.preventDefault()"
+                role="radio"
+                [attr.aria-checked]="selectedRole() === 'leaser'"
                 tabindex="0"
+                aria-label="List Equipment - Machinery Owner or Fleet Company"
               >
                 <div class="rs-role-card__radio">
                   <div class="rs-radio-circle" [class.rs-radio-circle--checked]="selectedRole() === 'leaser'"></div>
@@ -105,7 +113,7 @@
               Full Name <span class="rs-required">*</span>
             </label>
             <div class="rs-input-wrapper">
-              <mat-icon class="rs-input-icon">person_outline</mat-icon>
+              <mat-icon class="rs-input-icon" aria-hidden="true">person_outline</mat-icon>
               <input
                 id="reg-name"
                 type="text"
@@ -113,11 +121,14 @@
                 [class.rs-input--error]="f['name'].invalid && f['name'].touched"
                 formControlName="name"
                 placeholder="e.g. Aman Sharma / Vikram Patel"
+                autocomplete="name"
+                [attr.aria-invalid]="f['name'].invalid && f['name'].touched"
+                [attr.aria-describedby]="f['name'].invalid && f['name'].touched ? 'reg-name-error' : null"
               />
             </div>
             @if (f['name'].invalid && f['name'].touched) {
-              <div class="rs-form-error">
-                <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+              <div class="rs-form-error" id="reg-name-error" role="alert">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
                 <span>Full name is required</span>
               </div>
             }
@@ -131,7 +142,7 @@
                 Work Email <span class="rs-required">*</span>
               </label>
               <div class="rs-input-wrapper">
-                <mat-icon class="rs-input-icon">mail_outline</mat-icon>
+                <mat-icon class="rs-input-icon" aria-hidden="true">mail_outline</mat-icon>
                 <input
                   id="reg-email"
                   type="email"
@@ -139,11 +150,14 @@
                   [class.rs-input--error]="f['email'].invalid && f['email'].touched"
                   formControlName="email"
                   placeholder="name@company.in"
+                  autocomplete="email"
+                  [attr.aria-invalid]="f['email'].invalid && f['email'].touched"
+                  [attr.aria-describedby]="f['email'].invalid && f['email'].touched ? 'reg-email-error' : null"
                 />
               </div>
               @if (f['email'].invalid && f['email'].touched) {
-                <div class="rs-form-error">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                <div class="rs-form-error" id="reg-email-error" role="alert">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
                   <span>Valid email required</span>
                 </div>
               }
@@ -155,7 +169,7 @@
                 Mobile Number <span class="rs-required">*</span>
               </label>
               <div class="rs-input-wrapper">
-                <span class="rs-input-prefix rs-caption" style="font-weight: var(--rs-font-semibold); padding-left: 10px;">+91</span>
+                <span class="rs-input-prefix rs-caption" style="font-weight: var(--rs-font-semibold); padding-left: 10px;" aria-hidden="true">+91</span>
                 <input
                   id="reg-phone"
                   type="tel"
@@ -164,11 +178,14 @@
                   formControlName="phone"
                   placeholder="98260 12345"
                   maxlength="10"
+                  autocomplete="tel"
+                  [attr.aria-invalid]="f['phone'].invalid && f['phone'].touched"
+                  [attr.aria-describedby]="f['phone'].invalid && f['phone'].touched ? 'reg-phone-error' : null"
                 />
               </div>
               @if (f['phone'].invalid && f['phone'].touched) {
-                <div class="rs-form-error">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                <div class="rs-form-error" id="reg-phone-error" role="alert">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
                   <span>10-digit Indian number</span>
                 </div>
               }
@@ -181,13 +198,14 @@
               Company / Business Name (Optional)
             </label>
             <div class="rs-input-wrapper">
-              <mat-icon class="rs-input-icon">business</mat-icon>
+              <mat-icon class="rs-input-icon" aria-hidden="true">business</mat-icon>
               <input
                 id="reg-company"
                 type="text"
                 class="rs-input"
                 formControlName="companyName"
                 placeholder="e.g. Apex Infra Projects / Shree Krishna Earthmovers"
+                autocomplete="organization"
               />
             </div>
           </div>
@@ -207,21 +225,25 @@
                   [class.rs-input--error]="f['password'].invalid && f['password'].touched"
                   formControlName="password"
                   placeholder="Min. 6 chars"
+                  autocomplete="new-password"
+                  [attr.aria-invalid]="f['password'].invalid && f['password'].touched"
+                  [attr.aria-describedby]="f['password'].invalid && f['password'].touched ? 'reg-password-error' : null"
                 />
                 <button
                   type="button"
                   class="rs-input-suffix rs-btn rs-btn--ghost rs-btn--icon rs-btn--sm"
                   (click)="toggleShowPassword()"
-                  tabindex="-1"
+                  [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+                  [attr.aria-pressed]="showPassword()"
                 >
-                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;" aria-hidden="true">
                     {{ showPassword() ? 'visibility_off' : 'visibility' }}
                   </mat-icon>
                 </button>
               </div>
               @if (f['password'].invalid && f['password'].touched) {
-                <div class="rs-form-error">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                <div class="rs-form-error" id="reg-password-error" role="alert">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
                   <span>At least 6 chars</span>
                 </div>
               }
@@ -240,21 +262,25 @@
                   [class.rs-input--error]="passwordMismatch || (f['confirmPassword'].invalid && f['confirmPassword'].touched)"
                   formControlName="confirmPassword"
                   placeholder="Re-enter"
+                  autocomplete="new-password"
+                  [attr.aria-invalid]="passwordMismatch || (f['confirmPassword'].invalid && f['confirmPassword'].touched)"
+                  [attr.aria-describedby]="passwordMismatch ? 'reg-confirm-error' : null"
                 />
                 <button
                   type="button"
                   class="rs-input-suffix rs-btn rs-btn--ghost rs-btn--icon rs-btn--sm"
                   (click)="toggleShowConfirmPassword()"
-                  tabindex="-1"
+                  [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
+                  [attr.aria-pressed]="showConfirmPassword()"
                 >
-                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;" aria-hidden="true">
                     {{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}
                   </mat-icon>
                 </button>
               </div>
               @if (passwordMismatch) {
-                <div class="rs-form-error">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+                <div class="rs-form-error" id="reg-confirm-error" role="alert">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
                   <span>Passwords do not match</span>
                 </div>
               }
@@ -263,15 +289,15 @@
 
           <!-- 6. TERMS CHECKBOX -->
           <div class="rs-form-group">
-            <label class="rs-checkbox">
-              <input type="checkbox" formControlName="agreeTerms" />
+            <label class="rs-checkbox" for="reg-terms">
+              <input id="reg-terms" type="checkbox" formControlName="agreeTerms" [attr.aria-invalid]="f['agreeTerms'].invalid && f['agreeTerms'].touched" [attr.aria-describedby]="f['agreeTerms'].invalid && f['agreeTerms'].touched ? 'reg-terms-error' : null" />
               <span class="rs-caption rs-text-secondary">
                 I agree to the <a href="javascript:void(0)" class="rs-text-link">Terms of Service</a>, <a href="javascript:void(0)" class="rs-text-link">Machinery Safety Standards</a>, and <a href="javascript:void(0)" class="rs-text-link">Escrow Policy</a>.
               </span>
             </label>
             @if (f['agreeTerms'].invalid && f['agreeTerms'].touched) {
-              <div class="rs-form-error">
-                <mat-icon style="font-size: 14px; width: 14px; height: 14px;">error</mat-icon>
+              <div class="rs-form-error" id="reg-terms-error" role="alert">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px;" aria-hidden="true">error</mat-icon>
                 <span>You must accept the terms to proceed</span>
               </div>
             }

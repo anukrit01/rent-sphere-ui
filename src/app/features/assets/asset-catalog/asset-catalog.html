@@ -9,7 +9,7 @@
   <div class="rs-catalog-search-bar rs-card rs-mb-6">
     <form class="rs-catalog-search-form" (ngSubmit)="onSearchSubmit()">
       <div class="rs-input-wrapper rs-flex-1">
-        <mat-icon class="rs-input-icon">search</mat-icon>
+        <mat-icon class="rs-input-icon" aria-hidden="true">search</mat-icon>
         <input
           type="search"
           class="rs-input rs-input--lg"
@@ -17,6 +17,7 @@
           [ngModel]="searchInput()"
           (ngModelChange)="searchInput.set($event)"
           name="catalogSearch"
+          aria-label="Search machinery, models, or categories"
         />
         @if (searchInput()) {
           <button
@@ -112,11 +113,13 @@
           
           <!-- Sort Dropdown -->
           <div class="rs-flex rs-items-center rs-gap-2">
-            <span class="rs-caption rs-text-muted rs-hidden-mobile">Sort by:</span>
+            <label for="catalog-sort-select" class="rs-caption rs-text-muted rs-hidden-mobile">Sort by:</label>
             <select
+              id="catalog-sort-select"
               class="rs-input rs-input--sm rs-sort-select"
               [ngModel]="selectedSort()"
               (ngModelChange)="onSortChanged($event)"
+              aria-label="Sort machinery results by"
             >
               <option value="recommended">Recommended / Popular</option>
               <option value="price_asc">Price: Low to High</option>
@@ -127,24 +130,26 @@
           </div>
 
           <!-- Grid / List Toggle -->
-          <div class="rs-view-toggle rs-hidden-mobile">
+          <div class="rs-view-toggle rs-hidden-mobile" role="group" aria-label="View layout mode">
             <button
               type="button"
               class="rs-view-toggle__btn"
               [class.rs-view-toggle__btn--active]="viewMode() === 'grid'"
+              [attr.aria-pressed]="viewMode() === 'grid'"
               (click)="viewMode.set('grid')"
               aria-label="Grid view"
             >
-              <mat-icon>grid_view</mat-icon>
+              <mat-icon aria-hidden="true">grid_view</mat-icon>
             </button>
             <button
               type="button"
               class="rs-view-toggle__btn"
               [class.rs-view-toggle__btn--active]="viewMode() === 'list'"
+              [attr.aria-pressed]="viewMode() === 'list'"
               (click)="viewMode.set('list')"
               aria-label="List view"
             >
-              <mat-icon>view_list</mat-icon>
+              <mat-icon aria-hidden="true">view_list</mat-icon>
             </button>
           </div>
 
@@ -195,7 +200,7 @@
 
   <!-- Mobile Filter Drawer Overlay -->
   @if (mobileFilterOpen()) {
-    <div class="rs-mobile-filter-drawer rs-animate-fade-in">
+    <div class="rs-mobile-filter-drawer rs-animate-fade-in" role="dialog" aria-modal="true" aria-label="Filter and Sort Fleet" (keydown.escape)="mobileFilterOpen.set(false)">
       <div class="rs-mobile-filter-drawer__overlay" (click)="mobileFilterOpen.set(false)"></div>
       <div class="rs-mobile-filter-drawer__content rs-animate-slide-in-right">
         
