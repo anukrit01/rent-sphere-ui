@@ -1,5 +1,8 @@
 <footer class="rs-footer" role="contentinfo">
   
+  <!-- Golden Accent Strip -->
+  <div class="rs-footer__accent-strip" aria-hidden="true"></div>
+
   <!-- Trust & Value Proposition Banner -->
   <div class="rs-footer-banner">
     <div class="rs-container--wide rs-footer-banner__inner">
@@ -41,7 +44,7 @@
       
       <!-- Brand & Positioning Column -->
       <div class="rs-footer__brand-col">
-        <a routerLink="/" class="rs-brand rs-brand--light">
+        <a routerLink="/" class="rs-brand rs-brand--light" aria-label="RentSphere Home">
           <div class="rs-brand__icon-wrapper">
             <mat-icon class="rs-brand__icon">precision_manufacturing</mat-icon>
           </div>
@@ -51,21 +54,23 @@
           </div>
         </a>
 
-        <p class="rs-footer__tagline">
-          "Your Project. Our Machinery."
-        </p>
+        <!-- Motto Badge -->
+        <div class="rs-footer__motto">
+          <mat-icon class="rs-footer__motto-icon">format_quote</mat-icon>
+          <span class="rs-footer__motto-text">Your Project. Our Machinery.</span>
+        </div>
 
         <p class="rs-body-sm rs-footer__desc">
           India's leading heavy machinery & asset leasing marketplace. We connect construction contractors and project developers with verified equipment owners for high-efficiency asset leasing.
         </p>
 
-        <div class="rs-footer__contact-pill">
+        <a href="tel:18008897368" class="rs-footer__contact-pill" aria-label="Call Toll-Free Fleet Helpline 1800-889-7368">
           <mat-icon>phone_in_talk</mat-icon>
           <div>
             <span class="rs-caption">Toll-Free Fleet Helpline</span>
             <strong>1800-889-7368 (RENT)</strong>
           </div>
-        </div>
+        </a>
       </div>
 
       <!-- Categories Column -->
@@ -75,7 +80,8 @@
           @for (cat of popularCategories; track cat.name) {
             <li>
               <a [routerLink]="['/assets']" [queryParams]="{ category: cat.query }">
-                {{ cat.name }}
+                <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+                <span>{{ cat.name }}</span>
               </a>
             </li>
           }
@@ -86,12 +92,42 @@
       <div class="rs-footer__col">
         <h3 class="rs-footer__heading">Marketplace Solutions</h3>
         <ul class="rs-footer__links">
-          <li><a routerLink="/assets">Explore Machinery Fleet</a></li>
-          <li><a routerLink="/auth/register" [queryParams]="{ role: 'leaser' }">List Your Equipment</a></li>
-          <li><a routerLink="/dashboard/renter">Renter Project Hub</a></li>
-          <li><a routerLink="/dashboard/leaser">Fleet Owner Portal</a></li>
-          <li><a routerLink="/auth/register">Create Enterprise Account</a></li>
-          <li><a routerLink="/admin">Platform Administration</a></li>
+          <li>
+            <a routerLink="/assets">
+              <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+              <span>Explore Machinery Fleet</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/auth/register" [queryParams]="{ role: 'leaser' }">
+              <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+              <span>List Your Equipment</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/renter">
+              <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+              <span>Renter Project Hub</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/leaser">
+              <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+              <span>Fleet Owner Portal</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/auth/register">
+              <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+              <span>Create Enterprise Account</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/admin">
+              <mat-icon class="rs-footer__link-arrow">chevron_right</mat-icon>
+              <span>Platform Administration</span>
+            </a>
+          </li>
         </ul>
       </div>
 
@@ -104,31 +140,31 @@
           }
         </div>
 
-        <h3 class="rs-footer__heading rs-mt-4">Platform Trust</h3>
+        <h3 class="rs-footer__heading rs-mt-5">Platform Trust</h3>
         <ul class="rs-footer__links">
-          <li><span class="rs-footer__trust-item"><mat-icon>check</mat-icon> Verified Leaser Badges</span></li>
-          <li><span class="rs-footer__trust-item"><mat-icon>check</mat-icon> Standard Rental Contracts</span></li>
-          <li><span class="rs-footer__trust-item"><mat-icon>check</mat-icon> GST Compliant Invoicing</span></li>
+          <li><span class="rs-footer__trust-item"><mat-icon>verified</mat-icon> Verified Leaser Badges</span></li>
+          <li><span class="rs-footer__trust-item"><mat-icon>verified</mat-icon> Standard Rental Contracts</span></li>
+          <li><span class="rs-footer__trust-item"><mat-icon>verified</mat-icon> GST Compliant Invoicing</span></li>
         </ul>
       </div>
 
     </div>
   </div>
 
-  <!-- Bottom Legal & Copyright Bar -->
+  <!-- Bottom Signature Golden/Yellow Legal & Copyright Bar -->
   <div class="rs-footer__bottom">
     <div class="rs-container--wide rs-footer__bottom-inner">
-      <div class="rs-caption rs-footer__copyright">
-        &copy; {{ currentYear }} <strong>RentSphere Technologies Pvt. Ltd.</strong> All rights reserved. Made for professional construction & asset leasing.
+      <div class="rs-footer__copyright">
+        &copy; {{ currentYear }} <strong>RentSphere Technologies Pvt. Ltd.</strong> All rights reserved. &bull; <em>Your Project. Our Machinery.</em>
       </div>
       <div class="rs-footer__legal-links">
-        <a href="javascript:void(0)" class="rs-caption">Privacy Policy</a>
-        <span class="rs-footer__dot">&bull;</span>
-        <a href="javascript:void(0)" class="rs-caption">Terms of Service</a>
-        <span class="rs-footer__dot">&bull;</span>
-        <a href="javascript:void(0)" class="rs-caption">Equipment Safety Guidelines</a>
-        <span class="rs-footer__dot">&bull;</span>
-        <a href="javascript:void(0)" class="rs-caption">GST Invoicing</a>
+        <a href="javascript:void(0)">Privacy Policy</a>
+        <span class="rs-footer__dot" aria-hidden="true">&bull;</span>
+        <a href="javascript:void(0)">Terms of Service</a>
+        <span class="rs-footer__dot" aria-hidden="true">&bull;</span>
+        <a href="javascript:void(0)">Equipment Safety Guidelines</a>
+        <span class="rs-footer__dot" aria-hidden="true">&bull;</span>
+        <a href="javascript:void(0)">GST Invoicing</a>
       </div>
     </div>
   </div>
