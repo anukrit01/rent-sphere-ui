@@ -65,7 +65,7 @@
     flex-shrink: 0;
 
     mat-icon {
-      font-size: 20px;
+      font-size: var(--rs-text-xl);
       width: 20px;
       height: 20px;
     }
@@ -99,7 +99,7 @@
   }
 
   &__lbl {
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
     color: var(--rs-text-secondary);
   }
 }

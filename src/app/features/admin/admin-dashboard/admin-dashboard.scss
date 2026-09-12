@@ -34,7 +34,7 @@
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
-  transition: all var(--rs-transition-fast);
+  transition: transform var(--rs-transition-fast), box-shadow var(--rs-transition-fast), border-color var(--rs-transition-fast);
 
   &:hover {
     transform: translateY(-2px);
@@ -44,7 +44,7 @@
 
   &--alert {
     border-color: var(--rs-color-accent-400);
-    background-color: #fffdfa;
+    background-color: var(--rs-color-accent-surface);
     box-shadow: 0 0 0 2px var(--rs-color-accent-100);
   }
 
@@ -71,7 +71,7 @@
       justify-content: center;
 
       mat-icon {
-        font-size: 20px;
+        font-size: var(--rs-text-xl);
         width: 20px;
         height: 20px;
         line-height: 20px;
@@ -83,8 +83,8 @@
       }
 
       &--indigo {
-        background-color: #eef2ff;
-        color: #4f46e5;
+        background-color: var(--rs-color-info-50);
+        color: var(--rs-color-info-700);
       }
 
       &--amber {
@@ -98,8 +98,8 @@
       }
 
       &--gold {
-        background-color: #fefce8;
-        color: #ca8a04;
+        background-color: var(--rs-color-warning-surface);
+        color: var(--rs-color-warning-700);
       }
     }
   }
@@ -123,9 +123,9 @@
     flex-wrap: wrap;
 
     .rs-kpi-pill {
-      font-size: 11px;
+      font-size: var(--rs-text-xs);
       font-weight: var(--rs-font-weight-bold);
-      padding: 2px 8px;
+      padding: var(--rs-space-1) var(--rs-space-2);
       border-radius: var(--rs-radius-full);
 
       &--warning {
@@ -145,13 +145,13 @@
       }
 
       &--gold {
-        background-color: #fef08a;
-        color: #854d0e;
+        background-color: var(--rs-color-warning-100);
+        color: var(--rs-color-warning-700);
       }
     }
 
     .rs-kpi-meta {
-      font-size: 11px;
+      font-size: var(--rs-text-xs);
       color: var(--rs-color-text-muted);
     }
   }
@@ -196,7 +196,7 @@
   cursor: pointer;
   white-space: nowrap;
   margin-bottom: -2px;
-  transition: all var(--rs-transition-fast);
+  transition: color var(--rs-transition-fast), border-color var(--rs-transition-fast);
 
   .rs-tab-icon {
     font-size: 19px;
@@ -206,9 +206,9 @@
   }
 
   .rs-tab-badge {
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
     font-weight: var(--rs-font-weight-bold);
-    padding: 2px 7px;
+    padding: var(--rs-space-1) var(--rs-space-2);
     background-color: var(--rs-color-surface-subtle);
     color: var(--rs-color-text-secondary);
     border-radius: var(--rs-radius-full);
@@ -287,12 +287,12 @@
     font-weight: var(--rs-font-weight-medium);
     color: var(--rs-color-text-secondary);
     cursor: pointer;
-    transition: all var(--rs-transition-fast);
+    transition: border-color var(--rs-transition-fast), color var(--rs-transition-fast), background-color var(--rs-transition-fast);
 
     .rs-pill-count {
-      font-size: 11px;
+      font-size: var(--rs-text-xs);
       font-weight: var(--rs-font-weight-bold);
-      padding: 1px 6px;
+      padding: var(--rs-space-1) var(--rs-space-2);
       border-radius: var(--rs-radius-full);
       background-color: var(--rs-color-surface-subtle);
       color: var(--rs-color-text-muted);
@@ -393,7 +393,7 @@
   border-radius: var(--rs-radius-lg);
   cursor: pointer;
   box-shadow: var(--rs-shadow-xs);
-  transition: all var(--rs-transition-fast);
+  transition: border-color var(--rs-transition-fast), box-shadow var(--rs-transition-fast), background-color var(--rs-transition-fast);
 
   &:hover {
     border-color: var(--rs-color-primary-300);
@@ -433,7 +433,7 @@
       font-weight: var(--rs-font-weight-bold);
       background-color: rgba(10, 22, 40, 0.75);
       color: var(--rs-color-white);
-      padding: 1px 5px;
+      padding: var(--rs-space-1) var(--rs-space-2);
       border-radius: var(--rs-radius-xs);
     }
   }
@@ -602,15 +602,15 @@
     }
 
     &--danger {
-      background-color: #fef2f2;
-      border-bottom: 1px solid #fecaca;
-      color: #991b1b;
+      background-color: var(--rs-color-error-surface);
+      border-bottom: 1px solid var(--rs-color-error-100);
+      color: var(--rs-color-error-700);
     }
 
     &--warning {
-      background-color: #fffbeb;
-      border-bottom: 1px solid #fde68a;
-      color: #92400e;
+      background-color: var(--rs-color-warning-surface);
+      border-bottom: 1px solid var(--rs-color-warning-100);
+      color: var(--rs-color-warning-700);
     }
   }
 
@@ -653,7 +653,7 @@
         border: 2px solid transparent;
         cursor: pointer;
         opacity: 0.6;
-        transition: all var(--rs-transition-fast);
+        transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), color var(--rs-transition-fast);
 
         img {
           width: 100%;
@@ -693,10 +693,10 @@
       .rs-comm-box {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: var(--rs-space-1);
 
         .rs-comm-label {
-          font-size: 11px;
+          font-size: var(--rs-text-xs);
           color: var(--rs-color-text-muted);
         }
 
@@ -706,7 +706,7 @@
           color: var(--rs-color-primary-900);
 
           &--gold {
-            color: #b45309;
+            color: var(--rs-color-accent-700);
           }
         }
       }
@@ -1020,16 +1020,16 @@
   .rs-verify-toggle-btn {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    gap: var(--rs-space-1);
+    padding: var(--rs-space-1) var(--rs-space-2);
     border-radius: var(--rs-radius-full);
     border: 1px solid var(--rs-color-border);
     background-color: var(--rs-color-surface);
     color: var(--rs-color-text-muted);
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
     font-weight: var(--rs-font-weight-bold);
     cursor: pointer;
-    transition: all var(--rs-transition-fast);
+    transition: transform var(--rs-transition-fast), background-color var(--rs-transition-fast), border-color var(--rs-transition-fast);
 
     mat-icon {
       font-size: 13px;
@@ -1050,9 +1050,9 @@
   }
 
   .rs-status-tag {
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
     font-weight: var(--rs-font-weight-bold);
-    padding: 2px 7px;
+    padding: var(--rs-space-1) var(--rs-space-2);
     border-radius: var(--rs-radius-xs);
 
     &--active {
@@ -1112,7 +1112,7 @@
       font-weight: var(--rs-font-weight-bold);
 
       &--held {
-        color: #ca8a04;
+        color: var(--rs-color-warning-700);
       }
 
       &--refunded {
@@ -1209,11 +1209,11 @@
     .rs-cat-models-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
+      gap: var(--rs-space-1);
 
       .rs-model-tag {
         font-size: 10px;
-        padding: 1px 6px;
+        padding: var(--rs-space-1) var(--rs-space-2);
         border-radius: var(--rs-radius-xs);
         background-color: var(--rs-color-surface-subtle);
         color: var(--rs-color-text-secondary);
@@ -1267,7 +1267,7 @@
     }
 
     &--gold {
-      color: #b45309;
+      color: var(--rs-color-accent-700);
     }
 
     &--green {
@@ -1327,7 +1327,7 @@
 .rs-code-badge {
   font-family: monospace;
   font-weight: var(--rs-font-weight-bold);
-  padding: 1px 6px;
+  padding: var(--rs-space-1) var(--rs-space-2);
   background-color: var(--rs-color-surface-subtle);
   border-radius: var(--rs-radius-xs);
   border: 1px solid var(--rs-color-border);
@@ -1446,18 +1446,18 @@
       .rs-quick-chips {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: var(--rs-space-1);
 
         .rs-quick-chip-btn {
           text-align: left;
-          font-size: 11px;
-          padding: 4px 8px;
+          font-size: var(--rs-text-xs);
+          padding: var(--rs-space-1) var(--rs-space-2);
           background-color: var(--rs-color-surface-subtle);
           border: 1px solid var(--rs-color-border);
           border-radius: var(--rs-radius-md);
           color: var(--rs-color-text-secondary);
           cursor: pointer;
-          transition: all var(--rs-transition-fast);
+          transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), color var(--rs-transition-fast);
           min-height: 44px;
           display: flex;
           align-items: center;

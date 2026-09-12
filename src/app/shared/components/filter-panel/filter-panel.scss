@@ -58,17 +58,17 @@
 .rs-filter-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--rs-space-1);
   max-height: 220px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: var(--rs-space-1);
 }
 
 .rs-filter-option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 8px;
+  padding: var(--rs-space-2);
   border-radius: var(--rs-radius-sm);
   font-size: var(--rs-text-sm);
   color: var(--rs-text-primary);
@@ -89,7 +89,7 @@
     font-weight: var(--rs-font-semibold);
 
     mat-icon {
-      font-size: 16px;
+      font-size: var(--rs-text-md);
       width: 16px;
       height: 16px;
       color: var(--rs-color-primary-600);
@@ -100,11 +100,11 @@
 .rs-price-presets {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--rs-space-1);
 }
 
 .rs-preset-chip {
-  padding: 5px 8px;
+  padding: var(--rs-space-1) var(--rs-space-2);
   font-size: var(--rs-text-xs);
   text-align: left;
   border-radius: var(--rs-radius-sm);

@@ -26,10 +26,10 @@
   display: flex;
   align-items: center;
   color: var(--rs-text-tertiary);
-  padding: 4px;
+  padding: var(--rs-space-1);
 
   mat-icon {
-    font-size: 18px;
+    font-size: var(--rs-text-lg);
     width: 18px;
     height: 18px;
   }
@@ -53,15 +53,15 @@
 .rs-active-pills-list {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--rs-space-1);
   flex-wrap: wrap;
 }
 
 .rs-filter-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
+  gap: var(--rs-space-1);
+  padding: var(--rs-space-1) var(--rs-space-2);
   border-radius: var(--rs-radius-full);
   background-color: var(--rs-color-primary-50);
   border: 1px solid var(--rs-color-primary-200);
@@ -75,10 +75,10 @@
     justify-content: center;
     border-radius: var(--rs-radius-full);
     color: var(--rs-color-primary-600);
-    padding: 1px;
+    padding: var(--rs-space-1);
 
     mat-icon {
-      font-size: 14px;
+      font-size: var(--rs-text-base);
       width: 14px;
       height: 14px;
     }

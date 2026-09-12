@@ -80,7 +80,7 @@
     color: var(--rs-color-primary-800);
 
     mat-icon {
-      font-size: 16px;
+      font-size: var(--rs-text-md);
       width: 16px;
       height: 16px;
       margin-top: 1px;
@@ -115,11 +115,11 @@
   align-items: flex-start;
   justify-content: space-between;
   font-size: var(--rs-text-sm);
-  padding: 4px 0;
+  padding: var(--rs-space-1) 0;
 
   &--deposit {
     background-color: var(--rs-color-success-50);
-    padding: 6px 8px;
+    padding: var(--rs-space-2);
     border-radius: var(--rs-radius-sm);
     margin-top: 4px;
   }

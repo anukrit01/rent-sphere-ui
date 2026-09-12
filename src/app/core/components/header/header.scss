@@ -75,7 +75,7 @@
   }
 
   &__icon {
-    font-size: 22px;
+    font-size: var(--rs-text-2xl);
     width: 22px;
     height: 22px;
   }
@@ -118,8 +118,8 @@
 .rs-location-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: var(--rs-space-1);
+  padding: var(--rs-space-1) var(--rs-space-2);
   border-radius: var(--rs-radius-md);
   border: 1px solid var(--rs-border-default);
   background-color: var(--rs-color-gray-50);
@@ -136,7 +136,7 @@
   }
 
   &__icon {
-    font-size: 16px;
+    font-size: var(--rs-text-md);
     width: 16px;
     height: 16px;
     color: var(--rs-color-accent-500);
@@ -150,7 +150,7 @@
   }
 
   &__chevron {
-    font-size: 16px;
+    font-size: var(--rs-text-md);
     width: 16px;
     height: 16px;
     color: var(--rs-text-tertiary);
@@ -185,7 +185,7 @@
   background-color: var(--rs-color-gray-50);
   border: 1px solid var(--rs-border-default);
   border-radius: var(--rs-radius-full);
-  padding: 2px 4px 2px var(--rs-space-3);
+  padding: var(--rs-space-1) var(--rs-space-1) var(--rs-space-1) var(--rs-space-3);
   transition: border-color var(--rs-transition-fast), box-shadow var(--rs-transition-fast), background-color var(--rs-transition-fast);
 
   &:hover {
@@ -206,7 +206,7 @@
     margin-right: var(--rs-space-2);
 
     mat-icon {
-      font-size: 20px;
+      font-size: var(--rs-text-xl);
       width: 20px;
       height: 20px;
     }
@@ -232,7 +232,7 @@
     display: flex;
     align-items: center;
     color: var(--rs-text-tertiary);
-    padding: 2px;
+    padding: var(--rs-space-1);
     margin-right: 4px;
     border-radius: var(--rs-radius-full);
 
@@ -242,7 +242,7 @@
     }
 
     mat-icon {
-      font-size: 16px;
+      font-size: var(--rs-text-md);
       width: 16px;
       height: 16px;
     }
@@ -284,7 +284,7 @@
   &__label {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--rs-space-1);
     font-size: var(--rs-text-xs);
     font-weight: var(--rs-font-semibold);
     color: var(--rs-text-secondary);
@@ -292,7 +292,7 @@
     letter-spacing: var(--rs-tracking-wider);
 
     mat-icon {
-      font-size: 14px;
+      font-size: var(--rs-text-base);
       width: 14px;
       height: 14px;
       color: var(--rs-color-primary-500);
@@ -302,13 +302,13 @@
   &__pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--rs-space-1);
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--rs-space-1);
   }
 
   &__footer {
@@ -324,8 +324,8 @@
 .rs-search-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: var(--rs-space-1);
+  padding: var(--rs-space-1) var(--rs-space-3);
   border-radius: var(--rs-radius-full);
   background-color: var(--rs-color-gray-50);
   border: 1px solid var(--rs-border-default);
@@ -335,7 +335,7 @@
   transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast);
 
   mat-icon {
-    font-size: 14px;
+    font-size: var(--rs-text-base);
     width: 14px;
     height: 14px;
     color: var(--rs-color-primary-500);
@@ -358,14 +358,14 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 6px 10px;
+  padding: var(--rs-space-2) var(--rs-space-3);
   border-radius: var(--rs-radius-md);
   cursor: pointer;
   transition: background-color var(--rs-transition-fast);
   text-align: left;
 
   &__icon {
-    font-size: 16px;
+    font-size: var(--rs-text-md);
     width: 16px;
     height: 16px;
     color: var(--rs-text-tertiary);
@@ -380,9 +380,9 @@
 
   &__cat {
     color: var(--rs-text-secondary);
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
     background-color: var(--rs-color-gray-100);
-    padding: 2px 6px;
+    padding: var(--rs-space-1) var(--rs-space-2);
     border-radius: var(--rs-radius-sm);
   }
 
@@ -392,10 +392,10 @@
 }
 
 .rs-trending-tag {
-  font-size: 11px;
+  font-size: var(--rs-text-xs);
   color: var(--rs-color-blue-600);
   background-color: var(--rs-color-blue-50);
-  padding: 2px 8px;
+  padding: var(--rs-space-1) var(--rs-space-2);
   border-radius: var(--rs-radius-sm);
   cursor: pointer;
 
@@ -433,7 +433,7 @@
   &__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 4px;
+    gap: var(--rs-space-1);
     padding: var(--rs-space-2) 0;
   }
 
@@ -458,7 +458,7 @@
     flex-shrink: 0;
 
     mat-icon {
-      font-size: 18px;
+      font-size: var(--rs-text-lg);
       width: 18px;
       height: 18px;
     }
@@ -488,7 +488,7 @@
   &__link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--rs-space-1);
     font-size: var(--rs-text-sm);
     font-weight: var(--rs-font-medium);
     color: var(--rs-text-secondary);
@@ -510,13 +510,13 @@
   }
 
   &__icon {
-    font-size: 18px;
+    font-size: var(--rs-text-lg);
     width: 18px;
     height: 18px;
   }
 
   &__chevron {
-    font-size: 16px;
+    font-size: var(--rs-text-md);
     width: 16px;
     height: 16px;
     color: var(--rs-text-tertiary);
@@ -541,7 +541,7 @@
   }
 
   mat-icon {
-    font-size: 22px;
+    font-size: var(--rs-text-2xl);
     width: 22px;
     height: 22px;
   }
@@ -558,7 +558,7 @@
 }
 
 .rs-btn-icon {
-  font-size: 18px;
+  font-size: var(--rs-text-lg);
   width: 18px;
   height: 18px;
   margin-right: 4px;
@@ -575,8 +575,8 @@
 .rs-role-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: var(--rs-space-1);
+  padding: var(--rs-space-1) var(--rs-space-3);
   border-radius: var(--rs-radius-full);
   background-color: var(--rs-color-gray-100);
   border: 1px solid var(--rs-border-default);
@@ -600,7 +600,7 @@
   }
 
   &__chevron {
-    font-size: 16px;
+    font-size: var(--rs-text-md);
     width: 16px;
     height: 16px;
     margin-right: -4px;
@@ -639,7 +639,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--rs-space-2);
-  padding: 3px 8px 3px 3px;
+  padding: var(--rs-space-1) var(--rs-space-2) var(--rs-space-1) var(--rs-space-1);
   border-radius: var(--rs-radius-full);
   border: 1px solid var(--rs-border-default);
   background-color: var(--rs-surface-default);
@@ -654,7 +654,7 @@
   &__info {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--rs-space-1);
   }
 
   &__name {
@@ -664,7 +664,7 @@
   }
 
   &__chevron {
-    font-size: 18px;
+    font-size: var(--rs-text-lg);
     width: 18px;
     height: 18px;
     color: var(--rs-text-tertiary);
@@ -681,7 +681,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--rs-text-xs);
   font-weight: var(--rs-font-bold);
   letter-spacing: 0.5px;
 
@@ -781,7 +781,7 @@
   }
 
   &__time {
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
     color: var(--rs-text-tertiary);
     margin-top: 4px;
   }
@@ -881,24 +881,24 @@
   &__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
+    gap: var(--rs-space-1);
   }
 }
 
 .rs-mobile-cat-pill {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
+  gap: var(--rs-space-1);
+  padding: var(--rs-space-2) var(--rs-space-3);
   background-color: var(--rs-color-white);
   border: 1px solid var(--rs-border-default);
   border-radius: var(--rs-radius-md);
-  font-size: 11px;
+  font-size: var(--rs-text-xs);
   font-weight: var(--rs-font-medium);
   color: var(--rs-text-primary);
   text-decoration: none;
   min-height: 38px;
-  transition: all var(--rs-transition-fast);
+  transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), color var(--rs-transition-fast);
 
   &:active {
     background-color: var(--rs-color-primary-50);
@@ -915,15 +915,15 @@
 
 .rs-role-pills-row {
   display: flex;
-  gap: 6px;
-  margin-top: 6px;
+  gap: var(--rs-space-1);
+  margin-top: var(--rs-space-1);
   flex-wrap: wrap;
 }
 
 .rs-role-chip {
-  padding: 6px 12px;
+  padding: var(--rs-space-2) var(--rs-space-3);
   min-height: 38px;
-  font-size: 11px;
+  font-size: var(--rs-text-xs);
   font-weight: var(--rs-font-medium);
   border-radius: var(--rs-radius-md);
   border: 1px solid var(--rs-border-default);
@@ -933,7 +933,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--rs-transition-fast);
+  transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), color var(--rs-transition-fast);
 
   &:hover {
     border-color: var(--rs-color-primary-300);

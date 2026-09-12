@@ -79,25 +79,25 @@
   &__locations {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--rs-space-1);
   }
 
   &__loc-badge {
     background-color: rgba(255, 255, 255, 0.08);
     color: var(--rs-color-gray-300);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    font-size: 11px;
+    font-size: var(--rs-text-xs);
   }
 
   &__trust-item {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--rs-space-1);
     font-size: var(--rs-text-xs);
     color: var(--rs-color-gray-300);
 
     mat-icon {
-      font-size: 16px;
+      font-size: var(--rs-text-md);
       width: 16px;
       height: 16px;
       color: var(--rs-color-success-500);
@@ -117,7 +117,7 @@
 
     mat-icon {
       color: var(--rs-color-accent-400);
-      font-size: 22px;
+      font-size: var(--rs-text-2xl);
       width: 22px;
       height: 22px;
     }
@@ -178,7 +178,7 @@
     flex-shrink: 0;
 
     mat-icon {
-      font-size: 24px;
+      font-size: var(--rs-text-2xl);
       width: 24px;
       height: 24px;
     }

@@ -24,7 +24,7 @@
   }
 
   &__icon {
-    font-size: 26px;
+    font-size: var(--rs-text-2xl);
     width: 26px;
     height: 26px;
   }
@@ -69,7 +69,7 @@
     transition: transform var(--rs-transition-fast), background-color var(--rs-transition-fast), color var(--rs-transition-fast);
 
     mat-icon {
-      font-size: 16px;
+      font-size: var(--rs-text-md);
       width: 16px;
       height: 16px;
     }
@@ -102,7 +102,7 @@
       margin-bottom: var(--rs-space-2);
 
       mat-icon {
-        font-size: 20px;
+        font-size: var(--rs-text-xl);
         width: 20px;
         height: 20px;
       }

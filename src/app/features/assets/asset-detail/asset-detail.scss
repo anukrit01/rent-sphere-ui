@@ -117,8 +117,8 @@
     right: var(--rs-space-3);
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
+    gap: var(--rs-space-1);
+    padding: var(--rs-space-1) var(--rs-space-3);
     border-radius: var(--rs-radius-full);
     background-color: rgba(10, 22, 40, 0.75);
     backdrop-filter: blur(4px);
