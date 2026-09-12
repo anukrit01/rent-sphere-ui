@@ -7,23 +7,23 @@
   position: relative;
   overflow: hidden;
 
-  // Golden accent top strip
+  // Top accent strip: Industrial machinery gold gradient
   &__accent-strip {
     height: 3px;
     width: 100%;
     background: linear-gradient(
       90deg,
-      var(--rs-color-accent-600) 0%,
-      var(--rs-color-accent-400) 25%,
-      #f59e0b 50%,
-      var(--rs-color-accent-300) 75%,
-      var(--rs-color-accent-500) 100%
+      #c67d0a 0%,
+      #e59e0c 25%,
+      #f5a623 50%,
+      #f7b944 75%,
+      #df8f0a 100%
     );
   }
 
   &__main {
-    padding-top: var(--rs-space-10);
-    padding-bottom: var(--rs-space-10);
+    padding-top: var(--rs-space-12);
+    padding-bottom: var(--rs-space-12);
   }
 
   &__grid {
@@ -33,55 +33,26 @@
 
     @include bp-sm {
       grid-template-columns: repeat(2, 1fr);
+      gap: var(--rs-space-8);
     }
 
     @include bp-lg {
-      grid-template-columns: 1.6fr 1fr 1fr 1.1fr;
+      grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
       gap: var(--rs-space-8) var(--rs-space-10);
     }
   }
 
-  &__brand-col {
+  &__about-col {
     display: flex;
     flex-direction: column;
-    gap: var(--rs-space-3-5);
-  }
-
-  // Motto Quote Card
-  &__motto {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--rs-space-2);
-    padding: var(--rs-space-2) var(--rs-space-3);
-    background: rgba(232, 154, 36, 0.08);
-    border: 1px solid rgba(232, 154, 36, 0.22);
-    border-left: 3px solid var(--rs-color-accent-400);
-    border-radius: var(--rs-radius-md);
-    width: fit-content;
-    margin-top: var(--rs-space-1);
-
-    &-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-      color: var(--rs-color-accent-400);
-      opacity: 0.9;
-    }
-
-    &-text {
-      font-size: var(--rs-text-sm);
-      font-weight: var(--rs-font-semibold);
-      color: var(--rs-color-accent-300);
-      letter-spacing: 0.02em;
-      font-style: italic;
-    }
+    gap: var(--rs-space-3);
   }
 
   &__desc {
     color: var(--rs-color-gray-400);
     font-size: var(--rs-text-sm);
     line-height: var(--rs-leading-relaxed);
-    max-width: 360px;
+    max-width: 380px;
     margin: 0;
   }
 
@@ -101,9 +72,9 @@
       position: absolute;
       left: 0;
       bottom: 0;
-      width: 24px;
+      width: 28px;
       height: 2px;
-      background: var(--rs-color-accent-400);
+      background: #f5a623;
       border-radius: var(--rs-radius-full);
     }
   }
@@ -129,14 +100,14 @@
         font-size: 14px;
         width: 14px;
         height: 14px;
-        color: var(--rs-color-accent-400);
+        color: #f5a623;
         opacity: 0;
         transform: translateX(-4px);
         transition: opacity var(--rs-transition-fast), transform var(--rs-transition-fast);
       }
 
       &:hover {
-        color: var(--rs-color-accent-300);
+        color: #f7b944;
         transform: translateX(4px);
 
         .rs-footer__link-arrow {
@@ -146,40 +117,55 @@
       }
 
       &:focus-visible {
-        outline: 2px solid var(--rs-color-accent-400);
+        outline: 2px solid #f5a623;
         outline-offset: 2px;
         border-radius: var(--rs-radius-xs);
       }
     }
   }
 
+  // Regional Hub Badges: spacious, distinct, with pin icon
   &__locations {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--rs-space-1-5);
+    gap: var(--rs-space-2) var(--rs-space-2-5);
+    margin-top: var(--rs-space-1);
   }
 
   &__loc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rs-space-1-5);
+    padding: var(--rs-space-1-5) var(--rs-space-3);
     background-color: rgba(255, 255, 255, 0.05);
-    color: var(--rs-color-gray-300);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--rs-color-gray-200);
+    border: 1px solid rgba(245, 166, 35, 0.25);
+    border-radius: var(--rs-radius-md);
     font-size: var(--rs-text-xs);
-    padding: var(--rs-space-1) var(--rs-space-2-5);
-    border-radius: var(--rs-radius-full);
+    font-weight: var(--rs-font-medium);
     cursor: default;
-    transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), color var(--rs-transition-fast);
+    transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), color var(--rs-transition-fast), transform var(--rs-transition-fast);
 
     &:hover {
-      background-color: rgba(232, 154, 36, 0.15);
-      border-color: rgba(232, 154, 36, 0.4);
-      color: var(--rs-color-accent-300);
+      background-color: rgba(245, 166, 35, 0.15);
+      border-color: #f5a623;
+      color: var(--rs-color-white);
+      transform: translateY(-1px);
     }
+  }
+
+  &__loc-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    color: #f5a623;
+    flex-shrink: 0;
   }
 
   &__trust-item {
     display: inline-flex;
     align-items: center;
-    gap: var(--rs-space-1-5);
+    gap: var(--rs-space-2);
     font-size: var(--rs-text-xs);
     color: var(--rs-color-gray-300);
 
@@ -187,37 +173,38 @@
       font-size: 16px;
       width: 16px;
       height: 16px;
-      color: var(--rs-color-accent-400);
+      color: #f5a623;
     }
   }
 
+  // Helpline Contact Card
   &__contact-pill {
     display: inline-flex;
     align-items: center;
     gap: var(--rs-space-3);
     padding: var(--rs-space-2-5) var(--rs-space-4);
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(232, 154, 36, 0.25);
+    border: 1px solid rgba(245, 166, 35, 0.25);
     border-radius: var(--rs-radius-lg);
     text-decoration: none;
     width: fit-content;
-    margin-top: var(--rs-space-1);
+    margin-top: var(--rs-space-2);
     transition: background-color var(--rs-transition-fast), border-color var(--rs-transition-fast), box-shadow var(--rs-transition-fast), transform var(--rs-transition-fast);
 
     &:hover {
-      background: rgba(232, 154, 36, 0.12);
-      border-color: var(--rs-color-accent-400);
-      box-shadow: 0 4px 16px rgba(232, 154, 36, 0.22);
+      background: rgba(245, 166, 35, 0.12);
+      border-color: #f5a623;
+      box-shadow: 0 4px 16px rgba(245, 166, 35, 0.2);
       transform: translateY(-2px);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--rs-color-accent-400);
+      outline: 2px solid #f5a623;
       outline-offset: 2px;
     }
 
     mat-icon {
-      color: var(--rs-color-accent-400);
+      color: #f5a623;
       font-size: var(--rs-text-2xl);
       width: 24px;
       height: 24px;
@@ -275,12 +262,12 @@
     width: 44px;
     height: 44px;
     border-radius: var(--rs-radius-lg);
-    background: rgba(232, 154, 36, 0.12);
-    border: 1px solid rgba(232, 154, 36, 0.25);
+    background: rgba(245, 166, 35, 0.12);
+    border: 1px solid rgba(245, 166, 35, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--rs-color-accent-400);
+    color: #f5a623;
     flex-shrink: 0;
 
     mat-icon {
@@ -304,100 +291,117 @@
 }
 
 // --------------------------------------------------------
-// Brand in light/dark context
-// --------------------------------------------------------
-
-.rs-brand--light {
-  .rs-brand__name {
-    color: var(--rs-color-white);
-    font-size: var(--rs-text-xl);
-    font-weight: var(--rs-font-bold);
-    letter-spacing: -0.02em;
-  }
-
-  .rs-brand__accent {
-    color: var(--rs-color-accent-400);
-  }
-
-  .rs-brand__tagline {
-    color: var(--rs-color-gray-400);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-  }
-
-  .rs-brand__icon-wrapper {
-    background: linear-gradient(135deg, var(--rs-color-accent-500), var(--rs-color-accent-400), #f59e0b);
-    color: var(--rs-color-primary-900);
-    box-shadow: 0 4px 14px rgba(232, 154, 36, 0.35);
-    width: 38px;
-    height: 38px;
-    border-radius: var(--rs-radius-md);
-
-    mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
-    }
-  }
-}
-
-// --------------------------------------------------------
-// Signature Golden/Yellow Bottom Legal & Copyright Bar
+// Signature Machinery Golden Taskbar (Bottom)
 // --------------------------------------------------------
 
 .rs-footer__bottom {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 45%, #f59e0b 100%);
-  border-top: 1px solid #d97706;
-  padding: var(--rs-space-3-5) 0;
+  background: linear-gradient(135deg, #e59e0c 0%, #f5a623 50%, #df8f0a 100%);
+  border-top: 1px solid #b87405;
+  padding: var(--rs-space-2) 0;
   color: #0a1628;
-  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
 
   &-inner {
     display: flex;
-    flex-direction: column;
-    gap: var(--rs-space-2);
     align-items: center;
     justify-content: space-between;
-    text-align: center;
+    gap: var(--rs-space-4);
+    flex-wrap: wrap;
 
-    @include bp-md {
-      flex-direction: row;
-      text-align: left;
+    @include bp-below-md {
+      justify-content: center;
+      text-align: center;
+      gap: var(--rs-space-2);
+    }
+  }
+
+  &-left {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rs-space-2);
+    flex-wrap: wrap;
+
+    @include bp-below-md {
+      justify-content: center;
     }
   }
 }
 
+// Mini Brand inside Taskbar
+.rs-brand--taskbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  .rs-brand__taskbar-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--rs-radius-xs);
+    background-color: #0a1628;
+    color: #f5a623;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .rs-brand__taskbar-name {
+    font-size: var(--rs-text-xs);
+    font-weight: var(--rs-font-bold);
+    color: #0a1628;
+    letter-spacing: -0.01em;
+    line-height: 1;
+
+    span {
+      color: #1e4d8c;
+    }
+  }
+}
+
+.rs-footer__taskbar-sep {
+  color: rgba(10, 22, 40, 0.35);
+  font-size: 11px;
+  margin: 0 2px;
+  user-select: none;
+}
+
 .rs-footer__copyright {
-  color: #0f2240;
+  color: #1a273a;
   font-size: var(--rs-text-xs);
   font-weight: var(--rs-font-medium);
-  line-height: var(--rs-leading-normal);
+  line-height: 1;
 
   strong {
     color: #0a1628;
     font-weight: var(--rs-font-bold);
   }
-
-  em {
-    font-style: italic;
-    color: #78350f;
-    font-weight: var(--rs-font-semibold);
-  }
 }
 
 .rs-footer__legal-links {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--rs-space-2-5);
+  gap: var(--rs-space-2);
   flex-wrap: wrap;
-  justify-content: center;
+
+  @include bp-below-md {
+    justify-content: center;
+  }
 
   a {
-    color: #0f2240;
+    color: #1a273a;
     font-size: var(--rs-text-xs);
     font-weight: var(--rs-font-semibold);
     text-decoration: none;
-    transition: color var(--rs-transition-fast), text-decoration-color var(--rs-transition-fast);
+    line-height: 1;
+    transition: color var(--rs-transition-fast);
 
     &:hover {
       color: #000000;
@@ -413,6 +417,7 @@
 }
 
 .rs-footer__dot {
-  color: #78350f;
+  color: #4a2800;
+  font-size: 10px;
   font-weight: var(--rs-font-bold);
 }
