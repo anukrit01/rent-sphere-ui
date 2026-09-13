@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { AssetDetail } from './asset-detail';
 
@@ -8,7 +10,11 @@ describe('AssetDetail', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AssetDetail]
+      imports: [AssetDetail],
+      providers: [
+        provideRouter([]),
+        provideNoopAnimations(),
+      ]
     })
     .compileComponents();
 

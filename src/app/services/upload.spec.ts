@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Upload } from './upload';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('Upload', () => {
-  let service: Upload;
+import { UploadService } from './upload';
+
+describe('UploadService', () => {
+  let service: UploadService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Upload);
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()]
+    });
+    service = TestBed.inject(UploadService);
   });
 
   it('should be created', () => {
