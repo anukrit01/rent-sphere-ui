@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { LeaserDashboard } from './leaser-dashboard';
 
@@ -8,7 +10,11 @@ describe('LeaserDashboard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LeaserDashboard]
+      imports: [LeaserDashboard],
+      providers: [
+        provideRouter([]),
+        provideNoopAnimations(),
+      ]
     })
     .compileComponents();
 

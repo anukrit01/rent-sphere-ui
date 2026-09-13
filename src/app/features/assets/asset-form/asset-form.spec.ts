@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { AssetForm } from './asset-form';
 
@@ -8,7 +10,11 @@ describe('AssetForm', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AssetForm]
+      imports: [AssetForm],
+      providers: [
+        provideRouter([]),
+        provideNoopAnimations(),
+      ]
     })
     .compileComponents();
 
