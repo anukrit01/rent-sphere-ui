@@ -1,0 +1,50 @@
+<div
+  class="rs-page-container"
+  [class.rs-page-container--wide]="maxWidth === 'wide'"
+  [class.rs-page-container--narrow]="maxWidth === 'narrow'"
+  [class.rs-page-container--fluid]="maxWidth === 'fluid'"
+  [class.rs-page-container--no-padding]="noPadding"
+>
+  @if (breadcrumbs && breadcrumbs.length > 0) {
+    <nav class="rs-breadcrumbs" aria-label="Breadcrumb">
+      <ol class="rs-breadcrumbs__list">
+        <li class="rs-breadcrumbs__item">
+          <a routerLink="/" class="rs-breadcrumbs__link">
+            <mat-icon class="rs-breadcrumbs__home-icon">home</mat-icon>
+            <span class="rs-sr-only">Home</span>
+          </a>
+        </li>
+        @for (item of breadcrumbs; track item.label; let last = $last) {
+          <li class="rs-breadcrumbs__separator" aria-hidden="true">
+            <mat-icon>chevron_right</mat-icon>
+          </li>
+          <li class="rs-breadcrumbs__item" [class.rs-breadcrumbs__item--active]="last">
+            @if (item.url && !last) {
+              <a [routerLink]="item.url" class="rs-breadcrumbs__link">{{ item.label }}</a>
+            } @else {
+              <span class="rs-breadcrumbs__current" aria-current="page">{{ item.label }}</span>
+            }
+          </li>
+        }
+      </ol>
+    </nav>
+  }
+
+  @if (title) {
+    <header class="rs-page-header">
+      <div class="rs-page-header__main">
+        <h1 class="rs-h2 rs-page-header__title">{{ title }}</h1>
+        @if (subtitle) {
+          <p class="rs-body rs-text-muted rs-page-header__subtitle">{{ subtitle }}</p>
+        }
+      </div>
+      <div class="rs-page-header__actions">
+        <ng-content select="[page-actions]"></ng-content>
+      </div>
+    </header>
+  }
+
+  <main class="rs-page-content">
+    <ng-content></ng-content>
+  </main>
+</div>

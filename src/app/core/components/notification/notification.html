@@ -1,0 +1,26 @@
+<div class="rs-toast-container" aria-live="polite" aria-atomic="true">
+  @for (toast of notifications(); track toast.id) {
+    <div
+      class="rs-toast rs-toast--{{ toast.type }} rs-animate-fade-in-down"
+      role="alert"
+    >
+      <div class="rs-toast__icon">
+        <mat-icon>{{ getIcon(toast.type) }}</mat-icon>
+      </div>
+      <div class="rs-toast__content">
+        @if (toast.title) {
+          <div class="rs-toast__title">{{ toast.title }}</div>
+        }
+        <div class="rs-toast__message">{{ toast.message }}</div>
+      </div>
+      <button
+        type="button"
+        class="rs-toast__close"
+        (click)="dismiss(toast.id)"
+        aria-label="Close notification"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+</div>

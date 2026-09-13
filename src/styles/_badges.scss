@@ -1,0 +1,159 @@
+// ============================================================
+// RentSphere Badges & Status Indicators
+// ============================================================
+
+// --------------------------------------------------------
+// Base badge
+// --------------------------------------------------------
+
+.rs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rs-space-1);
+  padding: 2px var(--rs-space-2);
+  font-size: var(--rs-text-xs);
+  font-weight: var(--rs-font-semibold);
+  line-height: var(--rs-leading-normal);
+  border-radius: var(--rs-radius-sm);
+  white-space: nowrap;
+  letter-spacing: var(--rs-tracking-wide);
+}
+
+// --------------------------------------------------------
+// Badge variants
+// --------------------------------------------------------
+
+.rs-badge--success {
+  background-color: var(--rs-color-success-50);
+  color: var(--rs-color-success-700);
+  border: 1px solid var(--rs-color-success-100);
+}
+
+.rs-badge--warning {
+  background-color: var(--rs-color-warning-50);
+  color: var(--rs-color-warning-700);
+  border: 1px solid var(--rs-color-warning-100);
+}
+
+.rs-badge--error {
+  background-color: var(--rs-color-error-50);
+  color: var(--rs-color-error-700);
+  border: 1px solid var(--rs-color-error-100);
+}
+
+.rs-badge--info {
+  background-color: var(--rs-color-info-50);
+  color: var(--rs-color-info-700);
+  border: 1px solid var(--rs-color-info-100);
+}
+
+.rs-badge--neutral {
+  background-color: var(--rs-color-gray-100);
+  color: var(--rs-color-gray-700);
+  border: 1px solid var(--rs-color-gray-200);
+}
+
+.rs-badge--primary {
+  background-color: var(--rs-color-primary-50);
+  color: var(--rs-color-primary-700);
+  border: 1px solid var(--rs-color-primary-100);
+}
+
+.rs-badge--accent {
+  background-color: var(--rs-color-accent-50);
+  color: var(--rs-color-accent-700);
+  border: 1px solid var(--rs-color-accent-100);
+}
+
+// --------------------------------------------------------
+// Solid badge variants
+// --------------------------------------------------------
+
+.rs-badge--solid-success {
+  background-color: var(--rs-color-success-500);
+  color: var(--rs-color-white);
+  border: none;
+}
+
+.rs-badge--solid-error {
+  background-color: var(--rs-color-error-500);
+  color: var(--rs-color-white);
+  border: none;
+}
+
+.rs-badge--solid-primary {
+  background-color: var(--rs-color-primary-500);
+  color: var(--rs-color-white);
+  border: none;
+}
+
+.rs-badge--solid-accent {
+  background-color: var(--rs-color-accent-500);
+  color: var(--rs-color-white);
+  border: none;
+}
+
+// --------------------------------------------------------
+// Pill badge (fully rounded)
+// --------------------------------------------------------
+
+.rs-badge--pill {
+  border-radius: var(--rs-radius-full);
+  padding: 2px var(--rs-space-3);
+}
+
+// --------------------------------------------------------
+// Status dot — small colored circle
+// --------------------------------------------------------
+
+.rs-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rs-radius-full);
+  flex-shrink: 0;
+
+  &--available  { background-color: var(--rs-color-success-500); }
+  &--busy       { background-color: var(--rs-color-warning-500); }
+  &--unavailable { background-color: var(--rs-color-error-500); }
+  &--pending    { background-color: var(--rs-color-accent-500); }
+  &--neutral    { background-color: var(--rs-color-gray-400); }
+}
+
+// --------------------------------------------------------
+// Count badge (notification count)
+// --------------------------------------------------------
+
+.rs-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: var(--rs-font-bold);
+  line-height: 1;
+  color: var(--rs-color-white);
+  background-color: var(--rs-color-error-500);
+  border-radius: var(--rs-radius-full);
+}
+
+// --------------------------------------------------------
+// Verified badge
+// --------------------------------------------------------
+
+.rs-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rs-space-1);
+  font-size: var(--rs-text-xs);
+  font-weight: var(--rs-font-medium);
+  color: var(--rs-color-blue-600);
+
+  .rs-verified-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+}

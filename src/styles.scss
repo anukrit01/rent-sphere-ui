@@ -1,0 +1,120 @@
+// ============================================================
+// RentSphere — Global Stylesheet
+// ============================================================
+// All @use statements MUST appear before any rules or @imports
+// ============================================================
+
+// 1. Design tokens (CSS custom properties)
+@use 'styles/tokens';
+
+// 2. Angular Material M3 theme + overrides
+@use 'styles/material-overrides';
+
+// 3. CSS reset & base element styles
+@use 'styles/reset';
+
+// 4. Typography classes
+@use 'styles/typography';
+
+// 5. Button styles
+@use 'styles/buttons';
+
+// 6. Form input styles
+@use 'styles/inputs';
+
+// 7. Card styles
+@use 'styles/cards';
+
+// 8. Badge & status indicator styles
+@use 'styles/badges';
+
+// 9. Layout utilities
+@use 'styles/layout';
+
+// 10. Animations & skeletons
+@use 'styles/animations';
+
+// ============================================================
+// Global utility classes
+// ============================================================
+
+// Visually hidden — accessible screen reader text
+.rs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Skip to main content link — accessible keyboard navigation
+.rs-skip-link {
+  position: fixed;
+  top: -100px;
+  left: var(--rs-space-4);
+  z-index: calc(var(--rs-z-modal) + 100);
+  background-color: var(--rs-color-primary-900);
+  color: var(--rs-color-white);
+  padding: var(--rs-space-3) var(--rs-space-5);
+  border: 2px solid var(--rs-color-accent-400);
+  border-radius: var(--rs-radius-md);
+  font-weight: var(--rs-font-semibold);
+  font-size: var(--rs-text-sm);
+  box-shadow: var(--rs-shadow-xl);
+  text-decoration: none;
+  transition: top var(--rs-transition-fast) ease;
+
+  &:focus,
+  &:focus-visible {
+    top: var(--rs-space-4);
+    outline: 2px solid var(--rs-border-focus);
+    outline-offset: 2px;
+    color: var(--rs-color-white);
+  }
+}
+
+// Main content wrapper — pushes content below fixed header
+.rs-main {
+  min-height: calc(100vh - var(--rs-header-height));
+  padding-top: var(--rs-header-height);
+}
+
+// Page wrapper
+.rs-page {
+  padding-top: var(--rs-space-6);
+  padding-bottom: var(--rs-space-12);
+}
+
+// ============================================================
+// Toast / Notification overrides (ngx-toastr)
+// ============================================================
+
+.toast-container {
+  .ngx-toastr {
+    font-family: var(--rs-font-family) !important;
+    border-radius: var(--rs-radius-lg) !important;
+    box-shadow: var(--rs-shadow-lg) !important;
+    padding: var(--rs-space-3) var(--rs-space-4) !important;
+    font-size: var(--rs-text-base) !important;
+  }
+
+  .toast-success {
+    background-color: var(--rs-color-success-600) !important;
+  }
+
+  .toast-error {
+    background-color: var(--rs-color-error-600) !important;
+  }
+
+  .toast-warning {
+    background-color: var(--rs-color-warning-600) !important;
+  }
+
+  .toast-info {
+    background-color: var(--rs-color-info-500) !important;
+  }
+}

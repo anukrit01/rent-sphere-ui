@@ -1,0 +1,22 @@
+<a
+  [routerLink]="['/assets']"
+  [queryParams]="{ category: category.name }"
+  class="rs-category-card rs-card rs-card--interactive"
+  [class.rs-category-card--compact]="compact"
+>
+  <div class="rs-category-card__icon-wrapper">
+    <mat-icon class="rs-category-card__icon">{{ category.icon }}</mat-icon>
+  </div>
+  <div class="rs-category-card__content">
+    <h3 class="rs-category-card__title">{{ category.name }}</h3>
+    @if (!compact && category.description) {
+      <p class="rs-category-card__desc rs-caption rs-text-clamp-2">{{ category.description }}</p>
+    }
+    <div class="rs-category-card__meta">
+      <span class="rs-badge rs-badge--neutral rs-badge--sm">{{ category.assetCount }} Available</span>
+      <span class="rs-category-card__arrow">
+        <mat-icon>arrow_forward</mat-icon>
+      </span>
+    </div>
+  </div>
+</a>

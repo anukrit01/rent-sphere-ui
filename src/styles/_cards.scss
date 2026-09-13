@@ -1,0 +1,135 @@
+// ============================================================
+// RentSphere Cards
+// ============================================================
+// Reusable card surface styles. Feature-specific cards
+// (asset-card, category-card) will extend these foundations.
+// ============================================================
+
+// --------------------------------------------------------
+// Base card
+// --------------------------------------------------------
+
+.rs-card {
+  background-color: var(--rs-surface-default);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-lg);
+  overflow: hidden;
+  transition:
+    box-shadow var(--rs-transition-base),
+    border-color var(--rs-transition-base),
+    transform var(--rs-transition-base);
+}
+
+// --------------------------------------------------------
+// Interactive card (clickable / hoverable)
+// --------------------------------------------------------
+
+.rs-card--interactive {
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--rs-border-strong);
+    box-shadow: var(--rs-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--rs-shadow-sm);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rs-border-focus);
+    outline-offset: 2px;
+  }
+}
+
+// --------------------------------------------------------
+// Card sections
+// --------------------------------------------------------
+
+.rs-card__image {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--rs-color-gray-100);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--rs-transition-slow);
+  }
+
+  .rs-card--interactive:hover & img {
+    transform: scale(1.04);
+  }
+}
+
+.rs-card__body {
+  padding: var(--rs-space-4);
+}
+
+.rs-card__footer {
+  padding: var(--rs-space-3) var(--rs-space-4);
+  border-top: 1px solid var(--rs-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// --------------------------------------------------------
+// Elevated card variant
+// --------------------------------------------------------
+
+.rs-card--elevated {
+  border-color: transparent;
+  box-shadow: var(--rs-shadow-sm);
+
+  &:hover {
+    box-shadow: var(--rs-shadow-lg);
+  }
+}
+
+// --------------------------------------------------------
+// Flat card variant (no border, background fill)
+// --------------------------------------------------------
+
+.rs-card--flat {
+  border-color: transparent;
+  background-color: var(--rs-surface-sunken);
+
+  &:hover {
+    background-color: var(--rs-color-gray-100);
+  }
+}
+
+// --------------------------------------------------------
+// Compact card
+// --------------------------------------------------------
+
+.rs-card--compact {
+  .rs-card__body {
+    padding: var(--rs-space-3);
+  }
+
+  .rs-card__footer {
+    padding: var(--rs-space-2) var(--rs-space-3);
+  }
+}
+
+// --------------------------------------------------------
+// Card image aspect ratios
+// --------------------------------------------------------
+
+.rs-card__image--16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.rs-card__image--4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.rs-card__image--square {
+  aspect-ratio: 1 / 1;
+}

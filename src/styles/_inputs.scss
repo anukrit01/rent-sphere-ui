@@ -1,0 +1,210 @@
+// ============================================================
+// RentSphere Form Inputs
+// ============================================================
+// Styled form controls — inputs, textareas, selects.
+// Use alongside Angular Material where appropriate,
+// or as standalone native controls.
+// ============================================================
+
+// --------------------------------------------------------
+// Form group wrapper
+// --------------------------------------------------------
+
+.rs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rs-space-1);
+  margin-bottom: var(--rs-space-4);
+}
+
+.rs-form-label {
+  font-size: var(--rs-text-sm);
+  font-weight: var(--rs-font-medium);
+  color: var(--rs-text-primary);
+  line-height: var(--rs-leading-normal);
+
+  .rs-required {
+    color: var(--rs-color-error-500);
+    margin-left: 2px;
+  }
+}
+
+.rs-form-hint {
+  font-size: var(--rs-text-xs);
+  color: var(--rs-text-tertiary);
+  margin-top: var(--rs-space-1);
+}
+
+.rs-form-error {
+  font-size: var(--rs-text-xs);
+  color: var(--rs-color-error-600);
+  margin-top: var(--rs-space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--rs-space-1);
+}
+
+// --------------------------------------------------------
+// Text input / textarea / select — base
+// --------------------------------------------------------
+
+.rs-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--rs-space-3);
+  font-family: var(--rs-font-family);
+  font-size: var(--rs-text-base);
+  color: var(--rs-text-primary);
+  background-color: var(--rs-color-white);
+  border: 1px solid var(--rs-border-default);
+  border-radius: var(--rs-radius-md);
+  transition:
+    border-color var(--rs-transition-fast),
+    box-shadow var(--rs-transition-fast);
+  outline: none;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--rs-text-tertiary);
+  }
+
+  &:hover:not(:disabled):not(:focus) {
+    border-color: var(--rs-border-strong);
+  }
+
+  &:focus {
+    border-color: var(--rs-border-focus);
+    box-shadow: var(--rs-shadow-focus);
+  }
+
+  &:disabled {
+    background-color: var(--rs-color-gray-50);
+    color: var(--rs-text-disabled);
+    cursor: not-allowed;
+  }
+
+  // Error state
+  &--error,
+  &.ng-invalid.ng-touched {
+    border-color: var(--rs-border-error);
+
+    &:focus {
+      box-shadow: var(--rs-shadow-focus-error);
+    }
+  }
+
+  // Success state
+  &--success {
+    border-color: var(--rs-border-success);
+  }
+}
+
+// Sizes
+.rs-input--sm {
+  height: 32px;
+  font-size: var(--rs-text-sm);
+  padding: 0 var(--rs-space-2);
+}
+
+.rs-input--lg {
+  height: 48px;
+  font-size: var(--rs-text-md);
+  padding: 0 var(--rs-space-4);
+}
+
+// --------------------------------------------------------
+// Textarea
+// --------------------------------------------------------
+
+textarea.rs-input {
+  height: auto;
+  min-height: 96px;
+  padding: var(--rs-space-3);
+  resize: vertical;
+  line-height: var(--rs-leading-normal);
+}
+
+// --------------------------------------------------------
+// Select
+// --------------------------------------------------------
+
+select.rs-input {
+  appearance: none;
+  padding-right: var(--rs-space-8);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23868e96' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--rs-space-3) center;
+  cursor: pointer;
+}
+
+// --------------------------------------------------------
+// Input with icon/prefix/suffix
+// --------------------------------------------------------
+
+.rs-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .rs-input-icon {
+    position: absolute;
+    left: var(--rs-space-3);
+    color: var(--rs-text-tertiary);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+
+    + .rs-input {
+      padding-left: var(--rs-space-10);
+    }
+  }
+
+  .rs-input-suffix {
+    position: absolute;
+    right: var(--rs-space-3);
+    color: var(--rs-text-tertiary);
+    display: flex;
+    align-items: center;
+  }
+}
+
+// --------------------------------------------------------
+// Checkbox & Radio (custom native)
+// --------------------------------------------------------
+
+.rs-checkbox,
+.rs-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rs-space-2);
+  cursor: pointer;
+  font-size: var(--rs-text-base);
+  color: var(--rs-text-primary);
+  user-select: none;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--rs-color-primary-500);
+    cursor: pointer;
+  }
+}
+
+// --------------------------------------------------------
+// Form row (horizontal layout)
+// --------------------------------------------------------
+
+.rs-form-row {
+  display: flex;
+  gap: var(--rs-space-4);
+
+  > .rs-form-group {
+    flex: 1;
+  }
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
