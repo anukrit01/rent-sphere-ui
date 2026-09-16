@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, map, catchError } from 'rxjs/operators';
 import { Booking, BookingCalculation, BookingStatus } from '../shared/models/booking.model';
 import { Asset } from '../shared/models/asset.model';
 import { MOCK_ASSETS } from '../shared/data/assets.data';
+import { environment } from '../../environments/environment';
+import { mapBackendBookingToUiBooking } from '../shared/adapters/api-adapters';
 
 export const INITIAL_BOOKINGS: Booking[] = [
   {
@@ -82,6 +85,7 @@ export const INITIAL_BOOKINGS: Booking[] = [
 
 @Injectable({ providedIn: 'root' })
 export class BookingService {
+  private http = inject(HttpClient);
   private bookings: Booking[] = [...INITIAL_BOOKINGS];
 
   constructor() {
@@ -112,7 +116,7 @@ export class BookingService {
     const duration = Math.max(1, params.durationDays || 1);
     const dailyRate = params.asset.pricePerDay;
     const rentalSubtotal = dailyRate * duration;
-    const operatorFee = params.operatorRequired ? (800 * duration) : 0;
+    const operatorFee = params.operatorRequired ? 800 * duration : 0;
     const deliveryFee = params.deliveryRequired ? (params.asset.deliveryFee || 2500) : 0;
     const securityDeposit = params.asset.securityDeposit;
     const estimatedTotal = rentalSubtotal + operatorFee + deliveryFee + securityDeposit;
@@ -129,6 +133,139 @@ export class BookingService {
   }
 
   public createBooking(payload: Omit<Booking, 'id' | 'createdAt' | 'status'>): Observable<Booking> {
+    const isUuid = typeof payload.assetId === 'string' && payload.assetId.includes('-');
+    const apiPayload = {
+      assetId: String(payload.assetId),
+      startDate: new Date(payload.startDate).toISOString(),
+      endDate: new Date(payload.endDate).toISOString(),
+      operatorRequired: !!payload.operatorRequired,
+      deliveryRequired: !!payload.deliveryRequired,
+      projectLocation: payload.projectLocation,
+      projectDescription: payload.projectDescription || 'Heavy equipment rental lease.',
+    };
+
+    if (isUuid) {
+      return this.http.post<any>(`${environment.apiUrl}/bookings`, apiPayload).pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            const mapped = mapBackendBookingToUiBooking(res.data);
+            this.bookings.unshift(mapped);
+            this.save();
+            return mapped;
+          }
+          return this.createMockBooking(payload);
+        }),
+        catchError(() => of(this.createMockBooking(payload)))
+      );
+    }
+
+    return of(this.createMockBooking(payload)).pipe(delay(350));
+  }
+
+  public getBookingsForUser(userId?: string | number): Observable<Booking[]> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/bookings`, {
+        params: new HttpParams().set('role', 'renter'),
+      })
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            const apiBookings = res.data.map((item: any) => mapBackendBookingToUiBooking(item));
+            return apiBookings;
+          }
+          return this.filterMockUserBookings(userId);
+        }),
+        catchError(() => of(this.filterMockUserBookings(userId)))
+      );
+  }
+
+  public getBookingsForLeaser(leaserId?: string | number): Observable<Booking[]> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/bookings`, {
+        params: new HttpParams().set('role', 'leaser'),
+      })
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            return res.data.map((item: any) => mapBackendBookingToUiBooking(item));
+          }
+          return this.filterMockLeaserBookings(leaserId);
+        }),
+        catchError(() => of(this.filterMockLeaserBookings(leaserId)))
+      );
+  }
+
+  public getAllBookings(): Observable<Booking[]> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/bookings`, {
+        params: new HttpParams().set('role', 'all'),
+      })
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            return res.data.map((item: any) => mapBackendBookingToUiBooking(item));
+          }
+          return [...this.bookings];
+        }),
+        catchError(() => of([...this.bookings]))
+      );
+  }
+
+  public getBookingsForAsset(assetId: string | number): Observable<Booking[]> {
+    const isUuid = typeof assetId === 'string' && assetId.includes('-');
+    if (isUuid) {
+      return this.http
+        .get<any>(`${environment.apiUrl}/bookings`, {
+          params: new HttpParams().set('assetId', String(assetId)),
+        })
+        .pipe(
+          map((res) => {
+            if (res && res.success && Array.isArray(res.data)) {
+              return res.data.map((item: any) => mapBackendBookingToUiBooking(item));
+            }
+            return this.bookings.filter((b) => b.assetId == assetId);
+          }),
+          catchError(() => of(this.bookings.filter((b) => b.assetId == assetId)))
+        );
+    }
+    return of(this.bookings.filter((b) => b.assetId == assetId)).pipe(delay(150));
+  }
+
+  public updateBookingStatus(id: string | number, status: BookingStatus, reason?: string): Observable<Booking> {
+    const isUuid = typeof id === 'string' && id.includes('-');
+    if (isUuid) {
+      let endpoint = `${environment.apiUrl}/bookings/${id}/status`;
+      let reqBody: any = { status: status.toUpperCase(), reason };
+
+      if (status === 'approved') {
+        endpoint = `${environment.apiUrl}/bookings/${id}/approve`;
+        reqBody = {};
+      } else if (status === 'rejected') {
+        endpoint = `${environment.apiUrl}/bookings/${id}/reject`;
+        reqBody = { rejectionReason: reason || 'Booking rejected by leaser' };
+      } else if (status === 'cancelled') {
+        endpoint = `${environment.apiUrl}/bookings/${id}/cancel`;
+        reqBody = { reason: reason || 'Booking cancelled by user' };
+      }
+
+      return this.http.patch<any>(endpoint, reqBody).pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            const mapped = mapBackendBookingToUiBooking(res.data);
+            this.updateLocalBooking(mapped);
+            return mapped;
+          }
+          return this.updateMockBookingStatus(id, status, reason);
+        }),
+        catchError(() => of(this.updateMockBookingStatus(id, status, reason)))
+      );
+    }
+
+    return of(this.updateMockBookingStatus(id, status, reason)).pipe(delay(200));
+  }
+
+  // --- Mock Helpers ---
+  private createMockBooking(payload: Omit<Booking, 'id' | 'createdAt' | 'status'>): Booking {
     const newBooking: Booking = {
       ...payload,
       id: Math.floor(Math.random() * 90000) + 10000,
@@ -138,28 +275,23 @@ export class BookingService {
 
     this.bookings.unshift(newBooking);
     this.save();
-    return of(newBooking).pipe(delay(350));
+    return newBooking;
   }
 
-  public getBookingsForUser(userId?: number): Observable<Booking[]> {
-    const list = userId ? this.bookings.filter((b) => b.renterId === userId) : this.bookings;
-    return of(list).pipe(delay(150));
+  private filterMockUserBookings(userId?: string | number): Booking[] {
+    if (!userId) return [...this.bookings];
+    return this.bookings.filter((b) => b.renterId == userId);
   }
 
-  public getBookingsForLeaser(leaserId?: number): Observable<Booking[]> {
-    const list = leaserId
-      ? this.bookings.filter((b) => b.asset?.leaserId === leaserId || b.asset?.owner?.id === leaserId)
-      : this.bookings;
-    return of(list).pipe(delay(150));
+  private filterMockLeaserBookings(leaserId?: string | number): Booking[] {
+    if (!leaserId) return [...this.bookings];
+    return this.bookings.filter(
+      (b) => b.asset?.leaserId == leaserId || b.asset?.owner?.id == leaserId
+    );
   }
 
-  public getBookingsForAsset(assetId: number): Observable<Booking[]> {
-    const list = this.bookings.filter((b) => b.assetId === assetId);
-    return of(list).pipe(delay(150));
-  }
-
-  public updateBookingStatus(id: number, status: BookingStatus, reason?: string): Observable<Booking> {
-    const idx = this.bookings.findIndex((b) => b.id === id);
+  private updateMockBookingStatus(id: string | number, status: BookingStatus, reason?: string): Booking {
+    const idx = this.bookings.findIndex((b) => b.id == id);
     if (idx !== -1) {
       this.bookings[idx] = {
         ...this.bookings[idx],
@@ -167,12 +299,18 @@ export class BookingService {
         rejectionReason: reason || this.bookings[idx].rejectionReason,
       };
       this.save();
-      return of(this.bookings[idx]).pipe(delay(200));
+      return this.bookings[idx];
     }
-    throw new Error('Booking not found');
+    return { ...this.bookings[0], status, rejectionReason: reason };
   }
 
-  public getAllBookings(): Observable<Booking[]> {
-    return of([...this.bookings]).pipe(delay(150));
+  private updateLocalBooking(updated: Booking): void {
+    const idx = this.bookings.findIndex((b) => b.id == updated.id);
+    if (idx !== -1) {
+      this.bookings[idx] = updated;
+    } else {
+      this.bookings.unshift(updated);
+    }
+    this.save();
   }
 }

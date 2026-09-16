@@ -48,7 +48,7 @@ export class AssetDetail implements OnInit {
   public asset = signal<Asset | undefined>(undefined);
   public loading = signal<boolean>(true);
   public error = signal<string | null>(null);
-  public currentAssetId = signal<number | null>(null);
+  public currentAssetId = signal<string | number | null>(null);
   public activeImageIndex = signal<number>(0);
 
   // Sticky Booking Widget state
@@ -62,8 +62,9 @@ export class AssetDetail implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      const id = Number(params['id']);
-      if (id) {
+      const rawId = params['id'];
+      if (rawId) {
+        const id = !isNaN(Number(rawId)) && !rawId.includes('-') ? Number(rawId) : rawId;
         this.currentAssetId.set(id);
         this.loadAsset(id);
       }
@@ -88,7 +89,7 @@ export class AssetDetail implements OnInit {
     }
   }
 
-  private loadAsset(id: number): void {
+  private loadAsset(id: string | number): void {
     this.loading.set(true);
     this.error.set(null);
     this.assetService.getAsset(id).subscribe({

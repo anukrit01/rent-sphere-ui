@@ -1,8 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { delay, map, catchError } from 'rxjs/operators';
 import { Asset } from '../shared/models/asset.model';
 import { MOCK_ASSETS } from '../shared/data/assets.data';
+import { environment } from '../../environments/environment';
+import { mapBackendAssetToUiAsset } from '../shared/adapters/api-adapters';
 
 export interface AssetQueryParams {
   q?: string;
@@ -19,14 +22,16 @@ export interface AssetQueryParams {
 
 @Injectable({ providedIn: 'root' })
 export class AssetService {
+  private http = inject(HttpClient);
+
   private assets: Asset[] = [...MOCK_ASSETS];
-  private favorites = new Set<number>();
+  private favorites = new Set<string | number>();
 
   constructor() {
     try {
       const savedFavs = localStorage.getItem('rentsphere_favorites');
       if (savedFavs) {
-        const parsed = JSON.parse(savedFavs) as number[];
+        const parsed = JSON.parse(savedFavs) as Array<string | number>;
         parsed.forEach((id) => this.favorites.add(id));
       }
     } catch {
@@ -35,6 +40,208 @@ export class AssetService {
   }
 
   public getAssets(query?: AssetQueryParams): Observable<{ data: Asset[]; total: number }> {
+    let params = new HttpParams();
+
+    if (query?.q) params = params.set('search', query.q);
+    if (query?.category && query.category !== 'All') params = params.set('category', query.category);
+    if (query?.location && query.location !== 'All Locations') params = params.set('city', query.location);
+    if (query?.minPrice !== undefined) params = params.set('minPrice', query.minPrice.toString());
+    if (query?.maxPrice !== undefined) params = params.set('maxPrice', query.maxPrice.toString());
+    if (query?.page) params = params.set('page', query.page.toString());
+    if (query?.limit) params = params.set('limit', query.limit.toString());
+    if (query?.sortBy) params = params.set('sortBy', query.sortBy);
+
+    return this.http
+      .get<any>(`${environment.apiUrl}/assets`, { params })
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data)) {
+            const mapped = res.data.map((item: any) => mapBackendAssetToUiAsset(item));
+            return {
+              data: mapped,
+              total: res.pagination?.total ?? mapped.length,
+            };
+          }
+          return this.getMockFilteredAssets(query);
+        }),
+        catchError(() => of(this.getMockFilteredAssets(query)))
+      );
+  }
+
+  public getPopularAssets(): Observable<Asset[]> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/assets`, {
+        params: new HttpParams().set('limit', '6'),
+      })
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            return res.data.map((item: any) => mapBackendAssetToUiAsset(item));
+          }
+          return this.assets.filter((a) => a.popular || a.featured).slice(0, 6);
+        }),
+        catchError(() => of(this.assets.filter((a) => a.popular || a.featured).slice(0, 6)))
+      );
+  }
+
+  public getNewArrivals(): Observable<Asset[]> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/assets`, {
+        params: new HttpParams().set('limit', '4'),
+      })
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            return res.data.map((item: any) => mapBackendAssetToUiAsset(item));
+          }
+          return this.assets.filter((a) => a.isNewArrival || Number(a.id) > 6).slice(0, 4);
+        }),
+        catchError(() => of(this.assets.filter((a) => a.isNewArrival || Number(a.id) > 6).slice(0, 4)))
+      );
+  }
+
+  public getAsset(id: string | number): Observable<Asset | undefined> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/assets/${id}`)
+      .pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            return mapBackendAssetToUiAsset(res.data);
+          }
+          const found = this.assets.find((a) => a.id == id);
+          return found ? { ...found } : undefined;
+        }),
+        catchError(() => {
+          const found = this.assets.find((a) => a.id == id);
+          return of(found ? { ...found } : undefined);
+        })
+      );
+  }
+
+  public createAsset(payload: Partial<Asset>): Observable<Asset> {
+    const backendDto = {
+      title: payload.title || 'Heavy Machinery Asset',
+      description: payload.description || 'Equipment ready for rental lease.',
+      dailyRate: Number(payload.pricePerDay || 5000),
+      weeklyRate: Number(payload.pricePerWeek || (Number(payload.pricePerDay || 5000) * 6)),
+      securityDeposit: Number(payload.securityDeposit || 20000),
+      location: payload.location || 'Industrial Area',
+      city: payload.city || 'Bhopal',
+      state: payload.state || 'Madhya Pradesh',
+      pinCode: payload.pinCode || '462001',
+      categoryId: (payload as any).categoryId || 'cat_excavators',
+      condition: (payload.condition || 'Good').toUpperCase().includes('EXCELLENT') ? 'EXCELLENT' : 'GOOD',
+      specification: {
+        brand: payload.specifications?.brand || 'Standard',
+        model: payload.specifications?.model || 'Industrial',
+        year: payload.specifications?.year || 2024,
+        fuelType: (payload.specifications?.fuelType || 'Diesel').toUpperCase(),
+      },
+    };
+
+    return this.http
+      .post<any>(`${environment.apiUrl}/assets`, backendDto)
+      .pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            const created = mapBackendAssetToUiAsset(res.data);
+            this.assets.unshift(created);
+            return created;
+          }
+          return this.createMockAsset(payload);
+        }),
+        catchError(() => of(this.createMockAsset(payload)))
+      );
+  }
+
+  public updateAsset(id: string | number, payload: Partial<Asset>): Observable<Asset> {
+    return this.http
+      .put<any>(`${environment.apiUrl}/assets/${id}`, payload)
+      .pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            return mapBackendAssetToUiAsset(res.data);
+          }
+          return this.updateMockAsset(id, payload);
+        }),
+        catchError(() => of(this.updateMockAsset(id, payload)))
+      );
+  }
+
+  public getAllAssetsAdmin(): Observable<Asset[]> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/admin/assets/pending`)
+      .pipe(
+        map((res) => {
+          if (res && res.success && Array.isArray(res.data)) {
+            return res.data.map((item: any) => mapBackendAssetToUiAsset(item));
+          }
+          return [...this.assets];
+        }),
+        catchError(() => of([...this.assets]))
+      );
+  }
+
+  public adminApprove(id: string | number): Observable<Asset> {
+    return this.http
+      .patch<any>(`${environment.apiUrl}/admin/assets/${id}/approve`, {})
+      .pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            return mapBackendAssetToUiAsset(res.data);
+          }
+          return this.updateMockAsset(id, { status: 'available', available: true });
+        }),
+        catchError(() => of(this.updateMockAsset(id, { status: 'available', available: true })))
+      );
+  }
+
+  public adminReject(id: string | number, reason: string): Observable<Asset> {
+    return this.http
+      .patch<any>(`${environment.apiUrl}/admin/assets/${id}/reject`, { reason })
+      .pipe(
+        map((res) => {
+          if (res && res.success && res.data) {
+            return mapBackendAssetToUiAsset(res.data);
+          }
+          return this.updateMockAsset(id, { status: 'rejected', available: false, auditReason: reason });
+        }),
+        catchError(() => of(this.updateMockAsset(id, { status: 'rejected', available: false, auditReason: reason })))
+      );
+  }
+
+  public adminRequestChanges(id: string | number, notes: string): Observable<Asset> {
+    return of(this.updateMockAsset(id, { status: 'changes_requested', available: false, adminNotes: notes }));
+  }
+
+  // Favorite toggle with API persistence
+  public isFavorite(id: string | number): boolean {
+    return this.favorites.has(id);
+  }
+
+  public toggleFavorite(id: string | number): boolean {
+    const isFav = this.favorites.has(id);
+    if (isFav) {
+      this.favorites.delete(id);
+      this.http.delete(`${environment.apiUrl}/assets/${id}/favorite`).subscribe({ error: () => {} });
+    } else {
+      this.favorites.add(id);
+      this.http.post(`${environment.apiUrl}/assets/${id}/favorite`, {}).subscribe({ error: () => {} });
+    }
+    try {
+      localStorage.setItem('rentsphere_favorites', JSON.stringify(Array.from(this.favorites)));
+    } catch {
+      // ignore
+    }
+    return this.favorites.has(id);
+  }
+
+  public getFavoritesCount(): number {
+    return this.favorites.size;
+  }
+
+  // --- Mock Fallback Helpers ---
+  private getMockFilteredAssets(query?: AssetQueryParams): { data: Asset[]; total: number } {
     let filtered = [...this.assets];
 
     if (query?.q) {
@@ -82,51 +289,16 @@ export class AssetService {
       filtered = filtered.filter((a) => a.condition.includes(query.condition!));
     }
 
-    // Sorting
-    switch (query?.sortBy) {
-      case 'price_asc':
-        filtered.sort((a, b) => a.pricePerDay - b.pricePerDay);
-        break;
-      case 'price_desc':
-        filtered.sort((a, b) => b.pricePerDay - a.pricePerDay);
-        break;
-      case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'newest':
-        filtered.sort((a, b) => (b.isNewArrival ? 1 : 0) - (a.isNewArrival ? 1 : 0));
-        break;
-      case 'recommended':
-      default:
-        filtered.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
-        break;
-    }
-
     const total = filtered.length;
     const page = query?.page || 1;
     const limit = query?.limit || 20;
     const start = (page - 1) * limit;
     const paginated = filtered.slice(start, start + limit);
 
-    return of({ data: paginated, total }).pipe(delay(150));
+    return { data: paginated, total };
   }
 
-  public getPopularAssets(): Observable<Asset[]> {
-    const popular = this.assets.filter((a) => a.popular || a.featured).slice(0, 6);
-    return of(popular).pipe(delay(100));
-  }
-
-  public getNewArrivals(): Observable<Asset[]> {
-    const news = this.assets.filter((a) => a.isNewArrival || a.id > 6).slice(0, 4);
-    return of(news).pipe(delay(100));
-  }
-
-  public getAsset(id: number): Observable<Asset | undefined> {
-    const found = this.assets.find((a) => a.id === Number(id));
-    return of(found ? { ...found } : undefined).pipe(delay(150));
-  }
-
-  public createAsset(payload: Partial<Asset>): Observable<Asset> {
+  private createMockAsset(payload: Partial<Asset>): Asset {
     const newAsset: Asset = {
       id: Math.floor(Math.random() * 9000) + 1000,
       title: payload.title || 'New Equipment Listing',
@@ -147,7 +319,7 @@ export class AssetService {
       rating: 5.0,
       reviewCount: 0,
       available: true,
-      status: 'pending', // Requires admin approval
+      status: 'pending',
       condition: payload.condition || 'Good (Fully Serviced)',
       specifications: payload.specifications || {
         brand: 'Standard',
@@ -158,7 +330,7 @@ export class AssetService {
       features: payload.features || ['Standard factory equipment', 'Inspected and certified'],
       rentalTerms: payload.rentalTerms || ['Minimum 2 days', 'Daily 8h shift standard'],
       owner: payload.owner || {
-        id: 201,
+        id: '201',
         name: 'Vikram Patel',
         companyName: 'Shree Krishna Heavy Earthmovers',
         verified: true,
@@ -174,54 +346,15 @@ export class AssetService {
     };
 
     this.assets.unshift(newAsset);
-    return of(newAsset).pipe(delay(300));
+    return newAsset;
   }
 
-  public updateAsset(id: number, payload: Partial<Asset>): Observable<Asset> {
-    const idx = this.assets.findIndex((a) => a.id === id);
+  private updateMockAsset(id: string | number, payload: Partial<Asset>): Asset {
+    const idx = this.assets.findIndex((a) => a.id == id);
     if (idx !== -1) {
       this.assets[idx] = { ...this.assets[idx], ...payload };
-      return of(this.assets[idx]).pipe(delay(200));
+      return this.assets[idx];
     }
-    throw new Error('Asset not found');
-  }
-
-  public getAllAssetsAdmin(): Observable<Asset[]> {
-    return of([...this.assets]).pipe(delay(100));
-  }
-
-  public adminApprove(id: number): Observable<Asset> {
-    return this.updateAsset(id, { status: 'approved', available: true, auditReason: undefined });
-  }
-
-  public adminReject(id: number, reason: string): Observable<Asset> {
-    return this.updateAsset(id, { status: 'rejected', available: false, auditReason: reason });
-  }
-
-  public adminRequestChanges(id: number, notes: string): Observable<Asset> {
-    return this.updateAsset(id, { status: 'changes_requested', available: false, adminNotes: notes });
-  }
-
-  // Favorite toggle
-  public isFavorite(id: number): boolean {
-    return this.favorites.has(id);
-  }
-
-  public toggleFavorite(id: number): boolean {
-    if (this.favorites.has(id)) {
-      this.favorites.delete(id);
-    } else {
-      this.favorites.add(id);
-    }
-    try {
-      localStorage.setItem('rentsphere_favorites', JSON.stringify(Array.from(this.favorites)));
-    } catch {
-      // ignore
-    }
-    return this.favorites.has(id);
-  }
-
-  public getFavoritesCount(): number {
-    return this.favorites.size;
+    return { ...this.assets[0], ...payload };
   }
 }

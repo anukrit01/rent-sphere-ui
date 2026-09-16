@@ -15,7 +15,7 @@ export interface AssetSpecification {
 }
 
 export interface AssetOwner {
-  id: number;
+  id: string | number;
   name: string;
   companyName: string;
   verified: boolean;
@@ -29,7 +29,7 @@ export interface AssetOwner {
 }
 
 export interface AssetReview {
-  id: number;
+  id: string | number;
   authorName: string;
   authorCompany?: string;
   rating: number;
@@ -39,7 +39,7 @@ export interface AssetReview {
 }
 
 export interface Asset {
-  id: number;
+  id: string | number;
   title: string;
   name?: string; // alias
   category: string;
@@ -73,7 +73,7 @@ export interface Asset {
   deliveryAvailable?: boolean;
   deliveryFee?: number;
   createdAt?: string;
-  leaserId?: number;
+  leaserId?: string | number;
   adminNotes?: string;
   auditReason?: string;
 }
