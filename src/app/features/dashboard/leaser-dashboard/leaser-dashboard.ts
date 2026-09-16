@@ -45,7 +45,7 @@ export class LeaserDashboard implements OnInit {
   public error = signal<string | null>(null);
   public activeTab = signal<'fleet' | 'incoming' | 'active' | 'earnings' | 'history'>('fleet');
   public rejectionReason = signal<string>('');
-  public showRejectDialog = signal<number | null>(null);
+  public showRejectDialog = signal<string | number | null>(null);
 
   public breadcrumbs = [
     { label: 'Marketplace', url: '/' },
@@ -133,7 +133,7 @@ export class LeaserDashboard implements OnInit {
     });
   }
 
-  public openRejectDialog(bookingId: number): void {
+  public openRejectDialog(bookingId: string | number): void {
     this.showRejectDialog.set(bookingId);
     this.rejectionReason.set('');
   }
