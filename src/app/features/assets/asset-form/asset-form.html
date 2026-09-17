@@ -951,14 +951,15 @@
               </div>
 
               <div class="rs-upload-actions">
-                <label class="rs-btn rs-btn--primary rs-btn--md rs-file-label">
-                  <mat-icon class="rs-btn-icon">add_photo_alternate</mat-icon>
-                  <span>Select Files to Upload</span>
+                <label class="rs-btn rs-btn--primary rs-btn--md rs-file-label" [class.rs-btn--disabled]="uploadingImages()">
+                  <mat-icon class="rs-btn-icon">{{ uploadingImages() ? 'hourglass_top' : 'add_photo_alternate' }}</mat-icon>
+                  <span>{{ uploadingImages() ? 'Uploading Photos...' : 'Select Files to Upload' }}</span>
                   <input
                     type="file"
                     multiple
                     accept="image/*"
                     class="rs-sr-only"
+                    [disabled]="uploadingImages()"
                     (change)="onFileInput($event)"
                   />
                 </label>

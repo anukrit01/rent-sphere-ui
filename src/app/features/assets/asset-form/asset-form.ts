@@ -8,6 +8,7 @@ import { StatusBadgeComponent } from '../../../shared/components/status-badge/st
 import { AuthService } from '../../../services/auth';
 import { AssetService } from '../../../services/asset';
 import { NotificationService } from '../../../core/services/notification.service';
+import { UploadService } from '../../../services/upload';
 import { EquipmentCondition, EquipmentStatus, Asset } from '../../../shared/models/asset.model';
 import { MARKETPLACE_CATEGORIES, MARKETPLACE_LOCATIONS } from '../../../shared/data/marketplace.data';
 import { Category, LocationHub } from '../../../shared/models/category.model';
@@ -88,6 +89,7 @@ export class AssetForm implements OnInit {
   private auth = inject(AuthService);
   private assetService = inject(AssetService);
   private notification = inject(NotificationService);
+  private uploadService = inject(UploadService);
 
   // Stepper metadata
   public steps: WizardStep[] = [
@@ -106,6 +108,7 @@ export class AssetForm implements OnInit {
   public submitting = signal<boolean>(false);
   public isSubmitted = signal<boolean>(false);
   public submittedAsset = signal<Asset | null>(null);
+  public uploadingImages = signal<boolean>(false);
 
   // Categories and Locations
   public categories: Category[] = MARKETPLACE_CATEGORIES;
@@ -403,19 +406,22 @@ export class AssetForm implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
-    Array.from(input.files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (result) {
-          this.formData.images.push(result);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    const files = Array.from(input.files);
+    this.uploadingImages.set(true);
 
-    this.notification.success(`Added ${input.files.length} image(s).`);
-    input.value = '';
+    this.uploadService.uploadImages(files).subscribe({
+      next: (uploaded) => {
+        this.uploadingImages.set(false);
+        uploaded.forEach((img) => this.formData.images.push(img.url));
+        this.notification.success(`Successfully uploaded ${uploaded.length} photo(s).`);
+        input.value = '';
+      },
+      error: (err) => {
+        this.uploadingImages.set(false);
+        input.value = '';
+        this.notification.error(err?.message || 'Failed to upload images to media storage.');
+      },
+    });
   }
 
   public loadCategoryPresetImages(): void {
