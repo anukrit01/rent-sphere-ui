@@ -4,10 +4,10 @@ import { User } from './user.model';
 export type BookingStatus = 'pending' | 'approved' | 'active' | 'rejected' | 'completed' | 'cancelled';
 
 export interface Booking {
-  id: number;
-  assetId: number;
+  id: string | number;
+  assetId: string | number;
   asset?: Asset;
-  renterId: number;
+  renterId: string | number;
   renterName?: string;
   renterCompany?: string;
   renterPhone?: string;

@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { RoleGuard } from './role-guard';
@@ -14,6 +16,8 @@ describe('RoleGuard', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         RoleGuard,
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },

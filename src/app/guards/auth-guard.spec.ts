@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthGuard } from './auth-guard';
@@ -14,6 +16,8 @@ describe('AuthGuard', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         AuthGuard,
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },

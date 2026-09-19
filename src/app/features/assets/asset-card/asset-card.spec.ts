@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AssetCard } from './asset-card';
@@ -8,7 +10,8 @@ describe('AssetCard', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AssetCard]
+      imports: [AssetCard],
+      providers: [provideHttpClient(), provideHttpClientTesting()]
     })
     .compileComponents();
 
